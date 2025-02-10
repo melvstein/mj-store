@@ -1,40 +1,27 @@
 import mongoose from "mongoose";
 const { Schema, model, models } = mongoose;
-import type { TProduct } from "@/types";
+import type { TProductReview } from "@/types";
 
-const ProductSchema = new Schema<TProduct>({
-    tags: {
-        type: [String],
+const ProductReviewSchema = new Schema<TProductReview>({
+    reviewCode: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    username: {
+        type: String,
         required: true,
     },
     sku: {
         type: String,
         required: true,
-        unique: true,
     },
-    name: { 
-        type: String,
-        required: true,
-        unique: true,
-    },
-    description: {
-        type: String,
-        required: true,
-    },
-    price: {
+    rating: {
         type: Number,
         required: true,
     },
-    stock: {
-        type: Number,
-        required: true,
-    },
-    brand: {
+    comment: {
         type: String,
-    },
-    images: {
-        type: [String],
-        default: [],
     },
     createdAt: {
         type: Date,
@@ -43,10 +30,10 @@ const ProductSchema = new Schema<TProduct>({
     updatedAt: {
         type: Date,
         default: Date.now,
-    }
+    },
 });
 
-ProductSchema.pre("save", function (next) {
+ProductReviewSchema.pre("save", function (next) {
     if (this.isModified("updatedAt") || this.isNew) {
         this.updatedAt = new Date();
     }
@@ -54,6 +41,6 @@ ProductSchema.pre("save", function (next) {
     next()
 });
 
-const Product = models.Product || model<TProduct>("Product", ProductSchema);
+const ProductReview = models.product_reviews || model<TProductReview>("product_reviews", ProductReviewSchema);
 
-export default Product;
+export default ProductReview;

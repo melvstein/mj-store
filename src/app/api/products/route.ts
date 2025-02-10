@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
 import Product from "@/models/Product";
+import type { TProduct } from "@/types";
 
 // 🟢 GET All Products
 export const GET = async () => {
+    let response: TProduct[] | { error: string } = [];
+    let status: number = 200;
+
     try {
         await connectDB();
-        const products = await Product.find({});
-        
-        return NextResponse.json(products, { status: 200 });
+        response = await Product.find({});
     } catch (error: unknown) {
-        const response = {
+        status = 500;
+
+        response = {
             error: "Failed to fetch products",
         };
 
@@ -19,15 +23,26 @@ export const GET = async () => {
         } else {
             console.error("An unknown error occurred:", error);
         }
-
-        return NextResponse.json(response, { status: 500 });
     }
+ 
+    return NextResponse.json(response, { status });
 };
 
 export const POST = async (request: NextRequest) => {
     await connectDB();
-    const data = await request.json();
-    const newProduct = await Product.create(data);
+    const requestParams = await request.json();
+    let newProduct;
 
-    return NextResponse.json(newProduct);
+    try {
+        newProduct = await new Product(requestParams);
+        await newProduct.save();
+    } catch (error) {
+        console.error("Error saving product:", error);
+
+        if (error instanceof Error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+    }
+
+    return NextResponse.json(newProduct, { status: 201 });
 };
