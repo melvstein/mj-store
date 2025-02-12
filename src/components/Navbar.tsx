@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { TNavLink } from "@/types"
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
 
 const Navbar: React.FC = () => {
     const pathName = usePathname();
@@ -27,18 +28,21 @@ const Navbar: React.FC = () => {
 
     const li = links.map((link) => {
         return (
-            <li key={link.id} className="flex items-center justify-center">
-                <Link href={link.href} className={`px-4 py-2 hover:bg-white hover:text-blue-400 ${pathName === link.href ? "bg-blue-500" : ""}`}>{ link.name }</Link>
+            <li key={link.id} className="flex items-stretch justify-center">
+                <Link href={link.href} className={`px-6 hover:bg-white hover:text-blue-400 flex items-center justify-center ${pathName === link.href ? "bg-blue-500" : ""}`}>{ link.name }</Link>
             </li>
         )
     });
 
     return (
-        <nav className="fixed top-0 left-0 right-0 flex items-center justify-between bg-blue-400 text-white">
+        <nav className="fixed top-0 left-0 right-0 flex items-stretch justify-between bg-blue-400 text-white">
             <div className="flex items-center justify-center">
-                <Link href="" className="px-4 py-2 hover:bg-white hover:text-blue-400">MJ STORE</Link>
+                <Link href="" className="px-4 py-2 flex items-center justify-center space-x-2">
+                    <Logo />
+                    <p className="">MJ STORE</p>
+                </Link>
             </div>
-            <ul className="flex items-center justify-between">
+            <ul className="flex items-stretch justify-between">
                 { li }
             </ul>
         </nav>

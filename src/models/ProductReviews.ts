@@ -3,11 +3,6 @@ const { Schema, model, models } = mongoose;
 import type { TProductReview } from "@/types";
 
 const ProductReviewSchema = new Schema<TProductReview>({
-    reviewCode: {
-        type: String,
-        required: true,
-        unique: true,
-    },
     username: {
         type: String,
         required: true,
@@ -41,6 +36,6 @@ ProductReviewSchema.pre("save", function (next) {
     next()
 });
 
-const ProductReview = models.product_reviews || model<TProductReview>("product_reviews", ProductReviewSchema);
+const ProductReview = models.productReviews || model<TProductReview>("productReviews", ProductReviewSchema);
 
 export default ProductReview;
