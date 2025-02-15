@@ -4,8 +4,10 @@ import Image from "next/image";
 import type { TProduct } from "@/types";
 import { useEffect, useState } from "react";
 import ProductRating from "./ProductRating"
+import { useSession } from "next-auth/react";
 
 const Products: React.FC = () => {
+    const { data: session } = useSession();
     const [products, setProducts] = useState<TProduct[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -41,6 +43,7 @@ const Products: React.FC = () => {
         return totalReviews === 0 ? 0 : parseFloat((totalScore / totalReviews).toFixed(1));
       } */
 
+        if (!session?.user) return null
     return (
         <section>
             <div className="grid grid-cols-5 gap-4">
