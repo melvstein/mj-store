@@ -1,7 +1,7 @@
 import { connectDB } from "@/lib/mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import type { TProductReview } from "@/types";
-import ProductReview from "@/models/ProductReviews";
+import ProductReview from "@/models/ProductReview";
 
 export const GET = async () => {
     await connectDB();

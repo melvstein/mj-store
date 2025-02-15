@@ -40,7 +40,7 @@ export default async function RootLayout({
 					<Navbar />
 				</header>
 				<main className="container mx-auto py-[80px] h-screen">
-						{children}
+					{children}
 				</main>
 			</SessionProvider>
 		</body>

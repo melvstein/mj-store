@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import type { TNavLink } from "@/types"
-import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import { SessionProvider, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
+import { FiLogOut } from "react-icons/fi";
+import { FaRegUser } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
-    const { data: session } = useSession();
-    const pathName = usePathname();
+    const { data: session, status } = useSession();
     const [open, setOpen] = useState<boolean>(false);
     const dropDownRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +26,10 @@ const Navbar: React.FC = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    if (status === "loading") {
+        return null; // Or a loading spinner
+    }
+
     const links: TNavLink[] = [
         {
             id: 1,
@@ -39,20 +43,20 @@ const Navbar: React.FC = () => {
         },
         {
             id: 3,
-            name: "Signin",
+            name: "Sign in",
             href: "/signin",
         },
     ];
 
     const filteredLinks = session?.user 
-    ? links.filter(link => link.name !== "Signin")
+    ? links.filter(link => link.name !== "Sign in")
     : links;
 
     const li = filteredLinks.map((link) => (
         <li key={link.id} className="flex items-stretch justify-center">
             <Link 
                 href={link.href} 
-                className={`px-6 hover:bg-white hover:text-blue-400 flex items-center justify-center ${pathName === link.href ? "bg-blue-500" : ""}`}
+                className={`px-6 flex items-center justify-center`}
             >
                 {link.name}
             </Link>
@@ -63,7 +67,7 @@ const Navbar: React.FC = () => {
         <SessionProvider>
             <nav className="fixed top-0 left-0 right-0 flex items-stretch justify-between bg-skin-primary text-skin-base">
                 <div className="flex items-center justify-center">
-                    <Link href="" className="px-4 py-2 flex items-center justify-center space-x-2">
+                    <Link href="/" className="px-4 py-2 flex items-center justify-center space-x-2">
                         <Logo />
                         <p className="">MJ STORE</p>
                     </Link>
@@ -73,17 +77,25 @@ const Navbar: React.FC = () => {
                     <li className="flex items-stretch justify-center">
                         {session?.user &&
                             <div ref={dropDownRef} className="relative flex items-stretch justify-center" onClick={() => setOpen(!open)}>
-                                <div className={`px-6 flex items-center justify-center cursor-pointer gap-2`}>
+                                <div className="px-6 flex items-center justify-center cursor-pointer gap-2">
                                     <Image src={ session.user.image as string } width={50} height={50} alt="Profile" className="rounded-full size-[35px] ring ring-skin-base" />
                                 </div>
 
-                                <div className={`absolute top-[60px] right-[20px] bg-skin-primary flex-col items-start justify-center rounded-lg border shadow-lg w-[250px] ` + `${open ? 'flex' : 'hidden'}`}>
+                                <div 
+                                    className={
+                                        `${open ? 'flex' : 'hidden'} absolute top-[60px] right-[20px] bg-skin-base text-skin-foreground text-sm flex-col items-start
+                                        justify-center rounded-lg border border-gray-300 shadow-xl w-[250px] transition-all`
+                                    }
+                                >
                                     <div className="flex flex-col items-start justify-center p-4 w-full">
                                         <p className="font-semibold">{ session.user.name }</p>
-                                        <p className="">{ session.user.email }</p>
+                                        <p className="text-skin-muted">{ session.user.email }</p>
                                     </div>
-                                    <div className="flex items-center justify-start p-4 cursor-pointer w-full" onClick={ async () => await signOut() }>
-                                        Logout
+                                    <a href="/customer/account" className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
+                                        <FaRegUser /> Manage Account
+                                    </a>
+                                    <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: "/" }) }>
+                                        <FiLogOut /> Log out
                                     </div>
                                 </div>
                             </div>
