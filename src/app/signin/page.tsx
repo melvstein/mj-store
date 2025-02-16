@@ -20,8 +20,8 @@ const SignIn: React.FC = () => {
 			<div className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]">
 				<GoogleSignin />
 				<p>or</p>
-				<input type="text" placeholder="Email or Username" className="border shadow rounded-lg px-4 py-2 text-start focus:outline-2 outline-skin-primary w-full" />
-				<input type="password" placeholder="Password" className="border shadow rounded-lg px-4 py-2 text-start focus:outline-2 outline-skin-primary w-full" />
+				<input type="text" placeholder="Email or Username" className="input-skin" />
+				<input type="password" placeholder="Password" className="input-skin" />
 				<button className="border shadow rounded-lg px-4 py-2 focus:outline-2 outline-skin-primary bg-skin-primary text-skin-base w-full font-semibold">
 					Signin
 				</button>

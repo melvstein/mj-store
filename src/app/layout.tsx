@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navbar";
+import Providers from "@/components/ClientProviders";
 import { SessionProvider } from "next-auth/react";
 
 /* import {
@@ -27,21 +27,14 @@ export const metadata: Metadata = {
   description: "MJ STORE ECOMMERCE",
 };
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
 	<html lang="en">
-		<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+		<body className={`${geistSans.variable} ${geistMono.variable} bg-skin-background text-skin-foreground antialiased`}>
 			<SessionProvider>
-				<header>
-					<Navbar />
-				</header>
-				<main className="container mx-auto py-[80px] h-screen">
+				<Providers>
 					{children}
-				</main>
+				</Providers>
 			</SessionProvider>
 		</body>
 	</html>

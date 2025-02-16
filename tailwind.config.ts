@@ -15,7 +15,7 @@ export default {
           base: "var(--base)",
           primary: "rgb(var(--primary) / <alpha-value>)",
           secondary: "rgb(var(--secondary) / <alpha-value>)",
-          muted: "var(--muted)",
+          muted: "rgb(var(--muted) / <alpha-value>)",
         }
       },
     },

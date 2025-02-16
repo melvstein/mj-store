@@ -62,11 +62,11 @@ const Products: React.FC = () => {
             {
                 products.map((product, index) => {
                     return (
-                        <div key={index} className="flex flex-col items-center justify-center px-4 bg-white rounded-xl shadow-xl border space-y-2">
+                        <div key={index} className="flex flex-col items-center justify-center px-4 rounded-xl shadow border space-y-2">
                             <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px] p-8">
                                 {
                                     product.images.map((images) => (
-                                        <Image src={images} width={500} height={500} key={index} alt={product.name} className="flex items-center justify-center" />
+                                        <Image src={images} width={500} height={500} key={index} alt={product.name} priority className="flex items-center justify-center" />
                                     ))
                                 }
                             </div>
@@ -82,7 +82,7 @@ const Products: React.FC = () => {
                             </div>
                             <div className="flex items-center justify-between w-full py-4">
                                 <p className="text-sm">Stock:<span className="font-bold">{ product.stock }</span></p>
-                                <button onClick={handleAddToCart} className="bg-blue-400 text-white border rounded-md px-2 py-1">Add to cart</button>
+                                <button onClick={handleAddToCart} className="bg-blue-400 text-white rounded-md px-2 py-1">Add to cart</button>
                             </div>
                         </div>
                     );
