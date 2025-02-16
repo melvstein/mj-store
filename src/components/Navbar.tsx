@@ -10,7 +10,6 @@ import { signOut } from "next-auth/react";
 import { FiLogOut } from "react-icons/fi";
 import { FaRegUser } from "react-icons/fa";
 import { RiMenuFold4Line as CloseMenu, RiMenuFold3Line as OpenMenu } from "react-icons/ri";
-import clsx from "clsx";
 
 import dynamic from 'next/dynamic'
 const ThemeChanger = dynamic(() => import('./ThemeChanger'), { ssr: false });
@@ -25,11 +24,24 @@ const Navbar: React.FC = () => {
         const handleClickOutside = (e: MouseEvent) => {
             if (dropDownRef.current && !dropDownRef.current.contains(e.target as Node)) {
                 setOpenUserMenu(false);
+                setToggleMenu(false);
             }
         }
 
+        const handleResize = () => {
+            if (window.innerWidth >= 640) {
+                setOpenUserMenu(false);
+                setToggleMenu(false);
+            }
+        };
+
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        window.addEventListener("resize", handleResize);
+
+          return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            window.removeEventListener("resize", handleResize);
+          };
     }, []);
 
     if (status === "loading") {
@@ -72,7 +84,7 @@ const Navbar: React.FC = () => {
     return (
         <SessionProvider>
             <nav className="fixed top-0 left-0 right-0 bg-skin-primary text-skin-base">
-                <div className="flex items-stretch justify-between">
+                <div className="relative flex items-stretch justify-between">
                     {/* Logo */}
                     <div className="flex items-center justify-center">
                         <Link href="/" className="px-4 py-2 flex items-center justify-center space-x-2">
@@ -86,14 +98,14 @@ const Navbar: React.FC = () => {
                         { li }
                         <li className="flex items-stretch justify-center">
                             {session?.user &&
-                                <div ref={dropDownRef} className="relative flex items-stretch justify-center" onClick={() => setOpenUserMenu(!openUserMenu)}>
+                                <div ref={dropDownRef} className="flex items-stretch justify-center" onClick={() => setOpenUserMenu(!openUserMenu)}>
                                     <div className="px-6 flex items-center justify-center cursor-pointer gap-2">
                                         <Image src={ session.user.image as string } width={50} height={50} alt="Profile" className="rounded-full size-[35px] ring ring-skin-base" />
                                     </div>
 
                                     <div 
                                         className={
-                                            `${openUserMenu ? 'flex' : 'hidden'} absolute top-[60px] right-[20px] bg-skin-base text-skin-foreground text-sm flex-col items-start
+                                            `${openUserMenu ? 'flex' : 'hidden'} absolute top-[70px] right-[20px] bg-skin-base text-skin-foreground text-sm flex-col items-start
                                             justify-center rounded-lg border border-gray-300 shadow-xl w-[250px] transition-all`
                                         }
                                     >
@@ -116,27 +128,29 @@ const Navbar: React.FC = () => {
                         </li>
                     </ul>
 
-                    {/* Mobile Menu Button */}
-                    <div className="sm:hidden flex items-center justify-center p-4">
-                            { !toggleMenu ? <CloseMenu className="size-[30px] cursor-pointer" onClick={() => setToggleMenu(true)} /> : <OpenMenu className="size-[30px] cursor-pointer" onClick={() => setToggleMenu(false)} /> }
-                    </div>
+                    <div ref={dropDownRef} className="sm:hidden flex items-center justify-center">
+                        {/* Mobile Menu Button */}
+                        <button className="flex items-center justify-center p-4" onClick={() => setToggleMenu(!toggleMenu)}>
+                                { !toggleMenu ? <CloseMenu className="size-[30px] cursor-pointer" /> : <OpenMenu className="size-[30px] cursor-pointer" /> }
+                        </button>
 
-                    {/* Mobile Menu */}
-                    {toggleMenu && (
-                            <div 
-                                className={
-                                    `${openUserMenu ? 'flex' : 'hidden'} bg-skin-base text-skin-foreground text-sm flex-col items-start
-                                    justify-center rounded-lg border border-gray-300 shadow-xl w-[250px] transition-all`
-                                }
-                            >
-                                <a href="/customer/account" className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
-                                    <FaRegUser /> Manage Account
-                                </a>
-                                <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: "/" }) }>
-                                    <FiLogOut /> Log out
+                        {/* Mobile Menu */}
+                        {toggleMenu && (
+                                <div
+                                    className={
+                                        `${toggleMenu ? 'flex' : 'hidden'} absolute top-[70px] left-0 bg-skin-primary text-skin-base text-sm flex-col items-start
+                                        justify-center w-full transition-all`
+                                    }
+                                >
+                                    <a href="/customer/account" className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
+                                        <FaRegUser /> Manage Account
+                                    </a>
+                                    <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: "/" }) }>
+                                        <FiLogOut /> Log out
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                    </div>
                 </div>
             </nav>
         </SessionProvider>
