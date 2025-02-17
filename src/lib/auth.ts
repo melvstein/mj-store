@@ -7,7 +7,7 @@ import type { User as NextAuthUser, Session } from "next-auth";
 export const config = {
 	providers: [Google],
 	pages: {
-		signIn: "/signin",
+		signIn: "/customer/signin",
 		signOut: "/",
 	},
 	callbacks: {

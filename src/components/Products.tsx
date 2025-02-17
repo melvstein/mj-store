@@ -1,39 +1,37 @@
 "use client"
 
 import Image from "next/image";
-import type { TProduct } from "@/types";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ProductRating from "./ProductRating"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Loading from "./Loading";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "@/lib/redux/store";
+import { fetchProducts } from "@/lib/redux/slices/productSlice";
 
 const Products: React.FC = () => {
     const { data: session } = useSession();
-    const [products, setProducts] = useState<TProduct[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
     const router = useRouter();
+    const dispatch = useDispatch<AppDispatch>();
+    const { items, loading, error } = useSelector((state: RootState) => state.products);
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await fetch("api/products");
-                const data = await response.json();
-                setProducts(data);
-            } catch (error) {
-                console.error("Failed to fetch products:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProducts();
-    }, []);
+        dispatch(fetchProducts());
+    }, [dispatch]);
 
     if (loading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
                 <Loading />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div>
+                <p>Error: {error}</p>
             </div>
         );
     }
@@ -52,7 +50,7 @@ const Products: React.FC = () => {
 
     const handleAddToCart = () => {
         if (!session?.user) {
-            router.push("/signin");
+            router.push("/customer/signin");
         }
     }
 
@@ -60,7 +58,7 @@ const Products: React.FC = () => {
         <section>
             <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
-                products.map((product, index) => {
+                items.map((product, index) => {
                     return (
                         <div key={index} className="flex flex-col items-center justify-center px-4 rounded-xl shadow border space-y-2">
                             <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px] p-8">

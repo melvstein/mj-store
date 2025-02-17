@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/ClientProviders";
 import { SessionProvider } from "next-auth/react";
+import Navbar from "@/components/Navbar";
+import ClientProviders from "@/providers/ClientProviders";
 
 /* import {
 	ClerkProvider,
@@ -27,16 +28,23 @@ export const metadata: Metadata = {
   description: "MJ STORE ECOMMERCE",
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-	<html lang="en">
-		<body className={`${geistSans.variable} ${geistMono.variable} bg-skin-background text-skin-foreground antialiased`}>
-			<SessionProvider>
-				<Providers>
-					{children}
-				</Providers>
-			</SessionProvider>
-		</body>
-	</html>
-  );
+const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+	return (
+		<html lang="en">
+			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-skin-background text-skin-foreground antialiased`}>
+				<SessionProvider>
+					<ClientProviders>
+						<header>
+							<Navbar />
+						</header>
+						<main className="container mx-auto py-[80px] h-screen">
+							{children}
+						</main>
+					</ClientProviders>
+				</SessionProvider>
+			</body>
+		</html>
+	);
 }
+
+export default RootLayout;

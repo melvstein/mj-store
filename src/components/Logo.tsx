@@ -3,7 +3,7 @@ import React from 'react'
 const Logo: React.FC = () => {
   return (
     <>
-        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="fill-white stroke-[200px] stroke-blue-500 hover:fill-blue-500 hover:stroke-white size-[35px]"
+        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="fill-skin-secondary stroke-[200px] stroke-skin-base size-[35px]"
             width="50" height="50" viewBox="0 0 496.000000 578.000000"
             preserveAspectRatio="xMidYMid meet">
             <g transform="translate(0.000000,578.000000) scale(0.100000,-0.100000)">
