@@ -37,9 +37,12 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 						<header>
 							<Navbar />
 						</header>
-						<main className="container mx-auto py-[80px] h-screen">
+						<main className="container mx-auto py-[80px]">
 							{children}
 						</main>
+						<footer>
+							<p>This is footer</p>
+						</footer>
 					</ClientProviders>
 				</SessionProvider>
 			</body>

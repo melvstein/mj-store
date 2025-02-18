@@ -93,9 +93,9 @@ const Navbar: React.FC = () => {
     return (
         <SessionProvider>
         {/* Content Wrapper with Blur Effect */}
-        <div className={`${isBlurred ? "fixed inset-0 transition-all backdrop-blur-md bg-black/30" : ""}`} />
+        <div className={`${isBlurred ? "fixed inset-0 transition-all backdrop-blur-md bg-black/30 z-10" : ""}`} />
 
-            <nav className="fixed top-0 left-0 right-0 bg-skin-primary text-skin-base z-10 select-none">
+            <nav className="fixed top-0 left-0 right-0 bg-skin-primary text-skin-base z-20 select-none">
                 <div className="relative flex items-stretch justify-between">
                     {/* Logo */}
                     <div className="flex items-center justify-center">

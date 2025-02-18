@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image";
 import { useEffect } from "react";
 import ProductRating from "./ProductRating"
 import { useSession } from "next-auth/react";
@@ -9,6 +8,7 @@ import Loading from "./Loading";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/lib/redux/store";
 import { fetchProducts } from "@/lib/redux/slices/productSlice";
+import ProductImageSlider from "./ProductImageSlider";
 
 const Products: React.FC = () => {
     const { data: session } = useSession();
@@ -60,12 +60,14 @@ const Products: React.FC = () => {
             {
                 items.map((product, index) => {
                     return (
-                        <div key={index} className="flex flex-col items-center justify-center px-4 rounded-xl shadow border space-y-2">
-                            <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px] p-8">
+                        <div key={index} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">
+                            <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px]">
                                 {
-                                    product.images.map((images) => (
+                                    /* product.images.map((images) => (
                                         <Image src={images} width={500} height={500} key={index} alt={product.name} priority className="flex items-center justify-center" />
-                                    ))
+                                    )) */
+                                   
+                                    <ProductImageSlider key={index} images={product.images} />
                                 }
                             </div>
                             <div className="flex flex-col items-start justify-center w-full">
