@@ -1,9 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { TProduct } from "@/types";
+import axios from "axios";
 
 export const fetchProducts = createAsyncThunk("products/fetchProducts", async () => {
-    const response = await fetch("/api/products"); 
-    return response.json();
+    try {
+        const response = await axios.get('/api/products');
+        return response.data;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error(`Error fetching products: ${error.message}`);
+            throw new Error(error.message);
+        }
+
+        throw new Error("An unknown error occurred");
+    }
 });
 
 type ProductState = {

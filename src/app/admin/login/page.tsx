@@ -1,17 +1,33 @@
-import React from 'react'
+"use client"
 
-const Page: React.FC = () => {
-  return (
-    <section className="flex items-center justify-center bg-primary">
-        <div className="border shadow-xl flex flex-col items-center justify-center p-4 space-y-4">
-            <input type="text" id="adminUsername" placeholder="Username" />
-            <input type="password" id="adminPassword" placeholder="Password" />
-            <button>
-                Login
-            </button>
-        </div>
-    </section>
-  )
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+
+const SignIn: React.FC = () => {
+	const { data: session } = useSession();
+	const router = useRouter();
+
+	useEffect(() => {
+        if (session?.user) {
+            router.push("/admin/"); // ✅ Redirect only when session exists
+        }
+    }, [session, router]);
+
+	return (
+		<section className="flex items-center justify-center text-skin-muted">
+			<div className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]">
+				<div>
+					<h1>Admin Login</h1>
+				</div>
+				<input type="text" placeholder="Email or Username" className="input-skin" />
+				<input type="password" placeholder="Password" className="input-skin" />
+				<button className="border shadow rounded-lg px-4 py-2 focus:outline-2 outline-skin-primary bg-skin-primary text-skin-base w-full font-semibold">
+					Login
+				</button>
+			</div>
+		</section>
+	)
 }
 
-export default Page
+export default SignIn;

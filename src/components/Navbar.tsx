@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
         {
             id: 3,
             name: "Sign in",
-            href: "/customer/signin",
+            href: "/customer/login",
         },
     ];
 
@@ -170,7 +170,7 @@ const Navbar: React.FC = () => {
                                             <FiShoppingCart /> <p>Cart <span>3</span></p>
                                         </Link>
                                         {!session?.user && (
-                                            <Link href="/customer/signin" className="flex items-center justify-start w-full gap-2">
+                                            <Link href="/customer/login" className="flex items-center justify-start w-full gap-2">
                                                 <FiLogIn /> <p>Sign in</p>
                                             </Link>
                                         )}

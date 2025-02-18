@@ -50,7 +50,7 @@ const Products: React.FC = () => {
 
     const handleAddToCart = () => {
         if (!session?.user) {
-            router.push("/customer/signin");
+            router.push("/customer/login");
         }
     }
 

@@ -40,9 +40,9 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 						<main className="container mx-auto py-[80px]">
 							{children}
 						</main>
-						<footer>
+						{/* <footer>
 							<p>This is footer</p>
-						</footer>
+						</footer> */}
 					</ClientProviders>
 				</SessionProvider>
 			</body>
