@@ -28,7 +28,7 @@ export const POST = async (request: NextRequest) => {
         await connectDB();
         response = ApiResponse.success;
         const requestParams = await request.json();
-        const validation = await getUserSchema.safeParseAsync(requestParams);
+        const validation = getUserSchema.safeParse(requestParams);
 
         if (!validation.success) {
             throw validation.error;
