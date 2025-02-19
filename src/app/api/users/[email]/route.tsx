@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongoose";
-import API_RESPONSE from "@/lib/apiResponse";
+import ApiResponse from "@/lib/apiResponse";
 import User from "@/models/User";
 import { ApiError } from "@/lib/errors/apiError";
 import { TResponse } from "@/types";
+import { z, ZodError } from "zod";
+
+const emailSchema = z.string().email();
 
 export const GET = async (request: NextRequest, { params } : { params: { email: string } }) => {
     let status: number = 200;
     let response: TResponse;
-    const email = params.email;
 
     try {
         await connectDB();
-        response = API_RESPONSE.success;
+        response = ApiResponse.success;
+        const email = emailSchema.parse(params.email);
         const data =  await User.findOne({ email });
 
         if (!data) {
-            throw new ApiError(API_RESPONSE.invalidEmail.code, API_RESPONSE.invalidEmail.message, 400);
+            throw new ApiError(ApiResponse.error.code, "Email not found", 400);
         }
 
         response.data = {
@@ -31,12 +34,16 @@ export const GET = async (request: NextRequest, { params } : { params: { email: 
         };
     } catch (error: unknown) {
         status = 400;
-        response = API_RESPONSE.error;
+        response = ApiResponse.error;
 
         if (error instanceof ApiError) {
             response.code = error.code;
             response.message = error.message;
             status = error.status;
+        }
+
+        if (error instanceof ZodError) {
+            response.message = error.errors[0].message;
         }
     }
     
