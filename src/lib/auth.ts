@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import { connectDB } from "./mongoose";
 import User from "@/models/User";
-import type { User as NextAuthUser, Session } from "next-auth";
+import type { Account, User as NextAuthUser, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
@@ -48,7 +48,12 @@ export const config = {
 		signOut: "/",
 	}, */
 	callbacks: {
-		async signIn({ user }: { user: NextAuthUser }) {
+		async signIn({ account, user }: { account: Account | null, user: NextAuthUser }) {
+			
+			if (account) {
+				console.log('Provider', account.provider);
+			}
+
 			try {
 				await connectDB();
 

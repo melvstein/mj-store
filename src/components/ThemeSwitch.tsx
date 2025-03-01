@@ -16,7 +16,7 @@ const ThemeSwitch: React.FC = () => {
 	  }
 
 	return (
-	<div className="select-none fixed bottom-5 right-5 bg-skin-primary rounded-full sm:p-2 p-1">
+	<div className="select-none fixed bottom-5 right-5 bg-skin-primary rounded-full sm:p-2 p-1 z-10">
 		{theme === "light" ?
 			<LuSun onClick={() => setTheme("dark")} className="ms:size-[30px] size-[25px] cursor-pointer fill-yellow-500 stroke-yellow-200" /> 
 			:  
