@@ -1,18 +1,45 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import { connectDB } from "./mongoose";
 import User from "@/models/User";
 import type { User as NextAuthUser, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import axios from "axios";
+import ApiResponse from "./apiResponse";
 
 export const config = {
+	debug: true,
 	providers: [
-		Google,
+		GoogleProvider({
+			clientId: process.env.AUTH_GOOGLE_ID,
+			clientSecret: process.env.AUTH_GOOGLE_SECRET
+		}),
 		CredentialsProvider({
 			name: "Credentials",
 			credentials: {
 				email: { label: "Email", type: "email", placeholder: "user@example.com" },
 				password: { label: "Password", type: "password", placeholder: "Password" }
+			},
+			async authorize(credentials, request) {
+				/* console.log('CredentialsProvider authorize method arg credentials', credentials);
+				console.log('CredentialsProvider authorize method arg request', request); */
+
+				const headerOrigin = request.headers.get('origin');
+
+				const response = await axios.post(`${headerOrigin}/api/users`, {
+					apiKey: process.env.API_KEY,
+					email: credentials.email
+				});
+
+				if (response.data.code === ApiResponse.success.code) {
+					const user = response.data.data;
+
+					if (user) {
+						return user;
+					}
+				}
+
+				return null;
 			}
 		}),
 	],/* 
@@ -22,7 +49,6 @@ export const config = {
 	}, */
 	callbacks: {
 		async signIn({ user }: { user: NextAuthUser }) {
-			console.log(user);
 			try {
 				await connectDB();
 
@@ -40,11 +66,12 @@ export const config = {
 
 				return true;
 			} catch (error) {
-				console.error("Error saving user:", error);
+				console.error("Signin callback Error saving user:", error);
 				return false;
 			}
 		},
 		async session({ session }: { session: Session }) {
+			// console.log('Session callback', session);
 			return session;
 		},
 	},
