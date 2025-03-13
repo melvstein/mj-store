@@ -62,4 +62,8 @@ body {
     .input-skin {
         @apply border shadow rounded-lg px-4 py-2 text-start focus:outline-2 outline-skin-primary w-full;
     }
+
+    .button-skin {
+		@apply border shadow rounded-lg px-4 py-2 focus:outline-2 outline-skin-primary bg-skin-primary text-skin-base font-medium uppercase text-sm;
+    }
 }

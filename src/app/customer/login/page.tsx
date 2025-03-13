@@ -21,14 +21,12 @@ const SignIn: React.FC = () => {
 		e.preventDefault();
 
 		const result = signIn("credentials", {
-			redirect: false,
+			redirect: true,
 			email,
 			password
 		});
 
 		console.log(result);
-
-		//router.push("/");
 	}
 
 	return (
@@ -40,11 +38,14 @@ const SignIn: React.FC = () => {
 				<GoogleSignin />
 				<p>or</p>
 				<form className="space-y-4" onSubmit={handleSubmit}>
-					<input type="text" placeholder="Email or Username" className="input-skin" value={email} onChange={(e) => setEmail(e.target.value)} />
-					<input type="password" placeholder="Password" className="input-skin" value={password} onChange={(e) => setPassword(e.target.value)} />
-					<button className="border shadow rounded-lg px-4 py-2 focus:outline-2 outline-skin-primary bg-skin-primary text-skin-base w-full font-semibold">
-						Login
-					</button>
+					<input type="text" placeholder="Email or Username" className="input-skin" value={email} onChange={(e) => setEmail(e.target.value)} required />
+					<input type="password" placeholder="Password" className="input-skin" value={password} onChange={(e) => setPassword(e.target.value)} required />
+
+					<div className="flex items-center justify-center">
+						<button className="button-skin">
+							Login
+						</button>
+					</div>
 				</form>
 			</div>
 		</section>

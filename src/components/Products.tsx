@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Loading from "./Loading";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchProducts } from "@/lib/redux/slices/productSlice";
+import { getProducts } from "@/lib/redux/slices/productSlice";
 import ProductImageSlider from "./ProductImageSlider";
 
 const Products: React.FC = () => {
@@ -17,7 +17,7 @@ const Products: React.FC = () => {
     const { items, loading, error } = useSelector((state: RootState) => state.products);
 
     useEffect(() => {
-        dispatch(fetchProducts());
+        dispatch(getProducts());
     }, [dispatch]);
 
     if (loading) {
