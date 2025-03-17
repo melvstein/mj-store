@@ -9,13 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/lib/redux/store";
 import { getProducts } from "@/lib/redux/slices/productSlice";
 import ProductImageSlider from "./ProductImageSlider";
+import { useGetProductsQuery } from "@/lib/redux/services/fetchApiData";
 
 const Products: React.FC = () => {
-    const { data: session } = useSession();
+    const { status } = useSession();
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
     const { items, loading, error } = useSelector((state: RootState) => state.products);
-
+    const { data, errors, isLoading } = useGetProductsQuery;
+    console.log(data);
     useEffect(() => {
         dispatch(getProducts());
     }, [dispatch]);
@@ -49,9 +51,11 @@ const Products: React.FC = () => {
       } */
 
     const handleAddToCart = () => {
-        if (!session?.user) {
+        if (status === 'unauthenticated') {
             router.push("/customer/login");
         }
+
+        
     }
 
     return (

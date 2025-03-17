@@ -59,7 +59,7 @@ const Navbar: React.FC = () => {
         {
             id: 2,
             name: "Cart",
-            href: "/cart",
+            href: "/customer/cart",
         },
         {
             id: 3,
@@ -139,7 +139,7 @@ const Navbar: React.FC = () => {
 
                     <div ref={menuDropDownRef} className="sm:hidden flex items-center justify-center gap-2">
                         <Link 
-                            href="/cart"
+                            href="customer/cart"
                             className="relative p-2 flex items-center justify-center"
                         >
                             <p>Cart</p>
@@ -163,10 +163,10 @@ const Navbar: React.FC = () => {
                                 >
                                     <div className="w-full p-4 space-y-4">
                                         <p className="text-skin-muted text-xs uppercase font-semibold">Main</p>
-                                        <Link href="/cart" className="flex items-center justify-start w-full gap-2">
+                                        <Link href="customer/cart" className="flex items-center justify-start w-full gap-2">
                                             <FaProductHunt /> <p>Products</p>
                                         </Link>
-                                        <Link href="/cart" className="flex items-center justify-start w-full gap-2">
+                                        <Link href="customer/cart" className="flex items-center justify-start w-full gap-2">
                                             <FiShoppingCart /> <p>Cart <span>3</span></p>
                                         </Link>
                                         {!session?.user && (
