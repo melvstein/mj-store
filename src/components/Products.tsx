@@ -1,28 +1,18 @@
 "use client"
 
-import { useEffect } from "react";
 import ProductRating from "./ProductRating"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Loading from "./Loading";
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState, AppDispatch } from "@/lib/redux/store";
-import { getProducts } from "@/lib/redux/slices/productSlice";
 import ProductImageSlider from "./ProductImageSlider";
 import { useGetProductsQuery } from "@/lib/redux/services/fetchApiData";
 
 const Products: React.FC = () => {
     const { status } = useSession();
     const router = useRouter();
-    const dispatch = useDispatch<AppDispatch>();
-    const { items, loading, error } = useSelector((state: RootState) => state.products);
-    const { data, errors, isLoading } = useGetProductsQuery;
-    console.log(data);
-    useEffect(() => {
-        dispatch(getProducts());
-    }, [dispatch]);
+    const { data: products, error, isLoading } = useGetProductsQuery();
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
                 <Loading />
@@ -31,11 +21,10 @@ const Products: React.FC = () => {
     }
 
     if (error) {
-        return (
-            <div>
-                <p>Error: {error}</p>
-            </div>
-        );
+        const errorMessage =
+            "status" in error ? `Error ${error.status}: ${JSON.stringify(error.data)}` : "An unknown error occurred";
+    
+        return <p>{errorMessage}</p>;
     }
 
     /* function calculateAverageRating(reviews: Record<number, number>): number {
@@ -62,7 +51,7 @@ const Products: React.FC = () => {
         <section>
             <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
-                items.map((product, index) => {
+                products.map((product, index) => {
                     return (
                         <div key={index} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">
                             <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px]">
