@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { TNavLink } from "@/types"
 import Logo from "./Logo";
-import { SessionProvider, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
@@ -11,6 +11,8 @@ import { FiLogOut, FiLogIn } from "react-icons/fi";
 import { FaRegUser, FaProductHunt } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { RiMenuFold4Line as CloseMenu, RiMenuFold3Line as OpenMenu } from "react-icons/ri";
+import Path from "@/utils/Path";
+import Var from "@/utils/Var";
 
 const Navbar: React.FC = () => {
     const { data: session, status } = useSession();
@@ -46,25 +48,25 @@ const Navbar: React.FC = () => {
           };
     }, []);
 
-    if (status === "loading") {
+    if (status == Var.status.loading) {
         return null; // Or a loading spinner
     }
 
     const links: TNavLink[] = [
         {
             id: 1,
-            name: "Products",
-            href: "/",
+            name: Var.products,
+            href: Path.home,
         },
         {
             id: 2,
-            name: "Cart",
-            href: "/customer/cart",
+            name: Var.cart,
+            href: Path.customer.cart,
         },
         {
             id: 3,
             name: "Sign in",
-            href: "/customer/login",
+            href: Path.customer.login,
         },
     ];
 
@@ -79,7 +81,7 @@ const Navbar: React.FC = () => {
                 className={`relative px-6 flex items-center justify-center gap-2`}
             >
                 {link.name}
-                {link.name === "Cart" && (
+                {link.name == Var.cart && (
                     <p className="absolute top-1 right-2 bg-skin-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
                         3
                     </p>
@@ -91,15 +93,14 @@ const Navbar: React.FC = () => {
     const isBlurred = openUserMenu || toggleMenu;
 
     return (
-        <SessionProvider>
-        {/* Content Wrapper with Blur Effect */}
-        <div className={`${isBlurred ? "fixed inset-0 transition-all backdrop-blur-md bg-black/30 z-10" : ""}`} />
-
+        <div>
+            {/* Content Wrapper with Blur Effect */}
+            <div className={`${isBlurred ? "fixed inset-0 transition-all backdrop-blur-md bg-black/30 z-10" : ""}`}></div>
             <nav className="fixed top-0 left-0 right-0 bg-skin-primary text-skin-base z-20 select-none">
                 <div className="relative flex items-stretch justify-between">
                     {/* Logo */}
                     <div className="flex items-center justify-center">
-                        <Link href="/" className="pl-4 py-2 flex items-center justify-center space-x-2">
+                        <Link href={ Path.home } className="pl-4 py-2 flex items-center justify-center space-x-2">
                             <Logo />
                             <p className="sm:text-base text-[10px]">MJ STORE</p>
                         </Link>
@@ -125,10 +126,10 @@ const Navbar: React.FC = () => {
                                             <p className="font-semibold">{ session.user.name }</p>
                                             <p className="text-skin-muted">{ session.user.email }</p>
                                         </div>
-                                        <Link href="/customer/account" className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
+                                        <Link href={ Path.customer.account } className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
                                             <FaRegUser /> Manage Account
                                         </Link>
-                                        <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: "/" }) }>
+                                        <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: Path.customer.login }) }>
                                             <FiLogOut /> Log out
                                         </div>
                                     </div>
@@ -139,7 +140,7 @@ const Navbar: React.FC = () => {
 
                     <div ref={menuDropDownRef} className="sm:hidden flex items-center justify-center gap-2">
                         <Link 
-                            href="customer/cart"
+                            href={ Path.customer.cart }
                             className="relative p-2 flex items-center justify-center"
                         >
                             <p>Cart</p>
@@ -163,14 +164,14 @@ const Navbar: React.FC = () => {
                                 >
                                     <div className="w-full p-4 space-y-4">
                                         <p className="text-skin-muted text-xs uppercase font-semibold">Main</p>
-                                        <Link href="customer/cart" className="flex items-center justify-start w-full gap-2">
+                                        <Link href={ Path.customer.cart } className="flex items-center justify-start w-full gap-2">
                                             <FaProductHunt /> <p>Products</p>
                                         </Link>
-                                        <Link href="customer/cart" className="flex items-center justify-start w-full gap-2">
+                                        <Link href={ Path.customer.cart } className="flex items-center justify-start w-full gap-2">
                                             <FiShoppingCart /> <p>Cart <span>3</span></p>
                                         </Link>
                                         {!session?.user && (
-                                            <Link href="/customer/login" className="flex items-center justify-start w-full gap-2">
+                                            <Link href={ Path.customer.login } className="flex items-center justify-start w-full gap-2">
                                                 <FiLogIn /> <p>Sign in</p>
                                             </Link>
                                         )}
@@ -187,10 +188,10 @@ const Navbar: React.FC = () => {
                                                     <p className="text-skin-muted text-[10px]">{ session.user.email }</p>
                                                 </div>
                                             </div>
-                                            <Link href="/customer/account" className="flex items-center justify-start w-full gap-2">
+                                            <Link href={ Path.customer.account } className="flex items-center justify-start w-full gap-2">
                                                 <FaRegUser /> Manage Account
                                             </Link>
-                                            <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: "/" }) }>
+                                            <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: Path.customer.login }) }>
                                                 <FiLogOut /> Log out
                                             </div>
                                         </div>
@@ -200,7 +201,7 @@ const Navbar: React.FC = () => {
                     </div>
                 </div>
             </nav>
-        </SessionProvider>
+        </div>
     );
 };
 

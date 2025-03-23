@@ -1,12 +1,21 @@
 "use client"
 
 import GoogleSignin from "@/components/GoogleSignin";
-import { signIn } from "next-auth/react";
+import Var from "@/utils/Var";
+import { signIn, useSession } from "next-auth/react";
 import React, { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import Path from "@/utils/Path";
 
 const SignIn: React.FC = () => {
+	const { status } = useSession();
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
+	const router = useRouter();
+
+	if (status == Var.status.authenticated) {
+		router.push(Path.home);
+	}
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -15,7 +24,7 @@ const SignIn: React.FC = () => {
 			redirect: true,
 			email,
 			password,
-			callbackUrl: "/"
+			callbackUrl: Path.home
 		});
 
 		console.log(result);
