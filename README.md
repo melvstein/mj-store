@@ -3,6 +3,7 @@
 Product API
 - POST Products "/api/products" - done
 - GET Products "/api/getProducts" - done
+- POST addToCart "api/product/addToCart"
 
 User API
 - GET Users "api/getUsers" - done

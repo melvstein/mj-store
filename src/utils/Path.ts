@@ -2,7 +2,7 @@ const Path = {
     home: "/",
     customer: {
         account: "/customer/account",
-        cart: "customer/cart",
+        cart: "/customer/cart",
         login: "/customer/login",
         logout: "/customer/logout",
     }

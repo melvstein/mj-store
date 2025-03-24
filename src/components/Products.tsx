@@ -6,11 +6,14 @@ import { useRouter } from "next/navigation";
 import Loading from "./Loading";
 import ProductImageSlider from "./ProductImageSlider";
 import { useGetProductsQuery } from "@/lib/redux/services/fetchApiData";
+import { TCurrencyCode } from "@/types";
+import Config from "@/utils/config";
 
 const Products: React.FC = () => {
     const { status } = useSession();
     const router = useRouter();
     const { data: products, error, isLoading } = useGetProductsQuery();
+    const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 
     if (isLoading) {
         return (
@@ -66,7 +69,7 @@ const Products: React.FC = () => {
                             <div className="flex flex-col items-start justify-center w-full">
                                 <div className="flex items-center justify-between w-full font-bold">
                                     <p>{ product.name }</p>
-                                    <p>${ product.price }</p>
+                                    <p>{ Config.getCurrencySymbol(currencyCode) } { product.price }</p>
                                 </div>
                                 <p className="text-sm">{ product.description }</p>
                             </div>

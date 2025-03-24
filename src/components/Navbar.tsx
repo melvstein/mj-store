@@ -102,7 +102,7 @@ const Navbar: React.FC = () => {
                     <div className="flex items-center justify-center">
                         <Link href={ Path.home } className="pl-4 py-2 flex items-center justify-center space-x-2">
                             <Logo />
-                            <p className="sm:text-base text-[10px]">MJ STORE</p>
+                            <p className="sm:text-base text-[10px]">{ Var.appName }</p>
                         </Link>
                     </div>
 
@@ -127,10 +127,10 @@ const Navbar: React.FC = () => {
                                             <p className="text-skin-muted">{ session.user.email }</p>
                                         </div>
                                         <Link href={ Path.customer.account } className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
-                                            <FaRegUser /> Manage Account
+                                            <FaRegUser /> <p>{ Var.manageAccount }</p>
                                         </Link>
                                         <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: Path.customer.login }) }>
-                                            <FiLogOut /> Log out
+                                            <FiLogOut /> <p>{ Var.logOut }</p>
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +143,7 @@ const Navbar: React.FC = () => {
                             href={ Path.customer.cart }
                             className="relative p-2 flex items-center justify-center"
                         >
-                            <p>Cart</p>
+                            <p>{ Var.cart }</p>
                             <p className="absolute top-[-1px] right-[-6px] bg-skin-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
                                 3
                             </p>
@@ -163,16 +163,16 @@ const Navbar: React.FC = () => {
                                     }
                                 >
                                     <div className="w-full p-4 space-y-4">
-                                        <p className="text-skin-muted text-xs uppercase font-semibold">Main</p>
+                                        <p className="text-skin-muted text-xs uppercase font-semibold">{ Var.main }</p>
                                         <Link href={ Path.customer.cart } className="flex items-center justify-start w-full gap-2">
-                                            <FaProductHunt /> <p>Products</p>
+                                            <FaProductHunt /> <p>{ Var.products }</p>
                                         </Link>
                                         <Link href={ Path.customer.cart } className="flex items-center justify-start w-full gap-2">
-                                            <FiShoppingCart /> <p>Cart <span>3</span></p>
+                                            <FiShoppingCart /> <p>{ Var.cart } <span>3</span></p>
                                         </Link>
                                         {!session?.user && (
                                             <Link href={ Path.customer.login } className="flex items-center justify-start w-full gap-2">
-                                                <FiLogIn /> <p>Sign in</p>
+                                                <FiLogIn /> <p>{ Var.signIn }</p>
                                             </Link>
                                         )}
                                     </div>
@@ -189,10 +189,10 @@ const Navbar: React.FC = () => {
                                                 </div>
                                             </div>
                                             <Link href={ Path.customer.account } className="flex items-center justify-start w-full gap-2">
-                                                <FaRegUser /> Manage Account
+                                                <FaRegUser /> <p>{ Var.manageAccount }</p>
                                             </Link>
                                             <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: Path.customer.login }) }>
-                                                <FiLogOut /> Log out
+                                                <FiLogOut /> <p>{ Var.logOut }</p>
                                             </div>
                                         </div>
                                     )}
