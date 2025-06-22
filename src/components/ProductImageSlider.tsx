@@ -18,6 +18,12 @@ const ProductImageSlider: React.FC<ProductImageCarouselProps> = ({ images }) => 
     const nextRef = useRef<HTMLButtonElement>(null);
     const swiperRef = useRef<SwiperRef>(null);
 
+    if (images == null) {
+        images = [
+            '/images/products/default.jpg',
+        ];
+    }
+
     useEffect(() => {
         if (swiperRef.current && swiperRef.current.swiper && prevRef.current && nextRef.current) {
             const swiper = swiperRef.current.swiper;

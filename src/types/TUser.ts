@@ -1,15 +1,16 @@
 export type TUser = {
-    _id: string[];
+    id: string[];
     role: string;
-    name: string;
+    name?: string;
     username: string;
     email: string;
     password: string;
-    encryptedPassword: string;
-    contactNumber: string;
-    address: string;
-    image: string;
-    provider: string;
+    contactNumber?: string;
+    address?: string;
+    profileImageUrl: string;
+    isActive: boolean;
+    isVerified?: boolean;
+    lastLoginAt?: Date;
     createdAt?: Date;
     updatedAt?: Date;
 };

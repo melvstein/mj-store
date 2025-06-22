@@ -1,5 +1,5 @@
 export type TProduct = {
-    _id: string[];
+    id: string[];
     tags: string[];
     sku: string;
     name: string;
@@ -8,6 +8,13 @@ export type TProduct = {
     stock: number;
     brand?: string;
     images: string[];
+    isActive: boolean;
     createdAt?: Date;
     updatedAt?: Date;
 };
+
+export type TProductResponse = {
+    code: string,
+    message: string,
+    data: any
+}

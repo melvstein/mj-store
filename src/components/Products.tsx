@@ -5,15 +5,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Loading from "./Loading";
 import ProductImageSlider from "./ProductImageSlider";
-import { useGetProductsQuery } from "@/lib/redux/services/fetchApiData";
-import { TCurrencyCode } from "@/types";
+import { useGetProductsQuery } from "@/lib/redux/services/ecommerceApi";
+import { TCurrencyCode, TProduct } from "@/types";
 import Config from "@/utils/config";
 
 const Products: React.FC = () => {
     const { status } = useSession();
     const router = useRouter();
-    const { data: products, error, isLoading } = useGetProductsQuery();
+    const { data: response, error, isLoading } = useGetProductsQuery();
     const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
+    const products = response?.data.content;
 
     if (isLoading) {
         return (
@@ -54,16 +55,17 @@ const Products: React.FC = () => {
         <section>
             <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
-                products?.map((product) => {
+                products?.map((product : TProduct) => {
+                    console.log(product);
                     return (
-                        <div key={String(product._id)} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">
+                        <div key={String(product.id)} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">
                             <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px]">
                                 {
                                     /* product.images.map((images) => (
                                         <Image src={images} width={500} height={500} key={index} alt={product.name} priority className="flex items-center justify-center" />
                                     )) */
                                    
-                                    <ProductImageSlider key={String(product._id)} images={product.images} />
+                                    <ProductImageSlider key={String(product.id)} images={product.images} />
                                 }
                             </div>
                             <div className="flex flex-col items-start justify-center w-full">

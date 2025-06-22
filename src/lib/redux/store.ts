@@ -2,15 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import productReducer from "./slices/productSlice";
 import userReducer from "./slices/userSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { productApi } from "./services/fetchApiData";
+import { ecommerceApi } from "./services/ecommerceApi";
 
 export const store = configureStore({
     reducer: {
         products: productReducer,
         user: userReducer,
-        [productApi.reducerPath]: productApi.reducer,
+        [ecommerceApi.reducerPath]: ecommerceApi.reducer,
     },
-    middleware: (getDefaultMiddleWare) => getDefaultMiddleWare().concat(productApi.middleware),
+    middleware: (getDefaultMiddleWare) => getDefaultMiddleWare().concat(ecommerceApi.middleware),
 });
 
 setupListeners(store.dispatch);

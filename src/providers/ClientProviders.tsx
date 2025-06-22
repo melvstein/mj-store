@@ -1,5 +1,4 @@
 "use client";
-
 import ReduxProvider from "./ReduxProvider";
 import Theme from "./Theme";
 
