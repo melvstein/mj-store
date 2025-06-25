@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
-import Navbar from "@/components/Navbar";
 import ClientProviders from "@/providers/ClientProviders";
 
 /* import {
@@ -34,9 +33,6 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-skin-background text-skin-foreground antialiased`}>
 				<SessionProvider>
 					<ClientProviders>
-						<header>
-							<Navbar />
-						</header>
 						<main className="container mx-auto py-[80px]">
 							{children}
 						</main>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ThemeProvider } from 'next-themes'
 import ThemeSwitch from "../components/ThemeSwitch";
 
-const Theme = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+const AppThemeProvider = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
@@ -21,4 +21,4 @@ const Theme = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   	);
 }
 
-export default Theme;
+export default AppThemeProvider;

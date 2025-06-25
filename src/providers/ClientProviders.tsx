@@ -1,13 +1,13 @@
 "use client";
 import ReduxProvider from "./ReduxProvider";
-import Theme from "./Theme";
+import AppThemeProvider from "./AppThemeProvider";
 
 const ClientProviders = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 	return (
 		<ReduxProvider>
-			<Theme>
+			<AppThemeProvider>
 				{children}
-			</Theme>
+			</AppThemeProvider>
 		</ReduxProvider>
   );
 }

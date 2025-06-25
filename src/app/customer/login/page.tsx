@@ -5,7 +5,7 @@ import Var from "@/utils/Var";
 import { signIn, useSession } from "next-auth/react";
 import React, { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import Path from "@/utils/Path";
+import Path from "@/utils/paths";
 
 const SignIn: React.FC = () => {
 	const { status } = useSession();

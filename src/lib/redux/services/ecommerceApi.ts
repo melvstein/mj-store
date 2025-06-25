@@ -1,40 +1,36 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { TProductResponse } from "@/types";
-import { getAccessToken, getRefreshToken, setTokens } from "@/utils/cookieUtils";
+import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import type { TApiResponse, TProductResponse } from "@/types";
+import { TTokens } from "@/types/TAuth";
+import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const REDUCER_PATH = "ecommerceApi";
+
 const HTTP_METHOD_POST = "POST";
+const HTTP_METHOD_GET = "GET";
+const HTTP_METHOD_PATCH = "PATCH";
+const HTTP_METHOD_DELETE = "DELETE";
 
 const GET_PRODUCTS_ENDPOINT = "/products";
-const ADMIN_LOGIN_ENDPOINT = "/auth/login";
+const AUTH_LOGIN_ENDPOINT = "/auth/login";
+const AUTH_REFRESH_TOKEN = "/auth/refresh-token";
 
-// Base fetcher without header logic (shared for refresh + main queries)
-const rawBaseQuery = fetchBaseQuery({
-  baseUrl: API_URL,
-  credentials: "include", // send cookies if needed
+const baseQuery = fetchBaseQuery({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL,
 });
 
-export const baseQueryWithRefresh: typeof rawBaseQuery = async (args, api, extraOptions) => {
-  const accessToken = getAccessToken();
+export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
 
-  let enhancedArgs = typeof args === "string" ? { url: args } : { ...args };
-
-  if (accessToken) {
-    enhancedArgs.headers = {
-      ...(enhancedArgs.headers || {}),
-      Authorization: `Bearer ${accessToken}`,
-    };
-  }
-
-  let result = await rawBaseQuery(enhancedArgs, api, extraOptions);
-
-  // Token expired, try refresh
-  if (result?.error?.status === 401) {
+  if (result.error && result.error.status === 401) {
+    // Try to refresh token
     const refreshToken = getRefreshToken();
-    if (!refreshToken) return result;
+    if (!refreshToken) {
+      clearTokens();
+      return result;
+    }
 
-    const refreshResult = await rawBaseQuery(
+    const refreshResult = await baseQuery(
       {
         url: "/auth/refresh-token",
         method: "POST",
@@ -46,60 +42,56 @@ export const baseQueryWithRefresh: typeof rawBaseQuery = async (args, api, extra
       extraOptions
     );
 
-      console.warn("Token refresh failed:", refreshResult.error);
-    if (refreshResult?.data?.data?.accessToken) {
-      const { accessToken: newAccessToken, refreshToken: newRefreshToken } = refreshResult.data.data;
-      setTokens(newAccessToken, newRefreshToken);
+    if (
+      refreshResult.data &&
+      typeof refreshResult.data === "object" &&
+      refreshResult.data !== null &&
+      "data" in refreshResult.data
+    ) {
+      const newTokens = (refreshResult.data as any).data;
+      setAccessToken(newTokens.accessToken);
+      setRefreshToken(newTokens.refreshToken);
 
-      // Retry original request with new token
-      if (typeof args !== "string") {
-        enhancedArgs.headers = {
-          ...(enhancedArgs.headers || {}),
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-      }
-
-      result = await rawBaseQuery(enhancedArgs, api, extraOptions);
+      // Retry original query with new access token
+      result = await baseQuery(args, api, extraOptions);
     } else {
-      console.warn("Token refresh failed:", refreshResult.error);
+      clearTokens();
     }
   }
 
   return result;
 };
 
-export type TLoginResponse = {
-  code: string;
-  message: string;
-  data: any;
-};
-
 export const ecommerceApi = createApi({
-  reducerPath: REDUCER_PATH,
-  baseQuery: baseQueryWithRefresh,
-  endpoints: (builder) => ({
-    getProducts: builder.query<TProductResponse, void>({
-      query: () => GET_PRODUCTS_ENDPOINT,
+    reducerPath: REDUCER_PATH,
+    baseQuery,
+    tagTypes: ["Product", "User"],
+    endpoints: (builder) => ({
+        getProducts: builder.query<TProductResponse, void>({
+            query: () => GET_PRODUCTS_ENDPOINT,
+            providesTags: [{ type: "Product", id: "LIST" }],
+        }),
+        authLogin: builder.mutation<TApiResponse<TTokens>, { username: string; password: string }>({
+            query: (request) => ({
+                url: AUTH_LOGIN_ENDPOINT,
+                method: HTTP_METHOD_POST,
+                body: request,
+            }),
+        }),
+        authRefreshToken: builder.mutation<TApiResponse<TTokens>, { refreshToken: string }>({
+            query: (request) => ({
+                url: AUTH_REFRESH_TOKEN,
+                method: HTTP_METHOD_POST,
+                headers: {
+                    "Authorization": `Bearer ${request.refreshToken}`
+                },
+            }),
+        }),
     }),
-    adminLogin: builder.mutation<TLoginResponse, { username: string; password: string }>({
-      query: (credentials) => ({
-        url: ADMIN_LOGIN_ENDPOINT,
-        method: HTTP_METHOD_POST,
-        body: credentials,
-      }),
-    }),
-    adminRefreshToken: builder.mutation<TLoginResponse, { refreshToken: string }>({
-      query: (body) => ({
-        url: "/auth/refresh-token",
-        method: HTTP_METHOD_POST,
-        body,
-      }),
-    }),
-  }),
 });
 
 export const {
-  useGetProductsQuery,
-  useAdminLoginMutation,
-  useAdminRefreshTokenMutation,
+    useGetProductsQuery,
+    useAuthLoginMutation,
+    useAuthRefreshTokenMutation,
 } = ecommerceApi;

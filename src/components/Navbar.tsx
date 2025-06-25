@@ -11,7 +11,7 @@ import { FiLogOut, FiLogIn } from "react-icons/fi";
 import { FaRegUser, FaProductHunt } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { RiMenuFold4Line as CloseMenu, RiMenuFold3Line as OpenMenu } from "react-icons/ri";
-import Path from "@/utils/Path";
+import paths from "@/utils/paths";
 import Var from "@/utils/Var";
 
 const Navbar: React.FC = () => {
@@ -56,17 +56,17 @@ const Navbar: React.FC = () => {
         {
             id: 1,
             name: Var.products,
-            href: Path.home,
+            href: paths.home,
         },
         {
             id: 2,
             name: Var.cart,
-            href: Path.customer.cart,
+            href: paths.customer.cart,
         },
         {
             id: 3,
             name: "Sign in",
-            href: Path.customer.login,
+            href: paths.customer.login,
         },
     ];
 
@@ -100,7 +100,7 @@ const Navbar: React.FC = () => {
                 <div className="relative flex items-stretch justify-between">
                     {/* Logo */}
                     <div className="flex items-center justify-center">
-                        <Link href={ Path.home } className="pl-4 py-2 flex items-center justify-center space-x-2">
+                        <Link href={ paths.home } className="pl-4 py-2 flex items-center justify-center space-x-2">
                             <Logo />
                             <p className="sm:text-base text-[10px]">{ Var.appName }</p>
                         </Link>
@@ -126,10 +126,10 @@ const Navbar: React.FC = () => {
                                             <p className="font-semibold">{ session.user.name }</p>
                                             <p className="text-skin-muted">{ session.user.email }</p>
                                         </div>
-                                        <Link href={ Path.customer.account } className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
+                                        <Link href={ paths.customer.account } className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
                                             <FaRegUser /> <p>{ Var.manageAccount }</p>
                                         </Link>
-                                        <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: Path.customer.login }) }>
+                                        <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: paths.customer.login }) }>
                                             <FiLogOut /> <p>{ Var.logOut }</p>
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@ const Navbar: React.FC = () => {
 
                     <div ref={menuDropDownRef} className="sm:hidden flex items-center justify-center gap-2">
                         <Link 
-                            href={ Path.customer.cart }
+                            href={ paths.customer.cart }
                             className="relative p-2 flex items-center justify-center"
                         >
                             <p>{ Var.cart }</p>
@@ -164,14 +164,14 @@ const Navbar: React.FC = () => {
                                 >
                                     <div className="w-full p-4 space-y-4">
                                         <p className="text-skin-muted text-xs uppercase font-semibold">{ Var.main }</p>
-                                        <Link href={ Path.customer.cart } className="flex items-center justify-start w-full gap-2">
+                                        <Link href={ paths.customer.cart } className="flex items-center justify-start w-full gap-2">
                                             <FaProductHunt /> <p>{ Var.products }</p>
                                         </Link>
-                                        <Link href={ Path.customer.cart } className="flex items-center justify-start w-full gap-2">
+                                        <Link href={ paths.customer.cart } className="flex items-center justify-start w-full gap-2">
                                             <FiShoppingCart /> <p>{ Var.cart } <span>3</span></p>
                                         </Link>
                                         {!session?.user && (
-                                            <Link href={ Path.customer.login } className="flex items-center justify-start w-full gap-2">
+                                            <Link href={ paths.customer.login } className="flex items-center justify-start w-full gap-2">
                                                 <FiLogIn /> <p>{ Var.signIn }</p>
                                             </Link>
                                         )}
@@ -188,10 +188,10 @@ const Navbar: React.FC = () => {
                                                     <p className="text-skin-muted text-[10px]">{ session.user.email }</p>
                                                 </div>
                                             </div>
-                                            <Link href={ Path.customer.account } className="flex items-center justify-start w-full gap-2">
+                                            <Link href={ paths.customer.account } className="flex items-center justify-start w-full gap-2">
                                                 <FaRegUser /> <p>{ Var.manageAccount }</p>
                                             </Link>
-                                            <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: Path.customer.login }) }>
+                                            <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: paths.customer.login }) }>
                                                 <FiLogOut /> <p>{ Var.logOut }</p>
                                             </div>
                                         </div>

@@ -1,23 +1,30 @@
 "use client"
-import { useAdminRefreshTokenMutation } from "@/lib/redux/services/ecommerceApi";
-import { getRefreshToken } from "@/utils/cookieUtils";
-import { isAccessTokenExpired } from "@/utils/JwtUtils";
+import { getRefreshToken, isAuthenticated, useAuthRefreshToken } from "@/services/AuthenticationService";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import Loading from "./loading";
 
-const adminLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+const AdminLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
+    const authenticated = isAuthenticated();
+    const refreshToken = getRefreshToken();
 
-    const [refreshToken] = useAdminRefreshTokenMutation();
+    if (authenticated) {
+        console.log("User is authenticated");
 
-    useEffect(() => {
-        const refreshToken1 = getRefreshToken();
-        const res =  refreshToken({ refreshToken: refreshToken1 });
-console.log(res);
-        if (isAccessTokenExpired()) {
-           router.push("/admin/login");
-        }
-    }, [router]);
+       const { isRefreshed, data, error, isLoading } = useAuthRefreshToken();
+
+       if (isLoading) {
+           return <Loading />;
+
+       }
+
+       console.log("isRefreshed:", { isRefreshed, data, error, isLoading });
+    } else {
+        useEffect(() => {
+            router.push("/admin/login");
+        }, [router]);
+    }
 
     return (
         <div>
@@ -26,4 +33,4 @@ console.log(res);
     );
 }
 
-export default adminLayout;
+export default AdminLayout;
