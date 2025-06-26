@@ -2,11 +2,10 @@ import { setCookie, getCookie, deleteCookie } from "cookies-next";
 import { isTokenExpired } from "./JwtService";
 import { useAuthRefreshTokenMutation } from "@/lib/redux/services/ecommerceApi";
 import { useEffect, useRef, useState } from "react";
-import { error } from "console";
 
 export const setAccessToken = (accessToken: string) => {
     setCookie("accessToken", accessToken, {
-        path: "/admin",
+        path: "/",
         secure: true,
         sameSite: "strict",
         maxAge: 60 * 60, // 1 hour (adjust as needed)
@@ -19,7 +18,7 @@ export const getAccessToken = (): string => {
 
 export const setRefreshToken = (refreshToken: string) => {
     setCookie("refreshToken", refreshToken, {
-        path: "/admin",
+        path: "/",
         secure: true,
         sameSite: "strict",
         maxAge: 60 * 60 * 24 * 7, // 7 days
@@ -31,8 +30,8 @@ export const getRefreshToken = (): string => {
 };
 
 export const clearTokens = () => {
-    deleteCookie("accessToken", { path: "/admin" });
-    deleteCookie("refreshToken", { path: "/admin" });
+    deleteCookie("accessToken", { path: "/" });
+    deleteCookie("refreshToken", { path: "/" });
 };
 
 export const isAuthenticated = (): boolean => {
@@ -53,36 +52,133 @@ export const isAuthenticated = (): boolean => {
     return true;
 }
 
-export const useAuthRefreshToken = () => {
-    const [authRefreshToken, {data, error, isLoading}] = useAuthRefreshTokenMutation();
+type UseAuthenticationRequest = {
+    enableRefreshToken: boolean;
+};
+
+export const useAuthentication = ({ enableRefreshToken }: UseAuthenticationRequest) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isRefreshed, setIsRefreshed] = useState(false);
+    const [authRefreshToken, { data, error, isLoading }] = useAuthRefreshTokenMutation();
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
+    const isMounted = useRef(true);
+    const refreshInProgress = useRef(false); // Prevent multiple refreshes
 
     useEffect(() => {
-        const processRefreshToken = async () => {
-            const refreshToken = getRefreshToken();
+        isMounted.current = true;
 
-            if (refreshToken) {
+        if (!accessToken || !refreshToken) {
+            setIsAuthenticated(false);
+            return;
+        }
+
+        if (!isTokenExpired(accessToken)) {
+            setIsAuthenticated(true);
+            return;
+        }
+
+        if (isTokenExpired(refreshToken)) {
+            clearTokens();
+            setIsAuthenticated(false);
+            return;
+        }
+
+        if (enableRefreshToken && !refreshInProgress.current) {
+            refreshInProgress.current = true;
+
+            const processRefreshToken = async () => {
+                if (!refreshToken || isTokenExpired(refreshToken)) {
+                    setIsRefreshed(false);
+                    setIsAuthenticated(false);
+                    refreshInProgress.current = false;
+                    return;
+                }
+
                 try {
                     const response = await authRefreshToken({ refreshToken }).unwrap();
+
                     if (response?.data?.accessToken && response?.data?.refreshToken) {
-                        clearTokens();
                         setAccessToken(response.data.accessToken);
                         setRefreshToken(response.data.refreshToken);
-                        setIsRefreshed(true);
+
+                        if (isMounted.current) {
+                            setIsRefreshed(true);
+                            setIsAuthenticated(true);
+                        }
+                        // Instead of reloading, trigger a state update to re-check cookies
+                        setTimeout(() => {
+                            if (isMounted.current) {
+                                setIsAuthenticated(true);
+                            }
+                        }, 100); // Give browser time to set cookies
                     } else {
-                        console.log("Invalid refresh token response format:", response);
-                        // clearTokens();
+                        console.log("Failed to refresh token response:", response);
+                        
+                        if (isMounted.current) {
+                            setIsRefreshed(false);
+                            setIsAuthenticated(false);
+                        }
+                        clearTokens();
                     }
                 } catch (err) {
-                    console.log("Refresh token failed:", err);
-                    // clearTokens();
+                    console.log("Failed to refresh token err:", err);
+
+                    if (isMounted.current) {
+                        setIsRefreshed(false);
+                        setIsAuthenticated(false);
+                    }
+                    clearTokens();
+                } finally {
+                    refreshInProgress.current = false;
                 }
+            };
+            processRefreshToken();
+        }
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, [accessToken, refreshToken, authRefreshToken, enableRefreshToken]);
+
+    return {
+        isAuthenticated,
+        authRefreshToken: {
+            isRefreshed, data, error, isLoading,
+        },
+    };
+};
+
+export const useAuthRefreshToken = (enabled: boolean = true) => {
+    const [authRefreshToken, { data, error, isLoading }] = useAuthRefreshTokenMutation();
+    const [isRefreshed, setIsRefreshed] = useState(false);
+    const refreshToken = getRefreshToken();
+
+    useEffect(() => {
+        if (!enabled) return;
+
+        const processRefreshToken = async () => {
+            if (!refreshToken) return;
+
+            try {
+                const response = await authRefreshToken({ refreshToken }).unwrap();
+
+                if (response?.data?.accessToken && response?.data?.refreshToken) {
+                    clearTokens(); // optional depending on your flow
+                    setAccessToken(response.data.accessToken);
+                    setRefreshToken(response.data.refreshToken);
+                    setIsRefreshed(true);
+                } else {
+                    console.warn("Unexpected refresh token response:", response);
+                }
+            } catch (err) {
+                console.log("Failed to refresh token:", err);
+                // clearTokens(); // uncomment if token failure should log user out
             }
         };
 
         processRefreshToken();
+    }, [enabled, refreshToken, authRefreshToken]);
 
-    }, [authRefreshToken]);
-
-    return { isRefreshed, data, error, isLoading};
+    return { isRefreshed, data, error, isLoading };
 };

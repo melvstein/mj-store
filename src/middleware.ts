@@ -8,9 +8,13 @@ export function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
 
     // admin page
-    /* if (pathname.startsWith(paths.admin.main)) {
+    if (pathname.startsWith(paths.admin.main)) {
         const accessToken = request.cookies.get("accessToken")?.value;
         const isExpired = accessToken ? isTokenExpired(accessToken) : true;
+
+        /* if (isExpired && !pathname.startsWith(paths.admin.login)) {
+            return NextResponse.redirect(new URL("/error/unauthorized", request.url));
+        } */
 
         // If accessing a protected admin route but not /admin/login
         if (!pathname.startsWith(paths.admin.login) && !accessToken) {
@@ -21,7 +25,7 @@ export function middleware(request: NextRequest) {
         if (accessToken && pathname === paths.admin.login) {
             return NextResponse.redirect(new URL(paths.admin.main, request.url));
         }
-    } */
+    }
 
     return NextResponse.next();
 }

@@ -10,16 +10,6 @@ const SignIn: React.FC = () => {
     const [password, setPassword] = useState("");
 	const [authLogin, { data, error, isLoading }] = useAuthLoginMutation();
     const router = useRouter();
-    const authenticated = isAuthenticated();
-
-    useEffect(() => {
-        if (authenticated) {
-            console.log("User is authenticated, redirecting to admin dashboard");
-            router.push("/admin");
-        } else {
-            console.log("User is not authenticated, showing login form");
-        }
-    }, [authenticated, router]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -27,22 +17,24 @@ const SignIn: React.FC = () => {
         try {
             const response = await authLogin({ username, password }).unwrap();
 
-            console.log("Login Success");
-
             if (response?.data?.accessToken && response?.data?.refreshToken) {
+                console.log("Login Success");
+
                 setAccessToken(response.data.accessToken);
                 setRefreshToken(response.data.refreshToken);
+
                 router.push("/admin");
             } else {
-                console.error("Invalid login response format:", response);
+                console.log("Invalid login response format:", response);
             }
         } catch (err) {
-            console.error("Login Failed:", err);
+            console.log("Login Failed:", err);
         }
     };
 
 	return (
 		<section className="flex items-center justify-center text-skin-muted">
+            {error && <>{error.data?.message}</>}
 			<form
                 onSubmit={(e) => handleSubmit(e) }
                 className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]"

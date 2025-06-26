@@ -1,30 +1,33 @@
 "use client"
-import { getRefreshToken, isAuthenticated, useAuthRefreshToken } from "@/services/AuthenticationService";
-import { useRouter } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { getRefreshToken, isAuthenticated, useAuthentication, useAuthRefreshToken } from "@/services/AuthenticationService";
+import { usePathname, useRouter } from "next/navigation";
 import Loading from "./loading";
+import Unauthorized from "@/components/errors/Unauthorized";
+import paths from "@/utils/paths";
+import { useEffect } from "react";
 
 const AdminLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
-    const authenticated = isAuthenticated();
-    const refreshToken = getRefreshToken();
+    const pathname = usePathname();
+    const { isAuthenticated, authRefreshToken } = useAuthentication({ enableRefreshToken: true });
+    const isLoading = authRefreshToken.isLoading;
 
-    if (authenticated) {
-        console.log("User is authenticated");
+    useEffect(() => {
+        if (isAuthenticated && pathname === "/admin/login") {
+            console.log("User is authenticated, redirecting to admin dashboard");
+            router.replace("/admin")
+        } else if (!isAuthenticated && pathname !== "/admin/login") {
+            router.replace("/admin/login");
+        }
+    }, [isAuthenticated, pathname, router]);
 
-       const { isRefreshed, data, error, isLoading } = useAuthRefreshToken();
-
-       if (isLoading) {
-           return <Loading />;
-
-       }
-
-       console.log("isRefreshed:", { isRefreshed, data, error, isLoading });
-    } else {
-        useEffect(() => {
-            router.push("/admin/login");
-        }, [router]);
+    if (isLoading) {
+        return <Loading />;
     }
+
+    /* if (!isAuthenticated && pathname !== "/admin/login") {
+            router.replace("/admin/login");
+    } */
 
     return (
         <div>
