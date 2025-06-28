@@ -1,5 +1,5 @@
 export type TApiResponse<T = null> = {
-    code: number;
+    code: string;
     message: string;
     data?: T;
 }

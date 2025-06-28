@@ -1,3 +1,4 @@
+"use client"
 import { jwtDecode } from "jwt-decode";
 
 type JwtPayload = {
@@ -8,6 +9,11 @@ type JwtPayload = {
 const isExpired = (expiration: number) => {
     return expiration * 1000 < Date.now();
 };
+
+export const extractUserId = (token: string) => {
+    const decoded = jwtDecode<JwtPayload>(token);
+    return decoded.userId;
+}
 
 const extractExpiration = (token: string) => {
     const decoded = jwtDecode<JwtPayload>(token);

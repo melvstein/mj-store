@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuthLoginMutation } from "@/lib/redux/services/ecommerceApi";
+import { useAuthLoginMutation } from "@/lib/redux/services/authenticationApi";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isAuthenticated, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";

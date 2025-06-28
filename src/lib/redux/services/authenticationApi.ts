@@ -1,22 +1,17 @@
 import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import type { TApiResponse, TProductResponse } from "@/types";
+import type { TApiResponse } from "@/types";
 import { TTokens } from "@/types/TAuth";
-import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
+import { clearTokens, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
+import HttpMethod from "@/constants/HttpMethod";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-const REDUCER_PATH = "ecommerceApi";
-
-const HTTP_METHOD_POST = "POST";
-const HTTP_METHOD_GET = "GET";
-const HTTP_METHOD_PATCH = "PATCH";
-const HTTP_METHOD_DELETE = "DELETE";
-
-const GET_PRODUCTS_ENDPOINT = "/products";
+const REDUCER_PATH = "authenticationApi";
 const AUTH_LOGIN_ENDPOINT = "/auth/login";
-const AUTH_REFRESH_TOKEN = "/auth/refresh-token";
+const AUTH_REFRESH_TOKEN_ENDPOINT = "/auth/refresh-token";
+const AUTH_LOGOUT_ENDPOINT = "/auth/logout";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL,
+  baseUrl: API_URL,
 });
 
 export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
@@ -62,28 +57,32 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
   return result;
 };
 
-export const ecommerceApi = createApi({
+export const authenticationApi = createApi({
     reducerPath: REDUCER_PATH,
     baseQuery,
-    tagTypes: ["Product", "User"],
     endpoints: (builder) => ({
-        getProducts: builder.query<TProductResponse, void>({
-            query: () => GET_PRODUCTS_ENDPOINT,
-            providesTags: [{ type: "Product", id: "LIST" }],
-        }),
         authLogin: builder.mutation<TApiResponse<TTokens>, { username: string; password: string }>({
             query: (request) => ({
                 url: AUTH_LOGIN_ENDPOINT,
-                method: HTTP_METHOD_POST,
+                method: HttpMethod.POST,
                 body: request,
             }),
         }),
-        authRefreshToken: builder.mutation<TApiResponse<TTokens>, { refreshToken: string }>({
+        authLogout: builder.mutation<TApiResponse, { id: string }>({
             query: (request) => ({
-                url: AUTH_REFRESH_TOKEN,
-                method: HTTP_METHOD_POST,
+                url:  `${AUTH_LOGOUT_ENDPOINT}/${request.id}`,
+                method: HttpMethod.POST,
                 headers: {
-                    "Authorization": `Bearer ${request.refreshToken}`
+                    "Authorization": `Bearer ${getRefreshToken()}`
+                },
+            }),
+        }),
+        authRefreshToken: builder.mutation<TApiResponse<TTokens>, void>({
+            query: () => ({
+                url: AUTH_REFRESH_TOKEN_ENDPOINT,
+                method: HttpMethod.POST,
+                headers: {
+                    "Authorization": `Bearer ${getRefreshToken()}`
                 },
             }),
         }),
@@ -91,7 +90,7 @@ export const ecommerceApi = createApi({
 });
 
 export const {
-    useGetProductsQuery,
     useAuthLoginMutation,
+    useAuthLogoutMutation,
     useAuthRefreshTokenMutation,
-} = ecommerceApi;
+} = authenticationApi;

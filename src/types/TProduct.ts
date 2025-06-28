@@ -12,9 +12,3 @@ export type TProduct = {
     createdAt?: Date;
     updatedAt?: Date;
 };
-
-export type TProductResponse = {
-    code: string,
-    message: string,
-    data: any
-}

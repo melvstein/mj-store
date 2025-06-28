@@ -3,23 +3,23 @@
 import ProductRating from "./ProductRating"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Loading from "./Loading";
 import ProductImageSlider from "./ProductImageSlider";
-import { useGetProductsQuery } from "@/lib/redux/services/ecommerceApi";
 import { TCurrencyCode, TProduct } from "@/types";
 import Config from "@/utils/config";
+import { useGetProductsQuery } from "@/lib/redux/services/productsApi";
+import Spinner from "./Loading/Spinner";
 
 const Products: React.FC = () => {
     const { status } = useSession();
     const router = useRouter();
     const { data: response, error, isLoading } = useGetProductsQuery();
     const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
-    const products = response?.data.content;
+    const products: TProduct[] = Array.isArray(response?.data?.content) ? response.data.content : [];
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
-                <Loading />
+                <Spinner />
             </div>
         );
     }
@@ -55,7 +55,7 @@ const Products: React.FC = () => {
         <section>
             <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
-                products?.map((product : TProduct) => {
+                products.map((product : TProduct) => {
                     console.log(product);
                     return (
                         <div key={String(product.id)} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">

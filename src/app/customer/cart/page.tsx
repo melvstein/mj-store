@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import ProductRating from "@/components/ProductRating";
-import Loading from "@/components/Loading";
+import Loading from "@/components/Loading/Spinner";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/lib/redux/store";
 import { getProducts } from "@/lib/redux/slices/productSlice";

@@ -1,11 +1,11 @@
-import Navbar from "./components/AdminNavbar"
+import AdminNavbar from "./components/AdminNavbar"
 
 const AdminPage: React.FC = () => {
   return (
-    <div>{/* 
+    <div>{
         <header>
-            <Navbar />
-        </header> */}
+            <AdminNavbar />
+        </header>}
         AdminPage
     </div>
   )

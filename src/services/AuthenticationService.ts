@@ -1,7 +1,11 @@
+"use client"
 import { setCookie, getCookie, deleteCookie } from "cookies-next";
-import { isTokenExpired } from "./JwtService";
-import { useAuthRefreshTokenMutation } from "@/lib/redux/services/ecommerceApi";
+import { extractUserId, isTokenExpired } from "./JwtService";
+import { useAuthLogoutMutation, useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
 import { useEffect, useRef, useState } from "react";
+import Response from "@/constants/Response";
+import { useRouter } from "next/navigation";
+import paths from "@/utils/paths";
 
 export const setAccessToken = (accessToken: string) => {
     setCookie("accessToken", accessToken, {
@@ -96,7 +100,7 @@ export const useAuthentication = ({ enableRefreshToken }: UseAuthenticationReque
                 }
 
                 try {
-                    const response = await authRefreshToken({ refreshToken }).unwrap();
+                    const response = await authRefreshToken().unwrap();
 
                     if (response?.data?.accessToken && response?.data?.refreshToken) {
                         setAccessToken(response.data.accessToken);
@@ -114,7 +118,7 @@ export const useAuthentication = ({ enableRefreshToken }: UseAuthenticationReque
                         }, 100); // Give browser time to set cookies
                     } else {
                         console.log("Failed to refresh token response:", response);
-                        
+
                         if (isMounted.current) {
                             setIsRefreshed(false);
                             setIsAuthenticated(false);
@@ -161,7 +165,7 @@ export const useAuthRefreshToken = (enabled: boolean = true) => {
             if (!refreshToken) return;
 
             try {
-                const response = await authRefreshToken({ refreshToken }).unwrap();
+                const response = await authRefreshToken().unwrap();
 
                 if (response?.data?.accessToken && response?.data?.refreshToken) {
                     clearTokens(); // optional depending on your flow
@@ -181,4 +185,37 @@ export const useAuthRefreshToken = (enabled: boolean = true) => {
     }, [enabled, refreshToken, authRefreshToken]);
 
     return { isRefreshed, data, error, isLoading };
+};
+
+export const useLogout = () => {
+    const [authLogout, { data, error, isLoading }] = useAuthLogoutMutation();
+    const [isLogout, setIsLogout] = useState(false);
+    const router = useRouter();
+
+    const logout = async () => {
+        const accessToken = getAccessToken();
+        const userId = extractUserId(accessToken);
+        console.log("userId", userId);
+        if (!userId) return;
+
+        try {
+            const response = await authLogout({ id: userId }).unwrap();
+            if (response?.code === Response.SUCCESS) {
+                setIsLogout(true);
+                clearTokens();
+                router.replace(paths.admin.login);
+            }
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
+
+    return {
+        logout,
+        isLogout,
+        extra: {
+            error,
+            isLoading,
+        },
+    };
 };
