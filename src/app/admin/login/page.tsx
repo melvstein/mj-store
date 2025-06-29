@@ -3,7 +3,8 @@
 import { useAuthLoginMutation } from "@/lib/redux/services/authenticationApi";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isAuthenticated, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
+import { setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
+import ErrorMessage from "@/components/prompts/ErrorMessage";
 
 const SignIn: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -33,8 +34,8 @@ const SignIn: React.FC = () => {
     };
 
 	return (
-		<section className="flex items-center justify-center text-skin-muted">
-            {error && <>{error.data?.message}</>}
+		<section className="flex flex-col items-center justify-center text-skin-muted">
+            {error && <ErrorMessage message={error?.data?.message} />}
 			<form
                 onSubmit={(e) => handleSubmit(e) }
                 className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]"

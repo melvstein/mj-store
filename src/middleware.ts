@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import paths from "./utils/paths";
-import { isTokenExpired } from "./services/JwtService";
 
 export function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
@@ -10,11 +9,6 @@ export function middleware(request: NextRequest) {
     // admin page
     if (pathname.startsWith(paths.admin.main)) {
         const accessToken = request.cookies.get("accessToken")?.value;
-        const isExpired = accessToken ? isTokenExpired(accessToken) : true;
-
-        /* if (isExpired && !pathname.startsWith(paths.admin.login)) {
-            return NextResponse.redirect(new URL("/error/unauthorized", request.url));
-        } */
 
         // If accessing a protected admin route but not /admin/login
         if (!pathname.startsWith(paths.admin.login) && !accessToken) {

@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import Response from "@/constants/Response";
 import { useRouter } from "next/navigation";
 import paths from "@/utils/paths";
+import { useUser } from "./UserService";
+import { TUser } from "@/types";
 
 export const setAccessToken = (accessToken: string) => {
     setCookie("accessToken", accessToken, {
@@ -56,18 +58,77 @@ export const isAuthenticated = (): boolean => {
     return true;
 }
 
-type UseAuthenticationRequest = {
+export const useAuthentication = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userDetails, setUserDetails] = useState<TUser | null>(null);
+
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
+    const isMounted = useRef(true);
+
+    const userId = extractUserId(accessToken) ?? null;
+    const { user, extra } = useUser({ id: userId });
+
+    useEffect(() => {
+        setUserDetails(user ?? null);
+    }, [user]);
+
+    useEffect(() => {
+        isMounted.current = true;
+
+        if (!accessToken || !refreshToken) {
+            setIsAuthenticated(false);
+            return;
+        }
+
+        if (!isTokenExpired(accessToken)) {
+            setIsAuthenticated(true);
+            return;
+        }
+
+        if (isTokenExpired(refreshToken)) {
+            clearTokens();
+            setIsAuthenticated(false);
+            return;
+        }
+        return () => {
+            isMounted.current = false;
+        };
+    }, [accessToken, refreshToken]);
+
+    return {
+        isAuthenticated,
+        userDetails,
+    };
+};
+
+type UseAuthenticationWithRefreshToken = {
     enableRefreshToken: boolean;
 };
 
-export const useAuthentication = ({ enableRefreshToken }: UseAuthenticationRequest) => {
+
+export const useAuthenticationWithRefreshToken = ({ enableRefreshToken }: UseAuthenticationWithRefreshToken) => {
+    const [authRefreshToken, { data, error, isLoading }] = useAuthRefreshTokenMutation();
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isRefreshed, setIsRefreshed] = useState(false);
-    const [authRefreshToken, { data, error, isLoading }] = useAuthRefreshTokenMutation();
+    const [userDetails, setUserDetails] = useState<TUser | null>(null);
+
     const accessToken = getAccessToken();
     const refreshToken = getRefreshToken();
     const isMounted = useRef(true);
     const refreshInProgress = useRef(false); // Prevent multiple refreshes
+
+    const userId = extractUserId(accessToken) ?? null;
+    const { user,
+        extra: {
+            error: userError,
+            isLoading: isUserLoading,
+        } } = useUser({ id: userId });
+
+    useEffect(() => {
+        setUserDetails(user ?? null);
+    }, [user]);
 
     useEffect(() => {
         isMounted.current = true;
@@ -150,6 +211,7 @@ export const useAuthentication = ({ enableRefreshToken }: UseAuthenticationReque
         authRefreshToken: {
             isRefreshed, data, error, isLoading,
         },
+        userDetails,
     };
 };
 

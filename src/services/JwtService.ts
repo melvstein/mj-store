@@ -11,6 +11,7 @@ const isExpired = (expiration: number) => {
 };
 
 export const extractUserId = (token: string) => {
+    if (!token) return null; 
     const decoded = jwtDecode<JwtPayload>(token);
     return decoded.userId;
 }

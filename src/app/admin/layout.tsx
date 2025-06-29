@@ -1,5 +1,5 @@
 "use client"
-import { getRefreshToken, isAuthenticated, useAuthentication, useAuthRefreshToken } from "@/services/AuthenticationService";
+import { useAuthenticationWithRefreshToken } from "@/services/AuthenticationService";
 import { usePathname, useRouter } from "next/navigation";
 import Loading from "./loading";
 import Unauthorized from "@/components/errors/Unauthorized";
@@ -9,7 +9,7 @@ import { useEffect } from "react";
 const AdminLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
     const pathname = usePathname();
-    const { isAuthenticated, authRefreshToken } = useAuthentication({ enableRefreshToken: true });
+    const { isAuthenticated, authRefreshToken } = useAuthenticationWithRefreshToken({ enableRefreshToken: true });
     const isLoading = authRefreshToken.isLoading;
 
     useEffect(() => {

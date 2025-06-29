@@ -18,9 +18,9 @@ export const usersApi = createApi({
         getUsers: builder.query<TApiResponse<TUser[]>, void>({
             query: () => USERS_ENDPOINT,
         }),
-        getUser: builder.query<TApiResponse<TUser>, {id: string }>({
-            query: (request) => ({
-                url: USERS_ENDPOINT + `/${request.id}`,
+        getUser: builder.query<TApiResponse<TUser>, string>({
+            query: (id) => ({
+                url: USERS_ENDPOINT + `/${id}`,
                 headers: {
                     "Authorization": `Bearer ${getRefreshToken()}`
                 },
