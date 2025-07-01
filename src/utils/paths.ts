@@ -12,7 +12,7 @@ const paths = {
         users: "/admin/users",
         customers: "/admin/customers",
         products: "/admin/products",
-    }
+    },
 };
 
 export default paths;

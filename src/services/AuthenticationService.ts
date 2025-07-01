@@ -42,20 +42,29 @@ export const clearTokens = () => {
 
 export const isAuthenticated = (): boolean => {
     const accessToken = getAccessToken();
-    const refreshToken = getRefreshToken();
 
-    if (!accessToken || !refreshToken) {
+    if (!accessToken) {
         return false;
     }
 
     if (isTokenExpired(accessToken)) {
-        if (isTokenExpired(refreshToken)) {
-            clearTokens();
-            return false;
-        }
+        return false
     }
 
     return true;
+}
+
+export const useAuthenticatedUser = () => {
+    const userId = extractUserId(getAccessToken());
+    const { user, extra: { error, isLoading } } = useUser({ id: userId });
+
+    return {
+        user,
+        extra: {
+            error,
+            isLoading,
+        },
+    };
 }
 
 export const useAuthentication = () => {
@@ -133,6 +142,8 @@ export const useAuthenticationWithRefreshToken = ({ enableRefreshToken }: UseAut
     useEffect(() => {
         isMounted.current = true;
 
+        if (isLoading) return;
+
         if (!accessToken || !refreshToken) {
             setIsAuthenticated(false);
             return;
@@ -204,7 +215,7 @@ export const useAuthenticationWithRefreshToken = ({ enableRefreshToken }: UseAut
         return () => {
             isMounted.current = false;
         };
-    }, [accessToken, refreshToken, authRefreshToken, enableRefreshToken]);
+    }, [accessToken, refreshToken, authRefreshToken, enableRefreshToken, isLoading]);
 
     return {
         isAuthenticated,

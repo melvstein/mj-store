@@ -1,4 +1,3 @@
-import Skeleton from "@/components/Loading/Skeleton";
 import Spinner from "@/components/Loading/Spinner";
 
 const Loading = () => {

@@ -1,7 +1,9 @@
 export type TUser = {
-    id: string[];
+    id: string;
     role: string;
-    name?: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
     username: string;
     email: string;
     password: string;
@@ -10,7 +12,7 @@ export type TUser = {
     profileImageUrl: string;
     isActive: boolean;
     isVerified?: boolean;
-    lastLoginAt?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
+    lastLoginAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
 };

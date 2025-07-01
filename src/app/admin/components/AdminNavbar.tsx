@@ -1,15 +1,17 @@
 "use client";
-import { useAuthentication, useLogout } from "@/services/AuthenticationService";
+import { useAuthenticatedUser, useAuthentication, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const AdminNavbar = () => {
     const router = useRouter();
-    const { isAuthenticated, userDetails } = useAuthentication();
+    const { user } = useAuthenticatedUser();
     const { logout, isLogout } = useLogout();
+    const [openProfile, setOpenProfile] = useState(false);
+    const profileRef = useRef<HTMLDivElement>(null)
 
-    console.log(userDetails);
+    console.log(user);
 
     useEffect(() => {
         if (isLogout) {
@@ -17,13 +19,47 @@ const AdminNavbar = () => {
         }
     }, [isLogout]);
 
+    useEffect(() => {
+        if (!openProfile) return;
+
+        const handleClickOutside = (e: MouseEvent) => {
+            if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+                setOpenProfile(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [openProfile]);
+
     return (
-        <nav className="fixed top-0 inset-x-0 bg-skin-primary flex items-center justify-between p-4">
+        <nav className="fixed top-0 inset-x-0 bg-skin-primary flex items-center justify-between p-4 text-skin-base">
             <div>
-                <h1 className="text-2xl font-bold text-skin-base uppercase">{ userDetails?.role }</h1>
+                <a href={ paths.admin.main } className="text-md font-bold uppercase">Dashboard</a>
             </div>
-            <div>
-                <a onClick={logout} className="cursor-pointer">Logout</a>
+            <div className="flex items-center justify-center gap-4">
+                <div>
+                    <a href={ paths.admin.users }>Users</a>
+                </div>
+                <div>
+                    <a href={ paths.admin.products }>Products</a>
+                </div>
+                <div ref={ profileRef }>
+                    <button onClick={() => setOpenProfile((prev) => !prev)} className="relative">
+                        { user?.username && user?.username.charAt(0).toUpperCase() + user?.username.slice(1) }
+                    </button>
+                    <ul className={`absolute right-4 p-4 space-y-2 bg-skin-primary text-skin-base border border-skin-base rounded shadow-md ${openProfile ? 'block' : 'hidden'}`}>
+                        <li>
+                            <a href={`/admin/user/${user?.id}/update`} className="flex items-center justify-start">Update Profile</a>
+                        </li>
+                        <li>
+                            <a onClick={logout} className="cursor-pointer flex items-center justify-start">Logout</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     );

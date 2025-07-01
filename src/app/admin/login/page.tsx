@@ -9,33 +9,39 @@ import ErrorMessage from "@/components/prompts/ErrorMessage";
 const SignIn: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-	const [authLogin, { data, error, isLoading }] = useAuthLoginMutation();
+	const [authLogin] = useAuthLoginMutation();
     const router = useRouter();
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
             const response = await authLogin({ username, password }).unwrap();
+            const accessToken = response.data?.accessToken;
+            const refreshToken = response.data?.refreshToken;
 
-            if (response?.data?.accessToken && response?.data?.refreshToken) {
+            if (accessToken) {
                 console.log("Login Success");
+                setAccessToken(accessToken);
 
-                setAccessToken(response.data.accessToken);
-                setRefreshToken(response.data.refreshToken);
+                if (refreshToken) {
+                    setRefreshToken(refreshToken);
+                }
 
                 router.push("/admin");
             } else {
                 console.log("Invalid login response format:", response);
             }
-        } catch (err) {
-            console.log("Login Failed:", err);
+        } catch (error: any) {
+            // console.log("Login Failed:", error);
+            setErrorMessage(error.data.message);
         }
     };
 
 	return (
 		<section className="flex flex-col items-center justify-center text-skin-muted">
-            {error && <ErrorMessage message={error?.data?.message} />}
+            {errorMessage && <ErrorMessage message={errorMessage} />}
 			<form
                 onSubmit={(e) => handleSubmit(e) }
                 className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]"
