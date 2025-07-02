@@ -1,4 +1,4 @@
-import AdminNavbar from "../components/AdminNavbar"
+import AdminNavbar from "../components/AdminNavbar-shad"
 
 const AdminPage: React.FC = () => {
   return (

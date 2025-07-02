@@ -8,9 +8,22 @@ import {
   ColumnDef,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { FilePenLine, Trash2 } from 'lucide-react';
 
 const UserTable = ({ data }: { data: TUser[] }) => {
   const columns = useMemo<ColumnDef<TUser>[]>(() => [
+    {
+        header: "Actions",
+        cell: ({ row }) => {
+            const user = row.original;
+            return (
+                <div className="flex items-center space-x-2">
+                    <a href={`/admin/user/${user.id}/update`} className="text-blue-600 hover:underline"><FilePenLine className="size-4" /></a>
+                    <a href={`/admin/user/${user.id}/delete`} className="text-red-600 hover:underline"><Trash2 className="size-4" /></a>
+                </div>
+            );
+        },
+    },
     {
         header: "ID",
         accessorKey: "id",
@@ -63,18 +76,6 @@ const UserTable = ({ data }: { data: TUser[] }) => {
             );
         },
     },
-    {
-        header: "Actions",
-        cell: ({ row }) => {
-            const user = row.original;
-            return (
-                <div className="flex items-center space-x-2">
-                    <a href={`/admin/user/${user.id}/update`} className="text-blue-600 hover:underline">Update</a>
-                    <a href={`/admin/user/${user.id}/delete`} className="text-red-600 hover:underline">Delete</a>
-                </div>
-            );
-        },
-    }
   ], []);
 
   const table = useReactTable({

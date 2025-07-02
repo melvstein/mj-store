@@ -1,7 +1,7 @@
 "use client"
 import { setCookie, getCookie, deleteCookie } from "cookies-next";
 import { extractUserId, isTokenExpired } from "./JwtService";
-import { useAuthLogoutMutation, useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
+import { useAuthLogoutMutation, useAuthRefreshTokenMutation, useAuthRegisterMutation } from "@/lib/redux/services/authenticationApi";
 import { useEffect, useRef, useState } from "react";
 import Response from "@/constants/Response";
 import { useRouter } from "next/navigation";
@@ -291,4 +291,25 @@ export const useLogout = () => {
             isLoading,
         },
     };
+};
+
+export const useRegisterUserHandler = () => {
+    const [doRegister] = useAuthRegisterMutation();
+
+    const createUser = async (user: Partial<TUser>) => {
+        try {
+            const response = await doRegister(user).unwrap();
+            return response;
+        } catch (err: any) {
+            if (err?.data?.message) {
+                throw new Error(err.data.message);
+            } else if (err?.message) {
+                throw new Error(err.message);
+            } else {
+                throw new Error("An unknown error occurred while creating the user.");
+            }
+        }
+    };
+
+    return createUser;
 };
