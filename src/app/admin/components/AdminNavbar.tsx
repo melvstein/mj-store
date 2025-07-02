@@ -6,8 +6,6 @@ import UserProfileDropdown from "./UserProfileDropdown";
 
 const AdminNavbarLocal = () => {
     const { user } = useAuthenticatedUser();
-    const [openProfile, setOpenProfile] = useState(false);
-    const profileRef = useRef<HTMLDivElement>(null)
 
     return (
         <nav className="fixed top-0 inset-x-0 bg-skin-primary flex items-center justify-between p-4 text-skin-base">

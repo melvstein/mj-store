@@ -1,4 +1,5 @@
-import { useCreateUserMutation, useGetUserQuery } from "@/lib/redux/services/usersApi"
+import Response from "@/constants/Response";
+import { useCreateUserMutation, useDeleteUserMutation, useGetUserQuery } from "@/lib/redux/services/usersApi"
 import { TUser } from "@/types";
 import { useEffect, useState } from "react";
 
@@ -43,4 +44,31 @@ export const useCreateUserHandler = () => {
     };
 
     return createUser;
+};
+
+export const useDeleteUser = () => {
+    const [doDelete, { data, error, isLoading }] = useDeleteUserMutation();
+    const [isDeleted, setIsDeleted] = useState(false);
+
+    const deleteUser = async (id: string) => {
+        if (!id) return;
+
+        try {
+            const response = await doDelete(id).unwrap();
+            if (response?.code === Response.SUCCESS) {
+                setIsDeleted(true);
+            }
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
+
+    return {
+        deleteUser,
+        isDeleted,
+        extra: {
+            error,
+            isLoading,
+        },
+    };
 };

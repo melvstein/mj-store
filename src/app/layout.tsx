@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import ClientProviders from "@/providers/ClientProviders";
+import { ToastContainer } from "react-toastify";
 
 /* import {
 	ClerkProvider,
@@ -34,6 +35,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 				<SessionProvider>
 					<ClientProviders>
 						<main className="container mx-auto py-[80px]">
+                            <ToastContainer />
 							{children}
 						</main>
 						{/* <footer>

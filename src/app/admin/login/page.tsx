@@ -4,7 +4,9 @@ import { useAuthLoginMutation } from "@/lib/redux/services/authenticationApi";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
-import ErrorMessage from "@/components/prompts/ErrorMessage";
+import { useTheme } from "next-themes";
+import { useToastMessage } from "@/hooks/useToastMessage";
+import { Button } from "@/components/ui/button";
 
 const SignIn: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -12,6 +14,8 @@ const SignIn: React.FC = () => {
 	const [authLogin] = useAuthLoginMutation();
     const router = useRouter();
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
+	const { theme } = useTheme()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -28,7 +32,7 @@ const SignIn: React.FC = () => {
                 if (refreshToken) {
                     setRefreshToken(refreshToken);
                 }
-
+                setSuccessMessage("Login successful!");
                 router.push("/admin");
             } else {
                 console.log("Invalid login response format:", response);
@@ -39,9 +43,23 @@ const SignIn: React.FC = () => {
         }
     };
 
+    useToastMessage(errorMessage, "error");
+    useToastMessage(successMessage, "success");
+
+    useEffect(() => {
+        if (errorMessage) {
+            setErrorMessage(""); // Clear error message after showing toast
+        }
+
+        if (successMessage) {
+            setSuccessMessage(""); // Clear success message after showing toast
+        }
+
+    }, [errorMessage, successMessage]);
+ 
 	return (
 		<section className="flex flex-col items-center justify-center text-skin-muted">
-            {errorMessage && <ErrorMessage message={errorMessage} />}
+            {/* {errorMessage && <ErrorMessage message={errorMessage} />} */}
 			<form
                 onSubmit={(e) => handleSubmit(e) }
                 className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]"
@@ -51,9 +69,9 @@ const SignIn: React.FC = () => {
 				</div>
 				<input type="text" placeholder="Username" className="input-skin" onChange={(e) => setUsername(e.target.value) } />
 				<input type="password" placeholder="Password" className="input-skin" onChange={ (e) => setPassword(e.target.value) } />
-				<button className="border shadow rounded-lg px-4 py-2 focus:outline-2 outline-skin-primary bg-skin-primary text-skin-base w-full font-semibold">
-					Login
-				</button>
+
+                <button className="button-skin">Login</button>
+                <Button variant="default">Login</Button>
 			</form>
 		</section>
 	)

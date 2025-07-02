@@ -1,7 +1,9 @@
 "use client";
 
+import { useToastMessage } from "@/hooks/useToastMessage";
 import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
+import { set } from "mongoose";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaCaretLeft, FaCaretDown } from "react-icons/fa6";
@@ -11,13 +13,25 @@ const UserProfileDropdown = () => {
     const { user } = useAuthenticatedUser();
     const { logout, isLogout } = useLogout();
     const [openProfile, setOpenProfile] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
     const profileRef = useRef<HTMLDivElement>(null)
 
-    console.log(user);
+    useToastMessage(errorMessage, "error");
+    useToastMessage(successMessage, "success");
 
     useEffect(() => {
         if (isLogout) {
+            setSuccessMessage("You have been logged out successfully.");
             router.replace(paths.admin.login);
+        }
+
+        if (errorMessage) {
+            setErrorMessage(""); // Clear error message after showing toast
+        }
+
+        if (successMessage) {
+            setSuccessMessage(""); // Clear success message after showing toast
         }
     }, [isLogout]);
 

@@ -1,10 +1,15 @@
 "use client";
 import ErrorMessage from "@/components/prompts/ErrorMessage";
+import { useToastMessage } from "@/hooks/useToastMessage";
 import { useRegisterUserHandler } from "@/services/AuthenticationService";
 import { useEffect, useState } from "react";
 
 const CreateUserForm = () => {
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [successMessage, setSuccessMessage] = useState<string>("");
     const registerUser = useRegisterUserHandler();
+    useToastMessage(errorMessage, "error");
+    useToastMessage(successMessage, "success");
 
     const [formData, setFormData] = useState({
         role: "",
@@ -17,42 +22,52 @@ const CreateUserForm = () => {
         confirmPassword: "",
     });
 
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(null);
-        setSuccess(null);
 
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match.");
+            setErrorMessage("Passwords do not match.");
             return;
         }
 
         try {
             const user = await registerUser(formData); // ✅ usage here
-            setSuccess(`User ${user.data?.firstName} created successfully!`);
+            setSuccessMessage(`User ${user.data?.firstName} created successfully!`);
         } catch (err: any) {
-            setError(err.message);
+            setErrorMessage(err.message);
         }
     };
 
-    useEffect(() => {
-        if (success) {
-            const timer = setTimeout(() => {
-                window.location.reload()
-            }, 3000)
+    const handleClear = () => {
+        setFormData({
+            role: "",
+            email: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            username: "",
+            password: "",
+            confirmPassword: "",
+        });
 
-            return () => clearTimeout(timer) // cleanup if component unmounts early
+        setErrorMessage("");
+        setSuccessMessage("");
+    };
+
+    useEffect(() => {
+        if (errorMessage) {
+            setErrorMessage(""); // Clear error message after showing toast
         }
-    }, [success])
+
+        if (successMessage) {
+            setSuccessMessage(""); // Clear success message after showing toast
+        }
+    }, [errorMessage, successMessage]);
 
   return (
     <div className="">
-        {error && <ErrorMessage message={error} />}
         <h1 className="mb-4 text-skin-muted">Register User</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded">
+        <form onSubmit={handleSubmit} onReset={handleClear} className="space-y-4 p-4 border rounded">
             <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
                 <div className="w-full">
                     <label className="label-skin">Role</label>
@@ -144,17 +159,14 @@ const CreateUserForm = () => {
                     />
                 </div>
             </div>
-            <div className="flex items-center justify-end">
-                    <button
-                    type="submit"
-                    className="button-skin"
-                >
+            <div className="flex items-center justify-end gap-2">
+                <button type="reset" className="button-skin">
+                    Reset
+                </button>
+                <button type="submit" className="button-skin">
                     Save
                 </button>
             </div>
-
-            
-            {success && <p className="text-green-600">{success}</p>}
         </form>
     </div>
   );
