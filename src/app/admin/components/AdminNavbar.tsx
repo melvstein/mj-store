@@ -1,11 +1,12 @@
 "use client";
 import { useAuthenticatedUser} from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
-import {useRef, useState } from "react";
 import UserProfileDropdown from "./UserProfileDropdown";
 
 const AdminNavbarLocal = () => {
-    const { user } = useAuthenticatedUser();
+    const { user, extra } = useAuthenticatedUser();
+
+    if (extra.isLoading) return null;
 
     return (
         <nav className="fixed top-0 inset-x-0 bg-skin-primary flex items-center justify-between p-4 text-skin-base">

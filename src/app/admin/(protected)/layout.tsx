@@ -1,11 +1,11 @@
 "use client";
 import { clearTokens, isAuthenticated, setAccessToken, setRefreshToken, useAuthRefreshToken } from "@/services/AuthenticationService";
 import { usePathname, useRouter } from "next/navigation";
-import Loading from "../loading";
 import { useEffect, useState } from "react";
 import AdminNavbar from "../components/AdminNavbar";
 import paths from "@/utils/paths";
 import { useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
+import Spinner from "@/components/Loading/Spinner";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
@@ -52,10 +52,10 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
         validateSession();
     }, [authRefreshToken, router]);
 
-    if (loading) return <Loading />
+    if (loading) return <Spinner />
 
     return (
-        <div className="container mx-auto">
+        <div>
         {authenticated && (
             <header>
             <AdminNavbar />

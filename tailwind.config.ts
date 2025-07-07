@@ -11,12 +11,12 @@ export default {
   	extend: {
   		colors: {
   			skin: {
-  				background: 'var(--background)',
-  				foreground: 'var(--foreground)',
-  				base: 'var(--base)',
-  				primary: 'rgb(var(--primary) / <alpha-value>)',
-  				secondary: 'rgb(var(--secondary) / <alpha-value>)',
-  				muted: 'rgb(var(--muted) / <alpha-value>)'
+  				background: 'hsl(var(--background) / <alpha-value>)',
+  				foreground: 'hsl(var(--foreground) / <alpha-value>)',
+  				base: 'hsl(var(--base) / <alpha-value>)',
+  				primary: 'hsl(var(--primary) / <alpha-value>)',
+  				secondary: 'hsl(var(--secondary) / <alpha-value>)',
+  				muted: 'hsl(var(--muted) / <alpha-value>)'
   			},
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

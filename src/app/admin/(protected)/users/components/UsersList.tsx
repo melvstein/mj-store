@@ -1,7 +1,7 @@
-import Loading from "@/app/admin/loading";
 import { useGetUsersQuery } from "@/lib/redux/services/usersApi";
 import { TUser } from "@/types";
 import UserTable from "./UserTable";
+import Spinner from "@/components/Loading/Spinner";
 
 const UsersList = () => {
     const { data: response, error, isLoading } = useGetUsersQuery();
@@ -9,7 +9,7 @@ const UsersList = () => {
     console.log("UsersList response:", users);
 
     if (isLoading) {
-        return <Loading />;
+        return <Spinner />;
     }
 
     if (error) {
