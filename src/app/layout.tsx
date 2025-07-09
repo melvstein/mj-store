@@ -34,7 +34,7 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-skin-base text-skin-foreground antialiased`}>
 				<SessionProvider>
 					<ClientProviders>
-						<main className="container mx-auto min-h-screen min-w-full py-[80px]">
+						<main className="container mx-auto min-h-screen min-w-full">
                             <ToastContainer />
 							{children}
 						</main>

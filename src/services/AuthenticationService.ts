@@ -276,7 +276,7 @@ export const useLogout = () => {
             if (response?.code === Response.SUCCESS) {
                 setIsLogout(true);
                 clearTokens();
-                router.replace(paths.admin.login);
+                router.replace(paths.admin.login.path);
             }
         } catch (err) {
             console.error("Logout failed:", err);

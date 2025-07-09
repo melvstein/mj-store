@@ -10,8 +10,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import paths from "@/utils/paths";
+import BreadCrumb from "@/components/Breadcrumb";
 
-const CreateUserForm = () => {
+const RegisterUserForm = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
     const registerUser = useRegisterUserHandler();
@@ -71,23 +73,25 @@ const CreateUserForm = () => {
         }
     }, [errorMessage, successMessage]);
 
+    const breadcrumbMain = {
+        path: paths.admin.dashboard.main.path,
+        name: paths.admin.dashboard.main.name,
+    };
+
+    const breadcrumbPaths = [
+        {
+            path: paths.admin.users.main.path,
+            name: paths.admin.users.main.name,
+        },
+        {
+            path: paths.admin.users.register.path,
+            name: paths.admin.users.register.name,
+        },
+    ];
+
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center">
-        <Breadcrumb className="bg-red-100 w-full">
-            <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-                </BreadcrumbItem>
-            </BreadcrumbList>
-        </Breadcrumb>
+    <div className="container mx-auto flex flex-col items-center justify-center gap-4 p-4">
+        <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
         <form onSubmit={handleSubmit} onReset={handleClear} className="card-skin flex flex-col gap-4">
             <h2 className="card-skin-header">Register User</h2>
             <div className="card-skin-content flex flex-col gap-6">
@@ -196,4 +200,4 @@ const CreateUserForm = () => {
   );
 };
 
-export default CreateUserForm;
+export default RegisterUserForm;

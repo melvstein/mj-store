@@ -1,20 +1,25 @@
 "use client";
 
+import UserImageDefault from "@/components/UserImageDefault";
 import { useToastMessage } from "@/hooks/useToastMessage";
 import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
+import clsx from "clsx";
 import { set } from "mongoose";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaCaretLeft, FaCaretDown } from "react-icons/fa6";
+import { ClassNameValue } from "tailwind-merge";
 
 const UserProfileDropdown = () => {
     const router = useRouter();
+    const pathname = usePathname();
     const { user } = useAuthenticatedUser();
     const { logout, isLogout } = useLogout();
     const [openProfile, setOpenProfile] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null)
 
     useToastMessage(errorMessage, "error");
@@ -23,7 +28,7 @@ const UserProfileDropdown = () => {
     useEffect(() => {
         if (isLogout) {
             setSuccessMessage("You have been logged out successfully.");
-            router.replace(paths.admin.login);
+            router.replace(paths.admin.login.path);
         }
 
         if (errorMessage) {
@@ -33,7 +38,11 @@ const UserProfileDropdown = () => {
         if (successMessage) {
             setSuccessMessage(""); // Clear success message after showing toast
         }
-    }, [isLogout]);
+
+        if (pathname.startsWith(paths.admin.user.profile.main.path)) {
+            setIsSubMenuOpen(true);
+        }
+    }, [isLogout, pathname]);
 
     useEffect(() => {
         if (!openProfile) return;
@@ -50,18 +59,22 @@ const UserProfileDropdown = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [openProfile]);
-    
+
     return (
-        <div ref={ profileRef }>
-            <button onClick={() => setOpenProfile((prev) => !prev)} className="relative flex items-center justify-center whitespace-nowrap">
-                { user?.username && user?.username.charAt(0).toUpperCase() + user?.username.slice(1) } { openProfile ? <FaCaretDown /> : <FaCaretLeft /> }
+        <div ref={ profileRef } className="relative w-full">
+            <button onClick={() => setOpenProfile((prev) => !prev)} className={clsx("relative flex items-center justify-between whitespace-nowrap px-4 py-2 w-full transition-all", openProfile ? "shadow" : "", isSubMenuOpen ? "bg-skin-secondary" : "")}>
+                <span className="flex items-center justify-center gap-2">
+                    <UserImageDefault className="size-6 bg-skin-muted/50 rounded-full border border-skin-base" />
+                    { user?.username && user?.username.charAt(0).toUpperCase() + user?.username.slice(1) }
+                </span>
+                { openProfile ? <FaCaretDown /> : <FaCaretLeft /> }
             </button>
-            <ul className={`absolute right-4 p-4 space-y-2 bg-skin-primary text-skin-base border border-skin-base rounded shadow-md ${openProfile ? 'block' : 'hidden'}`}>
-                <li>
-                    <a href={`/admin/user/${user?.id}/update`} className="flex items-center justify-start">Update Profile</a>
+            <ul className={`flex flex-col items-start justify-center w-full inset-x-0 bg-skin-primary text-skin-base shadow-md ${openProfile ? 'block' : 'hidden'}`}>
+                <li className="w-full">
+                    <a href={`${paths.admin.user.profile.main.path}/${user?.id}`} className={clsx("flex items-center justify-start w-full pl-8 py-2", pathname.startsWith(paths.admin.user.profile.main.path) ? "bg-skin-secondary/50" : "")}>Update Profile</a>
                 </li>
-                <li>
-                    <a onClick={logout} className="cursor-pointer flex items-center justify-start">Logout</a>
+                <li className="w-full">
+                    <a onClick={logout} className="cursor-pointer flex items-center justify-start w-full pl-8 py-2">Logout</a>
                 </li>
             </ul>
         </div>

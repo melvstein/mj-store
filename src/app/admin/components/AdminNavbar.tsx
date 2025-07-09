@@ -11,14 +11,14 @@ const AdminNavbarLocal = () => {
     return (
         <nav className="fixed top-0 inset-x-0 bg-skin-primary flex items-center justify-between p-4 text-skin-base">
             <div>
-                <a href={ paths.admin.main } className="text-md font-bold uppercase">Dashboard</a>
+                <a href={ paths.admin.dashboard.main.path } className="text-md font-bold uppercase">{ paths.admin.dashboard.main.name }</a>
             </div>
             <div className="flex items-center justify-center gap-4">
                 <div>
-                    <a href={ paths.admin.users }>Users</a>
+                    <a href={ paths.admin.users.main.path }>{ paths.admin.users.main.name }</a>
                 </div>
                 <div>
-                    <a href={ paths.admin.products }>Products</a>
+                    <a href={ paths.admin.products.main.path }>{ paths.admin.products.main.name }</a>
                 </div>
                 <UserProfileDropdown />
             </div>

@@ -2,10 +2,10 @@
 import { clearTokens, isAuthenticated, setAccessToken, setRefreshToken, useAuthRefreshToken } from "@/services/AuthenticationService";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import AdminNavbar from "../components/AdminNavbar";
 import paths from "@/utils/paths";
 import { useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
 import Spinner from "@/components/Loading/Spinner";
+import AdminSidebar from "../components/AdminSidebar";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
@@ -17,6 +17,7 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
     useEffect(() => {
         const validateSession = async () => {
             if (isAuthenticated()) {
+                console.log("Authenticated");
                 setAuthenticated(true);
                 setLoading(false);
                 return;
@@ -38,12 +39,12 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
                     setAuthenticated(true);
                 } else {
                     clearTokens();
-                    router.replace(paths.admin.login);
+                    router.replace(paths.admin.login.path);
                 }
 
             } catch (error) {
                 clearTokens();
-                router.replace(paths.admin.login);
+                router.replace(paths.admin.login.path);
             } finally {
                 setLoading(false);
             }
@@ -55,10 +56,10 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
     if (loading) return <Spinner />
 
     return (
-        <div>
+        <div className="ml-[300px] p-24">
         {authenticated && (
             <header>
-            <AdminNavbar />
+            <AdminSidebar />
             </header>
         )}
             {children}

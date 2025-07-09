@@ -6,7 +6,7 @@ import Spinner from "@/components/Loading/Spinner";
 const UsersList = () => {
     const { data: response, error, isLoading } = useGetUsersQuery();
     const users: TUser[] = response?.data?.content ?? [];
-    console.log("UsersList response:", users);
+    // console.log("UsersList response:", users);
 
     if (isLoading) {
         return <Spinner />;

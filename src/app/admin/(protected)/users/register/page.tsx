@@ -1,9 +1,9 @@
-import CreateUserForm from "../components/CreateUserForm";
+import RegisterUserForm from "../components/RegisterUserForm";
 
 const CreateUserPage = () => {
     return (
         <div>
-           <CreateUserForm />
+           <RegisterUserForm />
         </div>
     );
 }

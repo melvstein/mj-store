@@ -61,8 +61,8 @@ const SignIn: React.FC = () => {
     }, [errorMessage, successMessage]);
  
 	return (
-		<section className="flex flex-col items-center justify-center min-h-screen">
-            <div className="w-full max-w-sm card-skin">
+		<section className="flex flex-col items-center justify-center">
+            <div className="w-full max-w-sm card-skin p-8 mt-24">
                 <div>
                     <h2 className="uppercase flex items-center justify-center">Admin Login</h2>
                 </div>
