@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
 import { useTheme } from "next-themes";
 import { useToastMessage } from "@/hooks/useToastMessage";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
+import { Button } from "@/components/ui/button";
 
 const SignIn: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -62,29 +62,34 @@ const SignIn: React.FC = () => {
  
 	return (
 		<section className="flex flex-col items-center justify-center">
-            <div className="w-full max-w-sm card-skin p-8 mt-24">
-                <div>
+            <Card className="w-full max-w-sm mt-24">
+                {/* <div>
                     <h2 className="uppercase flex items-center justify-center">Admin Login</h2>
-                </div>
-				<form
-                    onSubmit={(e) => handleSubmit(e) }
-                >
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="username">Username</label>
-                            <input id="username" type="text" className="input-skin" onChange={(e) => setUsername(e.target.value) } required />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="username">Password</label>
-                            <input id="password" type="password" className="input-skin" onChange={ (e) => setPassword(e.target.value) } required />
-                        </div>
+                </div> */}
+                <CardHeader>
+                    <CardTitle className="uppercase">Admin Login</CardTitle>
+                </CardHeader>
+				<CardContent>
+                    <form
+                        onSubmit={(e) => handleSubmit(e) }
+                    >
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="username">Username</Label>
+                                <Input id="username" type="text" onChange={(e) => setUsername(e.target.value) } required />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <Label htmlFor="username">Password</Label>
+                                <Input id="password" type="password" onChange={ (e) => setPassword(e.target.value) } required />
+                            </div>
 
-                        <button className="button-skin">
-                            Login
-                        </button>
-                    </div>
-                </form>
-            </div>
+                            <Button>
+                                Login
+                            </Button>
+                        </div>
+                    </form>
+                </CardContent>
+            </Card>
 		</section>
 	)
 }

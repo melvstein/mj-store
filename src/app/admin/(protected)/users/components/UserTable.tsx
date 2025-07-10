@@ -99,8 +99,8 @@ const UserTable = ({ data }: { data: TUser[] }) => {
 
     return (
         <div className="overflow-x-auto border border-gray-200 rounded-lg shadow">
-        <table className="min-w-full divide-y divide-gray-200 text-sm text-left bg-skin-base text-skin-foreground">
-            <thead className="bg-skin-muted/10 text-xs uppercase">
+        <table className="min-w-full divide-y divide-gray-200 text-sm text-left bg-background text-skin-foreground">
+            <thead className="bg-muted/10 text-xs uppercase">
             {table.getHeaderGroups().map((headerGroup) => {
                 
                 return (
@@ -126,7 +126,7 @@ const UserTable = ({ data }: { data: TUser[] }) => {
             </thead>
             <tbody className="divide-y divide-gray-100">
             {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-skin-primary transition">
+                <tr key={row.id} className="hover:bg-primary transition">
                 {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-6 py-4">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

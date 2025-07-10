@@ -6,6 +6,8 @@ import paths from "@/utils/paths";
 import { useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
 import Spinner from "@/components/Loading/Spinner";
 import AdminSidebar from "../components/AdminSidebar";
+import AdminNavbar from "../components/AdminNavbar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
@@ -56,14 +58,20 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
     if (loading) return <Spinner />
 
     return (
-        <div className="ml-[300px] p-24">
-        {authenticated && (
-            <header>
-            <AdminSidebar />
-            </header>
-        )}
-            {children}
+        <SidebarProvider defaultOpen={true}>
+            <div className="ml-[200px] p-24">
+            {authenticated && (
+                <header>
+                    <AdminNavbar />
+                    <AdminSidebar />
+                </header>
+            )}
+            <main>
+                <SidebarTrigger/>
+                {children}
+            </main>
         </div>
+        </SidebarProvider>
     );
 };
 

@@ -1,0 +1,65 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
+import { useToastMessage } from "@/hooks/useToastMessage";
+import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
+import paths from "@/utils/paths";
+import { LogOut, User } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+const UserNavigationMenuItem = () => {
+    const { user } = useAuthenticatedUser();
+    const { logout, isLogout } = useLogout();
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const router = useRouter();
+
+    useToastMessage(errorMessage, "error");
+    useToastMessage(successMessage, "success");
+
+    useEffect(() => {
+        if (isLogout) {
+            setSuccessMessage("You have been logged out successfully.");
+            router.replace(paths.admin.login.path);
+        }
+
+        if (errorMessage) {
+            setErrorMessage(""); // Clear error message after showing toast
+        }
+
+        if (successMessage) {
+            setSuccessMessage(""); // Clear success message after showing toast
+        }
+    }, [isLogout]);
+
+  return (
+    <NavigationMenuItem>
+        <NavigationMenuTrigger className="flex items-center justify-center gap-2 bg-primary">
+            <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-6">
+                <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" />
+                <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            { user?.username && user.username.charAt(0).toUpperCase() + user.username.slice(1) }
+        </NavigationMenuTrigger>
+        <NavigationMenuContent>
+            <div className="flex flex-col items-center justify-center w-[150px]">
+                <NavigationMenuLink asChild>
+                    <Link href={`${paths.admin.user.profile.main.path}/${user?.id}`} className="flex items-center gap-2 w-full p-2 hover:bg-secondary">
+                        <User />
+                        { paths.admin.user.profile.main.name }
+                    </Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                    <Link href="#" onClick={logout} className="flex items-center gap-2 w-full p-2 hover:bg-secondary">
+                        <LogOut />
+                        Logout
+                    </Link>
+                </NavigationMenuLink>
+            </div>
+        </NavigationMenuContent>
+    </NavigationMenuItem>
+  )
+};
+
+export default UserNavigationMenuItem;

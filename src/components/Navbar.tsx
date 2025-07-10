@@ -82,7 +82,7 @@ const Navbar: React.FC = () => {
             >
                 {link.name}
                 {link.name == Var.cart && (
-                    <p className="absolute top-1 right-2 bg-skin-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
+                    <p className="absolute top-1 right-2 bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
                         3
                     </p>
                 )}
@@ -96,7 +96,7 @@ const Navbar: React.FC = () => {
         <div>
             {/* Content Wrapper with Blur Effect */}
             <div className={`${isBlurred ? "fixed inset-0 transition-all backdrop-blur-md bg-black/30 z-10" : ""}`}></div>
-            <nav className="fixed top-0 left-0 right-0 bg-skin-primary text-skin-base z-20 select-none">
+            <nav className="fixed top-0 left-0 right-0 bg-primary text-skin-base z-20 select-none">
                 <div className="relative flex items-stretch justify-between">
                     {/* Logo */}
                     <div className="flex items-center justify-center">
@@ -118,7 +118,7 @@ const Navbar: React.FC = () => {
 
                                     <div 
                                         className={
-                                            `${openUserMenu ? 'flex' : 'hidden'} absolute top-[70px] right-[20px] bg-skin-base text-skin-foreground text-sm flex-col items-start
+                                            `${openUserMenu ? 'flex' : 'hidden'} absolute top-[70px] right-[20px] bg-background text-skin-foreground text-sm flex-col items-start
                                             justify-center rounded-lg border border-gray-300 shadow-xl w-[250px] transition-all`
                                         }
                                     >
@@ -144,7 +144,7 @@ const Navbar: React.FC = () => {
                             className="relative p-2 flex items-center justify-center"
                         >
                             <p>{ Var.cart }</p>
-                            <p className="absolute top-[-1px] right-[-6px] bg-skin-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
+                            <p className="absolute top-[-1px] right-[-6px] bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
                                 3
                             </p>
                         </Link>
@@ -158,7 +158,7 @@ const Navbar: React.FC = () => {
                         {toggleMenu && (
                                 <div
                                     className={
-                                        `${toggleMenu ? 'flex' : 'hidden'} absolute top-[70px] left-0 bg-skin-primary text-skin-base text-sm flex-col items-start
+                                        `${toggleMenu ? 'flex' : 'hidden'} absolute top-[70px] left-0 bg-primary text-skin-base text-sm flex-col items-start
                                         justify-center w-full transition-all`
                                     }
                                 >

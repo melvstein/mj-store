@@ -25,7 +25,7 @@ const UsersPage = () => {
         <div className="container mx-auto flex flex-col gap-4 p-4">
             <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
             <div className="flex items-center justify-end">
-                <button onClick={ () => router.replace("/admin/users/register") } className="bg-skin-primary px-4 py-2 rounded text-skin-base hover:bg-skin-secondary">
+                <button onClick={ () => router.replace("/admin/users/register") } className="bg-primary px-4 py-2 rounded text-skin-base hover:bg-secondary">
                     Register User
                 </button>
             </div>

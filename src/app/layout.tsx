@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 	return (
 		<html lang="en" className="dark">
-			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-skin-base text-skin-foreground antialiased`}>
+			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-background text-foreground antialiased`}>
 				<SessionProvider>
 					<ClientProviders>
 						<main className="container mx-auto min-h-screen min-w-full">

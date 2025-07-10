@@ -12,7 +12,7 @@ const GoogleSignin: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} className="flex items-center justify-center bg-skin-base px-10 py-2 rounded-lg text-skin-muted border shadow gap-2 w-full">
+        <button onClick={handleClick} className="flex items-center justify-center bg-background px-10 py-2 rounded-lg text-skin-muted border shadow gap-2 w-full">
             <FcGoogle className="size-[25px]" />
             Sign in with Google
         </button>

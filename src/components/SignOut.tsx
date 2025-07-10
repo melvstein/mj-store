@@ -8,7 +8,7 @@ const SignOut = () => {
   };
 
   return (
-    <button onClick={handleSignOut} className="bg-skin-primary text-white px-4 py-2 rounded">
+    <button onClick={handleSignOut} className="bg-primary text-white px-4 py-2 rounded">
       Sign Out
     </button>
   );
