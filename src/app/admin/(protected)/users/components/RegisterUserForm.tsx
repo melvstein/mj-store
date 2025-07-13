@@ -1,24 +1,33 @@
 "use client";
-import { useToastMessage } from "@/hooks/useToastMessage";
 import { useRegisterUserHandler } from "@/services/AuthenticationService";
 import { useEffect, useState } from "react";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import paths from "@/utils/paths";
 import BreadCrumb from "@/components/Breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+
+const breadcrumbMain = {
+    path: paths.admin.dashboard.main.path,
+    name: paths.admin.dashboard.main.name,
+};
+
+const breadcrumbPaths = [
+    {
+        path: paths.admin.users.main.path,
+        name: paths.admin.users.main.name,
+    },
+    {
+        path: paths.admin.users.register.path,
+        name: paths.admin.users.register.name,
+    },
+];
 
 const RegisterUserForm = () => {
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
     const registerUser = useRegisterUserHandler();
-    useToastMessage(errorMessage, "error");
-    useToastMessage(successMessage, "success");
 
     const [formData, setFormData] = useState({
         role: "",
@@ -35,15 +44,15 @@ const RegisterUserForm = () => {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
-            setErrorMessage("Passwords do not match.");
+            toast.error("Passwords do not match.");
             return;
         }
 
         try {
             const user = await registerUser(formData); // ✅ usage here
-            setSuccessMessage(`User ${user.data?.firstName} created successfully!`);
+            toast.success(`User ${user.data?.username} created successfully!`);
         } catch (err: any) {
-            setErrorMessage(err.message);
+            toast.error(err.message);
         }
     };
 
@@ -58,144 +67,119 @@ const RegisterUserForm = () => {
             password: "",
             confirmPassword: "",
         });
-
-        setErrorMessage("");
-        setSuccessMessage("");
     };
-
-    useEffect(() => {
-        if (errorMessage) {
-            setErrorMessage(""); // Clear error message after showing toast
-        }
-
-        if (successMessage) {
-            setSuccessMessage(""); // Clear success message after showing toast
-        }
-    }, [errorMessage, successMessage]);
-
-    const breadcrumbMain = {
-        path: paths.admin.dashboard.main.path,
-        name: paths.admin.dashboard.main.name,
-    };
-
-    const breadcrumbPaths = [
-        {
-            path: paths.admin.users.main.path,
-            name: paths.admin.users.main.name,
-        },
-        {
-            path: paths.admin.users.register.path,
-            name: paths.admin.users.register.name,
-        },
-    ];
 
   return (
-    <div className="container mx-auto flex flex-col items-center justify-center gap-4 p-4">
+    <div className="grid gap-4">
         <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
-        <form onSubmit={handleSubmit} onReset={handleClear} className="card-skin flex flex-col gap-4">
-            <h2 className="card-skin-header">Register User</h2>
-            <div className="card-skin-content flex flex-col gap-6">
-                <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
-                    <div className="w-full">
-                        <label className="label-skin">Role</label>
-                        <select
-                            className="input-skin"
-                            value={formData.role}
-                            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                            required
-                        >
-                            <option value="" disabled>Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="staff">Staff</option>
-                        </ select>
+        <Card>
+            <CardHeader>
+                <CardTitle>
+                    Register User
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} onReset={handleClear} className="flex flex-col gap-4">
+                    <div className="card-skin-content flex flex-col gap-6">
+                        <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
+                            <div className="w-full">
+                                <Label>Role</Label>
+                                <Select
+                                    value={formData.role}
+                                    onValueChange={(value) => setFormData({ ...formData, role: value })}
+                                    required
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select Role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="admin">Admin</SelectItem>
+                                        <SelectItem value="staff">Staff</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="w-full">
+                                <Label>Email</Label>
+                                <Input
+                                    placeholder="Email Address"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
+                            <div className="w-full">
+                                <Label>Fist Name</Label>
+                                <Input
+                                    placeholder="First Name"
+                                    value={formData.firstName}
+                                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="w-full">
+                                <Label>Middle Name</Label>
+                                <Input
+                                    placeholder="Middle Name"
+                                    value={formData.middleName}
+                                    onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="w-full">
+                                <Label>Last Name</Label>
+                                <Input
+                                    placeholder="Last Name"
+                                    value={formData.lastName}
+                                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
+                            <div className="w-full">
+                                <Label>Username</Label>
+                                <Input
+                                    placeholder="Username"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="w-full">
+                                <Label>Password</Label>
+                                <Input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="w-full">
+                                <Label>Confirm Password</Label>
+                                <Input
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-end gap-2">
+                            <Button type="reset">
+                                Reset
+                            </Button>
+                            <Button type="submit">
+                                Save
+                            </Button>
+                        </div>
                     </div>
-                    <div className="w-full">
-                        <label className="label-skin">Email</label>
-                        <input
-                            className="input-skin"
-                            placeholder="Email Address"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
-                    <div className="w-full">
-                        <label className="label-skin">Fist Name</label>
-                        <input
-                            className="input-skin"
-                            placeholder="First Name"
-                            value={formData.firstName}
-                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div className="w-full">
-                        <label className="label-skin">Middle Name</label>
-                        <input
-                            className="input-skin"
-                            placeholder="Middle Name"
-                            value={formData.middleName}
-                            onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div className="w-full">
-                        <label className="label-skin">Last Name</label>
-                        <input
-                            className="input-skin"
-                            placeholder="Last Name"
-                            value={formData.lastName}
-                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
-                    <div className="w-full">
-                        <label className="label-skin">Username</label>
-                        <input
-                            className="input-skin"
-                            placeholder="Username"
-                            value={formData.username}
-                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div className="w-full">
-                        <label className="label-skin">Password</label>
-                        <input
-                            type="password"
-                            className="input-skin"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div className="w-full">
-                        <label className="label-skin">Confirm Password</label>
-                        <input
-                            type="password"
-                            className="input-skin"
-                            placeholder="Confirm Password"
-                            value={formData.confirmPassword}
-                            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                            required
-                        />
-                    </div>
-                </div>
-                <div className="flex items-center justify-end gap-2">
-                    <button type="reset" className="button-skin">
-                        Reset
-                    </button>
-                    <button type="submit" className="button-skin">
-                        Save
-                    </button>
-                </div>
-            </div>
-        </form>
+                </form>
+            </CardContent>
+        </Card>
     </div>
   );
 };

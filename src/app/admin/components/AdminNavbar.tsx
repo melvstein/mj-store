@@ -1,5 +1,5 @@
 import { NavigationMenu, NavigationMenuContent, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-import UserNavigationMenuItem from "./UserNavigationMenuItem";
+import UserNavigationMenuItem from "./UserProfileNavigationMenuItem";
 
 const AdminNavbar = () => {
     return (

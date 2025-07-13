@@ -4,7 +4,7 @@ import paths from "@/utils/paths";
 import UserProfileDropdown from "./UserProfileDropdown";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import Logo from "@/components/Logo";
+import Logo from "@/components/AppLogo";
 import { FaUsers, FaProductHunt } from "react-icons/fa";
 
 const AdminSidebar = () => {

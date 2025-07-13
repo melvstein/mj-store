@@ -9,13 +9,62 @@ import {
   SortingState,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FilePenLine, Trash2, ArrowDown, ArrowUp} from 'lucide-react';
+import { useDeleteUser } from "@/services/UserService";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import clsx from "clsx";
+import { toast } from "sonner";
 
-const UserTable = ({ data }: { data: TUser[] }) => {
+const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id: string | null) => void }) => {
+    const { deleteUser, isDeleted, extra } = useDeleteUser();
+    const [successMessage, setSuccessMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [lastDeletedUserId, setLastDeletedUserId] = useState<string | null>(null);
+
     const [sorting, setSorting] = useState<SortingState>([
         { id: "updatedAt", desc: true },
     ]);
+
+    const handleDelete = async (e:  React.MouseEvent<HTMLButtonElement>, userId : string): Promise<void> => {
+        e.preventDefault();
+        await deleteUser(userId);
+        setLastDeletedUserId(userId);
+    };
+
+    useEffect(() => {
+        if (isDeleted && lastDeletedUserId) {
+            toast.success("Deleted successfully!")
+            setSuccessMessage("Deleted successfully!");
+            onUserDeleted(lastDeletedUserId); // Remove from list
+            setLastDeletedUserId(null);
+        }
+        
+        if (extra.error) {
+            setErrorMessage("Failed to delete user.");
+        }
+    }, [isDeleted, extra.error, lastDeletedUserId]);
+
+    useEffect(() => {
+        if (successMessage) {
+            setSuccessMessage("");
+        }
+
+        if (errorMessage) {
+            setErrorMessage("");
+        }
+    }, [successMessage, errorMessage]);
 
     const columns = useMemo<ColumnDef<TUser>[]>(() => [
         {
@@ -24,8 +73,43 @@ const UserTable = ({ data }: { data: TUser[] }) => {
                 const user = row.original;
                 return (
                     <div className="flex items-center space-x-2">
-                        <a href={`/admin/user/${user.id}/update`} className="text-blue-600 hover:underline"><FilePenLine className="size-4" /></a>
-                        <a href={`/admin/user/${user.id}/delete`} className="text-red-600 hover:underline"><Trash2 className="size-4" /></a>
+                        <Button
+                            variant="outline" 
+                            className="text-blue-500"
+                        >
+                            <FilePenLine className="size-4" />
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="text-red-500"
+                                >
+                                    <Trash2 className="size-4" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete your account
+                                    and remove your data from our servers.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={(e) => {
+                                        handleDelete(e, user.id)
+                                    }} 
+                                    className="disabled:cursor-not-allowed"
+                                    disabled={user.username === "melvstein"}
+                                >
+                                    Continue
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 );
             },

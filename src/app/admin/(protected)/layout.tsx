@@ -7,7 +7,8 @@ import { useAuthRefreshTokenMutation } from "@/lib/redux/services/authentication
 import Spinner from "@/components/Loading/Spinner";
 import AdminSidebar from "../components/AdminSidebar";
 import AdminNavbar from "../components/AdminNavbar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import clsx from "clsx";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const router = useRouter();
@@ -15,6 +16,15 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
     const [loading, setLoading] = useState(true);
     const [authenticated, setAuthenticated] = useState(false);
     const [authRefreshToken] = useAuthRefreshTokenMutation();
+    const {
+        state,
+        open,
+        setOpen,
+        openMobile,
+        setOpenMobile,
+        isMobile,
+        toggleSidebar,
+    } = useSidebar();
 
     useEffect(() => {
         const validateSession = async () => {
@@ -58,20 +68,23 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
     if (loading) return <Spinner />
 
     return (
-        <SidebarProvider defaultOpen={true}>
-            <div className="ml-[200px] p-24">
-            {authenticated && (
-                <header>
-                    <AdminNavbar />
-                    <AdminSidebar />
-                </header>
-            )}
-            <main>
-                <SidebarTrigger/>
-                {children}
-            </main>
+        <div className="min-h-screen w-full">
+            <SidebarInset className={clsx(
+                "md:ml-[260px] md:mt-2 md:mr-2 md:rounded-tl-2xl md:rounded-tr-2xl min-h-screen w-auto",
+                open ? "transition-all" : "md:ml-[60px]"
+            )}>
+                {authenticated && (
+                    <header className="border-b md:px-6 md:py-2 p-2">
+                        <SidebarTrigger className="" />
+                        {/* <AdminNavbar /> */}
+                        <AdminSidebar />
+                    </header>
+                )}
+                <main className="md:p-6 p-2">
+                    {children}
+                </main>
+            </SidebarInset>
         </div>
-        </SidebarProvider>
     );
 };
 

@@ -4,6 +4,8 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import ClientProviders from "@/providers/ClientProviders";
 import { ToastContainer } from "react-toastify";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 /* import {
 	ClerkProvider,
@@ -34,13 +36,16 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-background text-foreground antialiased`}>
 				<SessionProvider>
 					<ClientProviders>
-						<main className="container mx-auto min-h-screen min-w-full">
-                            <ToastContainer />
-							{children}
-						</main>
-						{/* <footer>
-							<p>This is footer</p>
-						</footer> */}
+                        <SidebarProvider defaultOpen={true}>
+                            <main className="container mx-auto min-h-screen min-w-full">
+                                <ToastContainer />
+                                <Toaster position="top-right" richColors closeButton />
+                                {children}
+                            </main>
+                            {/* <footer>
+                                <p>This is footer</p>
+                            </footer> */}
+                        </SidebarProvider>
 					</ClientProviders>
 				</SessionProvider>
 			</body>

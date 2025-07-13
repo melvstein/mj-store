@@ -1,7 +1,6 @@
 "use client";
 
 import UserImageDefault from "@/components/UserImageDefault";
-import { useToastMessage } from "@/hooks/useToastMessage";
 import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
 import clsx from "clsx";
@@ -9,6 +8,7 @@ import { set } from "mongoose";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaCaretLeft, FaCaretDown } from "react-icons/fa6";
+import { toast } from "react-toastify";
 import { ClassNameValue } from "tailwind-merge";
 
 const UserProfileDropdown = () => {
@@ -22,9 +22,6 @@ const UserProfileDropdown = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
 
-    useToastMessage(errorMessage, "error");
-    useToastMessage(successMessage, "success");
-
     useEffect(() => {
         if (isLogout) {
             setSuccessMessage("You have been logged out successfully.");
@@ -32,10 +29,12 @@ const UserProfileDropdown = () => {
         }
 
         if (errorMessage) {
+            toast.error(errorMessage);
             setErrorMessage(""); // Clear error message after showing toast
         }
 
         if (successMessage) {
+            toast.success(successMessage);
             setSuccessMessage(""); // Clear success message after showing toast
         }
 

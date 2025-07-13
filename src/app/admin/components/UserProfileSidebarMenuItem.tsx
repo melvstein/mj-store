@@ -1,0 +1,78 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
+import paths from "@/utils/paths";
+import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import clsx from "clsx";
+import { ChevronUp, LogOut, User, User2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+const UserProfileSidebarMenuItem = () => {
+    const { user } = useAuthenticatedUser();
+    const { logout, isLogout } = useLogout();
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const router = useRouter();
+    const { open } = useSidebar();
+
+    useEffect(() => {
+        if (isLogout) {
+            setSuccessMessage("You have been logged out successfully.");
+            router.replace(paths.admin.login.path);
+        }
+    }, [isLogout]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            toast.error(errorMessage);
+            setErrorMessage(""); // Clear error message after showing toast
+        }
+
+        if (successMessage) {
+            toast.success(successMessage);
+            setSuccessMessage(""); // Clear success message after showing toast
+        }
+    }, [errorMessage, successMessage]);
+
+  return (
+    <SidebarMenuItem>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="flex items-center justify-center">
+                    <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-6">
+                        <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" />
+                        <AvatarFallback>MJ</AvatarFallback>
+                    </Avatar>
+                    <span className={clsx(!open ? "hidden" : "block")}>
+                        { user?.username && user.username.charAt(0).toUpperCase() + user.username.slice(1) }
+                    </span>
+                    <ChevronUp className={clsx(!open ? "hidden" : "block ml-auto")} />
+                </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width]"
+            >
+                <DropdownMenuItem>
+                    <Link href={`${paths.admin.user.profile.main.path}/${user?.id}`} className="flex items-center gap-2 w-full p-2 rounded hover:bg-secondary">
+                        <User />
+                        { paths.admin.user.profile.main.name }
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <Link href="#" onClick={logout} className="flex items-center gap-2 w-full p-2 rounded hover:bg-secondary">
+                        <LogOut />
+                        Logout
+                    </Link>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    </SidebarMenuItem>
+  )
+};
+
+export default UserProfileSidebarMenuItem;

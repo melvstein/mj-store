@@ -5,11 +5,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
 import { useTheme } from "next-themes";
-import { useToastMessage } from "@/hooks/useToastMessage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const SignIn: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -46,15 +46,14 @@ const SignIn: React.FC = () => {
         }
     };
 
-    useToastMessage(errorMessage, "error");
-    useToastMessage(successMessage, "success");
-
     useEffect(() => {
         if (errorMessage) {
+            toast.error(errorMessage);
             setErrorMessage(""); // Clear error message after showing toast
         }
 
         if (successMessage) {
+            toast.success(successMessage);
             setSuccessMessage(""); // Clear success message after showing toast
         }
 

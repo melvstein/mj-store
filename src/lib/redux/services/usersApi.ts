@@ -1,5 +1,5 @@
 import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import type { TApiResponse, TUser } from "@/types";
+import type { TApiResponse, TUpdateUser, TUser } from "@/types";
 import { TTokens } from "@/types/TAuth";
 import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
 import HttpMethod from "@/constants/HttpMethod";
@@ -38,7 +38,7 @@ export const usersApi = createApi({
                 },
             }),
         }),
-        updateUser: builder.mutation<TApiResponse<TUser>, { id: string; user: Partial<TUser> }>({
+        updateUser: builder.mutation<TApiResponse<TUpdateUser>, { id: string; user: Partial<TUpdateUser> }>({
             query: ({ id, user }) => ({
                 url: `${USERS_ENDPOINT}/${id}`,
                 method: HttpMethod.PATCH,

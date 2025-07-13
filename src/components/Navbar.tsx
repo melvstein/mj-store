@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { TNavLink } from "@/types"
-import Logo from "./Logo";
+import Logo from "./AppLogo";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";

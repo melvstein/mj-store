@@ -1,22 +1,19 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-import { useToastMessage } from "@/hooks/useToastMessage";
 import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-const UserNavigationMenuItem = () => {
+const UserProfileNavigationMenuItem = () => {
     const { user } = useAuthenticatedUser();
     const { logout, isLogout } = useLogout();
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const router = useRouter();
-
-    useToastMessage(errorMessage, "error");
-    useToastMessage(successMessage, "success");
 
     useEffect(() => {
         if (isLogout) {
@@ -25,10 +22,12 @@ const UserNavigationMenuItem = () => {
         }
 
         if (errorMessage) {
+            toast.error(errorMessage);
             setErrorMessage(""); // Clear error message after showing toast
         }
 
         if (successMessage) {
+            toast.success(successMessage);
             setSuccessMessage(""); // Clear success message after showing toast
         }
     }, [isLogout]);
@@ -62,4 +61,4 @@ const UserNavigationMenuItem = () => {
   )
 };
 
-export default UserNavigationMenuItem;
+export default UserProfileNavigationMenuItem;
