@@ -48,7 +48,6 @@ export const useCreateUserHandler = () => {
 
 export const useUpdateUser = () => {
     const [doUpdate, { data, error, isLoading }] = useUpdateUserMutation();
-    const [isUpdated, setIsUpdated] = useState(false);
 
     const updateUser = async ({ id, user} : { id: string, user: TUpdateUser }) => {
         if (!id) return;
@@ -56,17 +55,21 @@ export const useUpdateUser = () => {
         try {
             const response = await doUpdate({ id, user }).unwrap();
 
-            if (response?.code === Response.SUCCESS) {
-                setIsUpdated(true);
-            }
+            return {
+                success: response?.code === Response.SUCCESS,
+                data: response
+            };
         } catch(err) {
-            console.log("Update failed:", err);
+            console.error("Update failed:", err);
+            return {
+                success: false,
+                error: err
+            };
         }
     };
 
     return {
         updateUser,
-        isUpdated,
         extra: {
             error,
             isLoading,

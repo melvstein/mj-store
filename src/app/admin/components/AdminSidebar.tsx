@@ -1,4 +1,4 @@
-import { List, UserRoundPlus, Users } from "lucide-react"
+import { ChevronLeft, ChevronRight, List, UserRoundPlus, Users } from "lucide-react"
  
 import {
     Sidebar,
@@ -24,6 +24,7 @@ import { FaProductHunt } from "react-icons/fa";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { title } from "process";
 import { usePathname } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
  
 // Menu items.
 const items = [
@@ -51,7 +52,7 @@ const items = [
 ];
 
 const AdminSidebar = () => {
-    const { open } = useSidebar();
+    const { open, isMobile, openMobile } = useSidebar();
   const pathname = usePathname();
   const isActive = (href: string) => pathname === href;
 
@@ -61,14 +62,16 @@ const AdminSidebar = () => {
                 <Link 
                     href={ paths.admin.dashboard.main.path } 
                     className={clsx(
-                        "flex items-center justify-start gap-2 text-md font-bold uppercase w-full",
-                        open ? "justify-start" : "justify-center"
+                        "flex items-center justify-start gap-2 text-md font-bold uppercase w-full px-2",
+                        open ? "justify-start" : "justify-center",
+                        isMobile ? "pt-2" : ""
                     )}
                 >
-                    <AppLogo className={clsx(open ? "size-8" : "size-[24px]")} />
-                    <span className={clsx(open ? "block" : "hidden")}>{ paths.admin.dashboard.main.name }</span>
+                    <AppLogo className={clsx(open || isMobile ? "size-8" : "size-[24px]")} />
+                    <span className={clsx(open || isMobile ? "block" : "hidden")}>{ paths.admin.dashboard.main.name }</span>
                 </Link>
             </SidebarHeader>
+            <Separator />
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -76,12 +79,13 @@ const AdminSidebar = () => {
                         <SidebarMenu>
                         {items.map((item, index) => 
                             item.dropdown ? (
-                                <Collapsible key={item.title + index} defaultOpen className="group/collapsible">
+                                <Collapsible key={item.title + index} defaultOpen={false} className="group/collapsible">
                                     <SidebarMenuItem>
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuButton>
                                             <item.icon />
                                             <span>{item.title}</span>
+                                            <ChevronLeft className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:-rotate-90" />
                                         </SidebarMenuButton>
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>

@@ -4,18 +4,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import { useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
-import Spinner from "@/components/Loading/Spinner";
 import AdminSidebar from "../components/AdminSidebar";
-import AdminNavbar from "../components/AdminNavbar";
 import { SidebarInset, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import clsx from "clsx";
+import Loading from "@/components/Loading/Loading";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
+    const [authRefreshToken, { isLoading: authLoading }] = useAuthRefreshTokenMutation();
+    const [authenticated, setAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
-    const [loading, setLoading] = useState(true);
-    const [authenticated, setAuthenticated] = useState(false);
-    const [authRefreshToken] = useAuthRefreshTokenMutation();
+
     const {
         state,
         open,
@@ -27,11 +27,15 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
     } = useSidebar();
 
     useEffect(() => {
+        if (authLoading) {
+            setIsLoading(authLoading);
+            return;
+        }
+
         const validateSession = async () => {
             if (isAuthenticated()) {
                 console.log("Authenticated");
                 setAuthenticated(true);
-                setLoading(false);
                 return;
             }
 
@@ -46,26 +50,22 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
                     if (newRefreshToken) {
                         console.log("New refresh token received:", newRefreshToken);
                         setRefreshToken(newRefreshToken);
+                        setAuthenticated(true);
                     }
-
-                    setAuthenticated(true);
                 } else {
                     clearTokens();
                     router.replace(paths.admin.login.path);
                 }
-
             } catch (error) {
                 clearTokens();
                 router.replace(paths.admin.login.path);
-            } finally {
-                setLoading(false);
             }
         }
 
         validateSession();
-    }, [authRefreshToken, router]);
+    }, [authLoading, authRefreshToken, router]);
 
-    if (loading) return <Spinner />
+    if (isLoading) return <Loading onComplete={ () => setIsLoading(false) } duration={300} />
 
     return (
         <div className="min-h-screen w-full">

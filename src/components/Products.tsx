@@ -7,7 +7,7 @@ import ProductImageSlider from "./ProductImageSlider";
 import { TCurrencyCode, TProduct } from "@/types";
 import Config from "@/utils/config";
 import { useGetProductsQuery } from "@/lib/redux/services/productsApi";
-import Spinner from "./Loading/Spinner";
+import Loading from "./Loading/Loading";
 
 const Products: React.FC = () => {
     const { status } = useSession();
@@ -19,7 +19,7 @@ const Products: React.FC = () => {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
-                <Spinner />
+                <Loading/>
             </div>
         );
     }

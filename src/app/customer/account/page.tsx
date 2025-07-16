@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/lib/redux/store";
 import { getUser } from '@/lib/redux/slices/userSlice';
-import Loading from '@/components/Loading/Spinner';
 import clsx from "clsx";
+import Loading from '@/components/Loading/Loading';
 
 const Account: React.FC = () => {
 	const { data: session } = useSession();

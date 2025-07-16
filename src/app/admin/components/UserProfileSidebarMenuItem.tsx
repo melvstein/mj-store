@@ -5,7 +5,7 @@ import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationServic
 import paths from "@/utils/paths";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
-import { ChevronUp, LogOut, User, User2 } from "lucide-react";
+import { ChevronsUpDown, ChevronUp, LogOut, User, User2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ const UserProfileSidebarMenuItem = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
     const router = useRouter();
-    const { open } = useSidebar();
+    const { open, isMobile } = useSidebar();
 
     useEffect(() => {
         if (isLogout) {
@@ -42,31 +42,36 @@ const UserProfileSidebarMenuItem = () => {
     <SidebarMenuItem>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="flex items-center justify-center">
-                    <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-6">
+                <SidebarMenuButton size="lg" className="flex items-center justify-center data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                    <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-8">
                         <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" />
                         <AvatarFallback>MJ</AvatarFallback>
                     </Avatar>
-                    <span className={clsx(!open ? "hidden" : "block")}>
-                        { user?.username && user.username.charAt(0).toUpperCase() + user.username.slice(1) }
-                    </span>
-                    <ChevronUp className={clsx(!open ? "hidden" : "block ml-auto")} />
+                    <div className={clsx("grid flex-1 text-left text-sm leading-tight", !open && !isMobile ? "hidden" : "block")}>
+                        <span className="truncate font-medium">{ user?.username && user.username.charAt(0).toUpperCase() + user.username.slice(1) }</span>
+                        <span className="truncate text-xs">{ user?.email }</span>
+                    </div>
+                    {/* <ChevronUp className={clsx(!open ? "hidden" : "block ml-auto")} /> */}
+                    <ChevronsUpDown className={clsx(!open && !isMobile ? "hidden" : "block ml-auto size-4")} />
                 </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
+                side={isMobile ? "bottom" : "right"}
+                align={isMobile ? "center" : "end"}
+                sideOffset={4}
+                loop={false}
+                className={clsx("w-(--radix-dropdown-menu-trigger-width) min-w-[270px] rounded-lg")}
             >
                 <DropdownMenuItem>
                     <Link href={`${paths.admin.user.profile.main.path}/${user?.id}`} className="flex items-center gap-2 w-full p-2 rounded hover:bg-secondary">
-                        <User />
+                        <User className="size-4" />
                         { paths.admin.user.profile.main.name }
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                     <Link href="#" onClick={logout} className="flex items-center gap-2 w-full p-2 rounded hover:bg-secondary">
-                        <LogOut />
-                        Logout
+                        <LogOut className="size-4" />
+                        Log out
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuContent>

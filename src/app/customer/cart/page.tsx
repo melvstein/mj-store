@@ -10,6 +10,7 @@ import ProductImageSlider from "@/components/ProductImageSlider";
 import CartSummary from "@/components/CartSummary";
 import Config from "@/utils/config";
 import { TCurrencyCode } from "@/types";
+import Loading from "@/components/Loading/Loading";
 
 const Cart: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -23,7 +24,7 @@ const Cart: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
-                <Loading />
+                <Progress />
             </div>
         );
     }
