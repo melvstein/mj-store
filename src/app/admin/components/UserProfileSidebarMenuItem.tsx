@@ -63,7 +63,7 @@ const UserProfileSidebarMenuItem = () => {
                 className={clsx("w-(--radix-dropdown-menu-trigger-width) min-w-[270px] rounded-lg")}
             >
                 <DropdownMenuItem>
-                    <Link href={`${paths.admin.user.profile.main.path}/${user?.id}`} className="flex items-center gap-2 w-full p-2 rounded hover:bg-secondary">
+                    <Link href={paths.admin.user.profile.main.path} className="flex items-center gap-2 w-full p-2 rounded hover:bg-secondary">
                         <User className="size-4" />
                         { paths.admin.user.profile.main.name }
                     </Link>
