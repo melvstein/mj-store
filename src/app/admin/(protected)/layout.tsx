@@ -1,6 +1,6 @@
 "use client";
-import { clearTokens, isAuthenticated, setAccessToken, setRefreshToken, useAuthRefreshToken } from "@/services/AuthenticationService";
-import { usePathname, useRouter } from "next/navigation";
+import { clearTokens, isAuthenticated, setAccessToken, setRefreshToken, useAuthenticatedUser, useAuthRefreshToken } from "@/services/AuthenticationService";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import { useAuthRefreshTokenMutation } from "@/lib/redux/services/authenticationApi";
@@ -8,27 +8,39 @@ import AdminSidebar from "../components/AdminSidebar";
 import { SidebarInset, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import clsx from "clsx";
 import Loading from "@/components/Loading/Loading";
+import Response from "@/constants/Response";
+import { toast } from "sonner";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-    const [authRefreshToken, { isLoading: authLoading }] = useAuthRefreshTokenMutation();
+    const [authRefreshToken, { error: authError, isLoading: authLoading }] = useAuthRefreshTokenMutation();
+    const { user, extra: {
+            error: userError,
+            isLoading: isUserLoading
+        } } = useAuthenticatedUser();
     const [authenticated, setAuthenticated] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const pathname = usePathname();
 
     const {
-        state,
         open,
-        setOpen,
-        openMobile,
-        setOpenMobile,
-        isMobile,
-        toggleSidebar,
     } = useSidebar();
 
     useEffect(() => {
+        if (authError) {
+            console.log('authError', authError);
+            setIsLoading(false);
+            return;
+        }
+
         if (authLoading) {
+            console.log('Auth is loading...');
             setIsLoading(authLoading);
+            return;
+        }
+
+        if (isUserLoading) {
+            console.log('User is loading...');
+            setIsLoading(isUserLoading);
             return;
         }
 
@@ -36,36 +48,48 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
             if (isAuthenticated()) {
                 console.log("Authenticated");
                 setAuthenticated(true);
+                setIsLoading(false);
                 return;
             }
 
             try {
                 const response = await authRefreshToken().unwrap();
-                const newAccessToken = response.data?.accessToken;
-                const newRefreshToken = response.data?.refreshToken;
 
-                if (newAccessToken) {
-                    setAccessToken(newAccessToken);
+                if (response.code == Response.SUCCESS) {
+                    const newAccessToken = response.data?.accessToken;
+                    const newRefreshToken = response.data?.refreshToken;
 
-                    if (newRefreshToken) {
-                        console.log("New refresh token received:", newRefreshToken);
-                        setRefreshToken(newRefreshToken);
-                        setAuthenticated(true);
+                    if (newAccessToken) {
+                        setAccessToken(newAccessToken);
+
+                        if (newRefreshToken) {
+                            setRefreshToken(newRefreshToken);
+                            setAuthenticated(true);
+                        }
+                    } else {
+                        clearTokens();
+                        setIsLoading(false);
+                        router.replace(paths.admin.login.path);
+                        toast.error("Auth failed");
                     }
                 } else {
                     clearTokens();
+                    setIsLoading(false);
                     router.replace(paths.admin.login.path);
+                    toast.error("Auth failed");
                 }
             } catch (error) {
                 clearTokens();
+                setIsLoading(false);
                 router.replace(paths.admin.login.path);
+                toast.error("Auth failed");
             }
         }
 
         validateSession();
-    }, [authLoading, authRefreshToken, router]);
+    }, [authLoading, authRefreshToken, router, isUserLoading]);
 
-    if (isLoading) return <Loading onComplete={ () => setIsLoading(false) } duration={300} />
+    if (isLoading) return <Loading duration={300} onComplete={ () => setIsLoading(false) } />
 
     return (
         <div className="min-h-screen w-full">

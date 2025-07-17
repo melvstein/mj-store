@@ -53,34 +53,86 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Response from "@/constants/Response"
 import Loading from "@/components/Loading/Loading"
+import { useForm } from "react-hook-form"
+import z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { FormField, FormItem, FormLabel, FormControl, Form } from "@/components/ui/form"
+
+const updateUserDefault: TUpdateUser = {
+  role: "",
+  email: "",
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  username: "",
+}
+
+const formUpdateUserSchema = z.object({
+    role: z.string().min(1, "Role is required"),
+    email: z.string().email("Invalid email address").min(1, "Email is required"),
+    firstName: z.string().min(1, "First name is required"),
+    middleName: z.string().optional(),
+    lastName: z.string().min(1, "Last name is required"),
+    username: z.string().min(1, "Username is required"),
+})
 
 export function UserDataTable() {
     const { data: response, error, isLoading: userLoading } = useGetUsersQuery();
-    const [doUpdate, { isLoading: updateUserLoading }] = useUpdateUserMutation();
-    const [doDelete, { isLoading: deleteUserLoading }] = useDeleteUserMutation();
-    const [isLoading, setIsLoading] = useState(true);
+    const [doUpdate] = useUpdateUserMutation();
+    const [doDelete] = useDeleteUserMutation();
+    const [isLoading, setIsLoading] = useState(false);
     const [users, setUsers] = useState<TUser[]>([]);
     const [updateUserId, setUpdateUserId] = useState("");
     const [lastDeletedUser, setLastDeletedUser] = useState<TUser | null>(null);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
-    const [openDeleteDialogUserId, setOpenDeleteDialogUserId] = useState<string | null>(null);
 
     const [sorting, setSorting] = useState<SortingState>([
         { id: "updatedAt", desc: true },
     ]);
 
-    const updateUserDefault = {
-        role: "",
-        email: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        username: "",
+    const [userUpdateFormData, setUserUpdateFormData] = useState(updateUserDefault);
+
+    const form = useForm<z.infer<typeof formUpdateUserSchema>>({
+        resolver: zodResolver(formUpdateUserSchema),
+        defaultValues: userUpdateFormData,
+    });
+
+    const onUpdateUser = async (data: z.infer<typeof formUpdateUserSchema>) => {
+        try {
+            const response = await doUpdate({ id: updateUserId, user: data });
+
+            if (response?.data?.code === Response.SUCCESS) {
+                toast.success(response.data.message || "User updated successfully!");
+
+                setUsers((prevUsers) =>
+                    prevUsers.map((user) =>
+                        user.id === updateUserId ? { 
+                            ...user, 
+                            ...data, 
+                            updatedAt: new Date().toLocaleString('sv-SE') }
+                        : user
+                    )
+                );
+            } else {
+                toast.error(response?.data?.message || "User failed to update!");
+            }
+        } catch (err: any) {
+            toast.error(err.message);
+        }
+
+        setUserUpdateFormData(updateUserDefault);
     };
 
-    const [formData, setFormData] = useState<TUpdateUser>(updateUserDefault);
+    const onError = (errors: any) => {
+         console.log("Validation Errors:", errors);
+
+        Object.entries(errors).forEach(([fieldName, error]: any) => {
+            console.log(`${fieldName}: ${error.message}`);
+            toast.error(`${fieldName}: ${error.message}`);
+        });
+    };
 
     useEffect(() => {
         if (userLoading) {
@@ -109,9 +161,9 @@ export function UserDataTable() {
         }
     };
 
-    const handleUpdate = async (userId: string) => {
+    /* const handleUpdate = async (userId: string) => {
         try {
-            const response = await doUpdate({ id: userId, user: formData });
+            const response = await doUpdate({ id: userId, user: userUpdateFormData });
 
             if (response?.data?.code === Response.SUCCESS) {
                 toast.success(response.data.message || "User updated successfully!");
@@ -120,7 +172,7 @@ export function UserDataTable() {
                     prevUsers.map((user) =>
                         user.id === userId ? { 
                             ...user, 
-                            ...formData, 
+                            ...userUpdateFormData, 
                             updatedAt: new Date().toLocaleString('sv-SE') }
                         : user
                     )
@@ -132,8 +184,8 @@ export function UserDataTable() {
             toast.error(err.message);
         }
 
-        setFormData(updateUserDefault);
-    };
+        setUserUpdateFormData(updateUserDefault);
+    }; */
 
     const columns = useMemo<ColumnDef<TUser, any>[]>(() => [
     {
@@ -157,14 +209,19 @@ export function UserDataTable() {
                                     className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
                                     onClick={() => {
                                         setUpdateUserId(user.id);
-                                            setFormData({
+
+                                        const userData = {
                                             role: user.role,
                                             email: user.email,
                                             firstName: user.firstName,
                                             middleName: user.middleName,
                                             lastName: user.lastName,
                                             username: user.username,
-                                        })
+                                        };
+
+                                        setUserUpdateFormData(userData);
+                                        // Reset the form with the user data
+                                        form.reset(userData);
                                     }}
                                 >
                                     <FilePenLine className="size-4" />
@@ -331,10 +388,10 @@ export function UserDataTable() {
 
     return (
         <div className="w-full">
-            {   formData && updateUserId &&
-                (<Dialog open={!!formData.role} onOpenChange={(open) => {
+            { userUpdateFormData && updateUserId &&
+                (<Dialog open={!!userUpdateFormData.role} onOpenChange={(open) => {
                     if (!open) {
-                        setFormData(updateUserDefault);
+                        setUserUpdateFormData(updateUserDefault);
                     }
                 }}>
                 <DialogContent className="sm:max-w-[425px]">
@@ -344,59 +401,142 @@ export function UserDataTable() {
                             Click save after updating the user details.
                         </DialogDescription>
                     </DialogHeader>
-                    <form
-                        onSubmit={async (e) => {
-                            e.preventDefault();
-                            await handleUpdate(updateUserId);
-                        }}
-                        className="grid gap-4"
-                    >
-                        <div className="grid gap-4">
-                            <div className="grid gap-3">
-                                <Label htmlFor={`role-${updateUserId}`}>Role</Label>
-                                <Select
-                                    value={formData.role}
-                                    onValueChange={(value) => {
-                                        setFormData({ ...formData, role: value })
-                                    }}
-                                >
-                                    <SelectTrigger id={`role-${updateUserId}`}>
-                                        <SelectValue placeholder="Select Role" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="admin">Admin</SelectItem>
-                                        <SelectItem value="staff">Staff</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                    <Form {...form}>
+                        <form
+                            onSubmit={form.handleSubmit(onUpdateUser, onError)}
+                            className="grid gap-4"
+                        >
+                            <div className="grid gap-4">
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="role"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Role</FormLabel>
+                                                <FormControl>
+                                                    <Select
+                                                        {...field}
+                                                        value={field.value}
+                                                        onValueChange={field.onChange}
+                                                    >
+                                                        <SelectTrigger id={`role-${updateUserId}`}>
+                                                            <SelectValue placeholder="Select Role" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="admin">Admin</SelectItem>
+                                                            <SelectItem value="staff">Staff</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="firstName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>First Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id={`firstName-${updateUserId}`}
+                                                        type="text"
+                                                        placeholder="First Name"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="middleName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Middle Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id={`middleName-${updateUserId}`}
+                                                        type="text"
+                                                        placeholder="Middle Name"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="lastName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Last Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id={`lastName-${updateUserId}`}
+                                                        type="text"
+                                                        placeholder="Last Name"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="username"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Username</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id={`username-${updateUserId}`}
+                                                        type="text"
+                                                        placeholder="Username"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Email</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id={`email-${updateUserId}`}
+                                                        type="email"
+                                                        placeholder="Email Address"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor={`firstName-${updateUserId}`}>First Name</Label>
-                                <Input id={`firstName-${updateUserId}`} name="firstName" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor={`middleName-${updateUserId}`}>Middle Name</Label>
-                                <Input id={`middleName-${updateUserId}`} name="middleName" value={formData.middleName} onChange={(e) => setFormData({ ...formData, middleName: e.target.value })} />
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor={`lastName-${updateUserId}`}>Last Name</Label>
-                                <Input id={`lastName-${updateUserId}`} name="lastName" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor={`username-${updateUserId}`}>Username</Label>
-                                <Input id={`username-${updateUserId}`} name="username" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor={`email-${updateUserId}`}>Email</Label>
-                                <Input id={`email-${updateUserId}`} name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button type="submit">Save changes</Button>
-                        </DialogFooter>
-                    </form>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                                <Button type="submit">Save changes</Button>
+                            </DialogFooter>
+                        </form>
+                    </Form>
                 </DialogContent>
             </Dialog>)
             }

@@ -1,14 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import UsersList from "./components/UsersList";
 import paths from "@/utils/paths";
 import BreadCrumb from "@/components/Breadcrumb";
-import { Button } from "@/components/ui/button";
 
 const UsersPage = () => {
-    const router = useRouter();
-
     const breadcrumbMain = {
         path: paths.admin.dashboard.main.path,
         name: paths.admin.dashboard.main.name,

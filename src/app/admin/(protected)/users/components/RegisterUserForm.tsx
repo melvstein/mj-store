@@ -1,5 +1,5 @@
 "use client";
-import { useRegisterUserHandler } from "@/services/AuthenticationService";
+
 import { use, useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import BreadCrumb from "@/components/Breadcrumb";
@@ -58,7 +58,7 @@ const formSchema = z.object({
 
 const RegisterUserForm = () => {
     const [doRegister, { isLoading: registerLoading }] = useAuthRegisterMutation();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -74,30 +74,8 @@ const RegisterUserForm = () => {
     });
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
-        console.log("Form Data:", data);
-    }
-
-    const [formData, setFormData] = useState({
-        role: "",
-        email: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        username: "",
-        password: "",
-        confirmPassword: "",
-    });
-
-    /* const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            toast.error("Passwords do not match.");
-            return;
-        }
-
         try {
-            const user = await doRegister(formData).unwrap();
+            const user = await doRegister(data).unwrap();
 
             if (user.data) {
                 toast.success(`User ${user.data?.username} created successfully!`);
@@ -108,18 +86,14 @@ const RegisterUserForm = () => {
             toast.error(err?.data?.message);
             setIsLoading(false);
         }
-    }; */
+    }
 
-    const handleClear = () => {
-        setFormData({
-            role: "",
-            email: "",
-            firstName: "",
-            middleName: "",
-            lastName: "",
-            username: "",
-            password: "",
-            confirmPassword: "",
+    const onError = (errors: any) => {
+        // console.log("Validation Errors:", errors);
+
+        Object.entries(errors).forEach(([fieldName, error]: any) => {
+            console.log(`${fieldName}: ${error.message}`);
+            toast.error(`${fieldName}: ${error.message}`);
         });
     };
 
@@ -138,14 +112,14 @@ const RegisterUserForm = () => {
     <div className="grid gap-4">
         <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
         <Card>
-            <CardHeader className="border-b bg-secondary rounded-tl-lg rounded-tr-lg">
+            <CardHeader>
                 <CardTitle>
                     Register User
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                    <form onSubmit={form.handleSubmit(onSubmit, onError)} className="flex flex-col gap-4">
                         <div className="card-skin-content flex flex-col gap-6">
                             <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
                                 <div className="w-full">
@@ -154,12 +128,12 @@ const RegisterUserForm = () => {
                                         name="role"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Role</FormLabel>
+                                                <FormLabel className="">Role</FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        { ...field }
-                                                        value={formData.role}
-                                                        onValueChange={(value) => setFormData({ ...formData, role: value })}
+                                                        {...field}
+                                                        value={field.value}
+                                                        onValueChange={field.onChange}
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue placeholder="Select Role" />
@@ -170,7 +144,6 @@ const RegisterUserForm = () => {
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -189,7 +162,6 @@ const RegisterUserForm = () => {
                                                         placeholder="Email"
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     
@@ -198,55 +170,113 @@ const RegisterUserForm = () => {
                             </div>
                             <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
                                 <div className="w-full">
-                                    <Label>Fist Name</Label>
-                                    <Input
-                                        placeholder="First Name"
-                                        value={formData.firstName}
-                                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                                    <FormField
+                                        control={form.control}
+                                        name="firstName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>First Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="text"
+                                                        placeholder="First Name"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                                 <div className="w-full">
-                                    <Label>Middle Name</Label>
-                                    <Input
-                                        placeholder="Middle Name"
-                                        value={formData.middleName}
-                                        onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
+                                    <FormField 
+                                        control={form.control}
+                                        name="middleName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Middle Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="text"
+                                                        placeholder="Middle Name"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                                 <div className="w-full">
-                                    <Label>Last Name</Label>
-                                    <Input
-                                        placeholder="Last Name"
-                                        value={formData.lastName}
-                                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                                    <FormField
+                                        control={form.control}
+                                        name="lastName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Last Name</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="text"
+                                                        placeholder="Last Name"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                             </div>
                             <div className="flex items-center justify-between md:flex-row flex-col w-full gap-4">
                                 <div className="w-full">
-                                    <Label>Username</Label>
-                                    <Input
-                                        placeholder="Username"
-                                        value={formData.username}
-                                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                    <FormField
+                                        control={form.control}
+                                        name="username"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Username</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="text"
+                                                        placeholder="Username"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                                 <div className="w-full">
-                                    <Label>Password</Label>
-                                    <Input
-                                        type="password"
-                                        placeholder="Password"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Password</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="password"
+                                                        placeholder="Password"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                                 <div className="w-full">
-                                    <Label>Confirm Password</Label>
-                                    <Input
-                                        type="password"
-                                        placeholder="Confirm Password"
-                                        value={formData.confirmPassword}
-                                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                    <FormField
+                                        control={form.control}
+                                        name="confirmPassword"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Confirm Password</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="password"
+                                                        placeholder="Confirm Password"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
                                 </div>
                             </div>

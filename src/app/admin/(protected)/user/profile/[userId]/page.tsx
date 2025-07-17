@@ -9,14 +9,14 @@ const UserProfilePage = ({ params }: UserProfilePageProps) => {
     const { userId } = params;
 
     const breadcrumbMain = {
-        path: paths.admin.dashboard,
-        name: "Dashboard",
+        path: paths.admin.dashboard.main.path,
+        name: paths.admin.dashboard.main.name,
     };
 
     const breadcrumbPaths = [
         {
-            path: paths.admin.user.profile.main,
-            name: "Profile",
+            path: paths.admin.user.profile.main.path,
+            name: paths.admin.user.profile.main.name,
         }
     ];
 
