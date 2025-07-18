@@ -4,14 +4,14 @@ import path from "path";
 
 const ProductPage = () => {
     const breadcrumbMain = {
-        path: paths.admin.dashboard,
-        name: "Dashboard",
+        path: paths.admin.dashboard.main.path,
+        name: paths.admin.dashboard.main.name,
     };
 
     const breadcrumbPaths = [
         {
-            path: paths.admin.products.main,
-            name: "Products",
+            path: paths.admin.products.main.path,
+            name: paths.admin.products.main.name,
         }
     ];
 

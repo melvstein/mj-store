@@ -8,18 +8,26 @@ import { TCurrencyCode, TProduct } from "@/types";
 import Config from "@/utils/config";
 import { useGetProductsQuery } from "@/lib/redux/services/productsApi";
 import Loading from "./Loading/Loading";
+import { useEffect, useState } from "react";
 
 const Products: React.FC = () => {
     const { status } = useSession();
     const router = useRouter();
-    const { data: response, error, isLoading } = useGetProductsQuery();
+    const { data: response, error, isLoading: productsLoading } = useGetProductsQuery();
+    const [isLoading, setIsLoading] = useState(false);
     const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
     const products: TProduct[] = Array.isArray(response?.data?.content) ? response.data.content : [];
+
+    useEffect(() => {
+        if (productsLoading) {
+            setIsLoading(true);
+        }
+    }, [productsLoading]);
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
-                <Loading/>
+                <Loading onComplete={ () => setIsLoading(false) } />
             </div>
         );
     }
@@ -47,13 +55,11 @@ const Products: React.FC = () => {
         if (status === 'unauthenticated') {
             router.push("/customer/login");
         }
-
-        
     }
 
     return (
         <section>
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+            <div className="container mx-auto mt-[100px] grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
                 products.map((product : TProduct) => {
                     console.log(product);

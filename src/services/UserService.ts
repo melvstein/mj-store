@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export const useUser = ({ id }: { id: string }) => {
     const [user, setUser] = useState<TUser | null>(null);
 
-    const {data: response, error, isLoading} = useGetUserQuery(id!, {
+    const {data: response, error, isLoading, refetch} = useGetUserQuery(id!, {
         skip: !id,
     });
 
@@ -22,6 +22,7 @@ export const useUser = ({ id }: { id: string }) => {
             error,
             isLoading,
         },
+        refetch
     };
 };
 

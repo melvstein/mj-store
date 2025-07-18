@@ -101,10 +101,10 @@ export function UserDataTable() {
 
     const onUpdateUser = async (data: z.infer<typeof formUpdateUserSchema>) => {
         try {
-            const response = await doUpdate({ id: updateUserId, user: data });
+            const response = await doUpdate({ id: updateUserId, user: data }).unwrap();
 
-            if (response?.data?.code === Response.SUCCESS) {
-                toast.success(response.data.message || "User updated successfully!");
+            if (response?.code === Response.SUCCESS) {
+                toast.success(response.message || "User updated successfully!");
 
                 setUsers((prevUsers) =>
                     prevUsers.map((user) =>
@@ -116,7 +116,7 @@ export function UserDataTable() {
                     )
                 );
             } else {
-                toast.error(response?.data?.message || "User failed to update!");
+                toast.error(response?.message || "User failed to update!");
             }
         } catch (err: any) {
             toast.error(err.message);

@@ -54,9 +54,20 @@ export const isAuthenticated = (): boolean => {
     return true;
 }
 
+export const useAuthenticatedUserId = (): string | null => {
+    const accessToken = getAccessToken();
+    const userId = extractUserId(accessToken);
+
+    if (!userId) {
+        return null;
+    }
+
+    return userId;
+}
+
 export const useAuthenticatedUser = () => {
     const userId = extractUserId(getAccessToken());
-    const { user, extra: { error, isLoading } } = useUser({ id: userId });
+    const { user, extra: { error, isLoading }, refetch } = useUser({ id: userId });
 
     return {
         user,
@@ -64,6 +75,7 @@ export const useAuthenticatedUser = () => {
             error,
             isLoading,
         },
+        refetch
     };
 }
 
