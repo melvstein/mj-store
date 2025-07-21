@@ -27,16 +27,64 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { useGetUserQuery, useUpdateUserMutation } from "@/lib/redux/services/usersApi";
+import { useGetUserQuery, useUpdateUserMutation, useUpdateUserPasswordMutation, useUploadProfileImageMutation } from "@/lib/redux/services/usersApi";
 import Response from "@/constants/Response";
 import { useRouter } from "next/navigation";
 
 const UserProfileImageCard = ({ user }: { user: TUser }) => {
-    const form = useForm();
+    const [uploadProfileImage] = useUploadProfileImageMutation();
+    const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
 
-    const onSubmit = (data: any) => {
-        console.log("Form submitted with data:", data);
-        // Handle form submission logic here
+    useEffect(() => {
+        if (user.profileImageUrl) {
+            setProfileImageUrl(user.profileImageUrl);
+        }
+    }, [user.profileImageUrl]);
+
+    const formSchema = z.object({
+        displayPicture: z
+            .instanceof(File)
+            .refine((file) => file.size <= 5_000_000, {
+                message: "File size should be less than 5MB",
+            })
+            .refine((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type), {
+                message: "Only JPEG, PNG, and WebP files are allowed",
+            }),
+    });
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            displayPicture: undefined,
+        },
+    });
+
+    const onSubmit = async (data: any) => {
+        try {
+            const response = await uploadProfileImage({
+                id: user.id,
+                file: data.displayPicture,
+            }).unwrap();
+
+            if (response?.code === Response.SUCCESS) {
+                toast.success(response.message || "Uploaded successfully!");
+                setProfileImageUrl(response.data.profileImageUrl);
+                window.location.reload();
+            } else {
+                toast.error(response?.message || "User failed to update!");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Upload failed");
+        }
+    };
+
+    const onError = (errors: any) => {
+        // console.log("Validation Errors:", errors);
+
+        Object.entries(errors).forEach(([fieldName, error]: any) => {
+            console.log(`${fieldName}: ${error.message}`);
+            toast.error(`${fieldName}: ${error.message}`);
+        });
     };
 
     return (
@@ -50,7 +98,7 @@ const UserProfileImageCard = ({ user }: { user: TUser }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
                     <div className="flex items-center justify-center w-full h-full p-4">
                         <Avatar className="flex bg-secondary size-32 sm:size-48 rounded-lg border border-primary">
-                            <AvatarImage className="" src="https://github.com/evilrabbit.png" alt="User Display Picture" />
+                            <AvatarImage className="" src={profileImageUrl ?? undefined} alt="User Display Picture" />
                             <AvatarFallback>MJ</AvatarFallback>
                         </Avatar>
                     </div>
@@ -58,31 +106,31 @@ const UserProfileImageCard = ({ user }: { user: TUser }) => {
                         <Form {...form}>
                             <form 
                                 className="flex flex-col items-center justify-between gap-4 h-full"
-                                onSubmit={form.handleSubmit(onSubmit)}
+                                onSubmit={form.handleSubmit(onSubmit, onError)}
                             >
                                 <div className="w-full">
                                     <FormField
-                                    control={form.control}
-                                    name="displayPicture"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Change Display Picture</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => {
-                                                        if (e.target.files && e.target.files[0]) {
-                                                            const file = e.target.files[0];
-                                                            field.onChange(file);
-                                                        }
-                                                    }}
-                                                    className="cursor-pointer"
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
+                                        control={form.control}
+                                        name="displayPicture"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Change Display Picture</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                field.onChange(file); // Pass the file directly, not an array
+                                                            }
+                                                        }}
+                                                        className="cursor-pointer"
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                                 <div className="flex items-center justify-end w-full">
                                     <Button
@@ -279,7 +327,7 @@ const UserDetailsCard = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: (
 
     useEffect(() => {
         if (user) {
-            console.log("User details loaded:", user);
+            /* console.log("User details loaded:", user); */
         }
 
         console.log("Current tab:", tab);
@@ -356,24 +404,121 @@ const UserDetailsCard = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: (
                             </div>
                         </CardContent>
                     </TabsContent>
-                    <TabsContent value="password">
-                        <CardContent className="grid gap-6">
-                        <div className="grid gap-3">
-                            <Label htmlFor="tabs-demo-current">Current password</Label>
-                            <Input id="tabs-demo-current" type="password" />
-                        </div>
-                        <div className="grid gap-3">
-                            <Label htmlFor="tabs-demo-new">New password</Label>
-                            <Input id="tabs-demo-new" type="password" />
-                        </div>
-                                <div className="flex items-center justify-end">
-                                    <Button type="submit">Save Password</Button>
-                                </div>
-                        </CardContent>
-                    </TabsContent>
+                    <ChangePasswordTabContent user={user} />
                 </Card>
             </Tabs>
         </div>
+    );
+};
+
+const ChangePasswordTabContent = ({ user } : { user: TUser }) => {
+    const [changePassword, { error }] = useUpdateUserPasswordMutation();
+
+    const formSchema = z.object({
+        currentPassword: z.string().min(1, "Current password is required"),
+        newPassword: z.string().min(6, "New password must be at least 6 characters long"),
+        confirmPassword: z.string().min(1, "Confirm password is required"),
+    }).refine((data) => data.newPassword === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    });
+
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        // console.log("Password change submitted:", data);
+
+        try {
+            const response = await changePassword({ id: user?.id, currentPassword: data.currentPassword, newPassword: data.newPassword }).unwrap();
+
+            if (response.code == Response.SUCCESS) {
+                toast.success("Password changed successfully!");
+            } else {
+                console.log(
+                    "Password change failed:", response.message || "An error occurred"
+                );
+                toast.error(response.message || "Failed to change password");
+            }
+
+            form.reset();
+        } catch (error: any) {
+            toast.error(error.message || "Failed to change password");
+        }
+    };
+
+    const onError = (errors: any) => {
+        Object.entries(errors).forEach(([fieldName, error]: any) => {
+            toast.error(`${fieldName}: ${error.message}`);
+        });
+    };
+
+    return (
+        <TabsContent value="password">
+            <CardContent className="grid gap-6">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit, onError)} className="grid gap-6">
+                        <FormField
+                            control={form.control}
+                            name="currentPassword"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Current Password</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            type="password" 
+                                            placeholder="Enter current password"
+                                            {...field} 
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="newPassword"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>New Password</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            type="password" 
+                                            placeholder="Enter new password"
+                                            {...field} 
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="confirmPassword"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Confirm Password</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            type="password" 
+                                            placeholder="Confirm new password"
+                                            {...field} 
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <div className="flex items-center justify-end">
+                            <Button type="submit">Save Password</Button>
+                        </div>
+                    </form>
+                </Form>
+            </CardContent>
+        </TabsContent>
     );
 };
 
@@ -540,7 +685,7 @@ const UserProfilePage = () => {
     
     useEffect(() => {
         if (response?.data) {
-            console.log("User data fetched:", response.data);
+            /* console.log("User data fetched:", response.data); */
             setUser(response.data);
         }
     }, [response]);

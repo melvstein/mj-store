@@ -36,7 +36,7 @@ const UserProfileNavigationMenuItem = () => {
     <NavigationMenuItem>
         <NavigationMenuTrigger className="flex items-center justify-center gap-2 bg-primary">
             <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-6">
-                <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" />
+                <AvatarImage className="rounded-full" src={user?.profileImageUrl} alt="User Display Picture" />
                 <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             { user?.username && user.username.charAt(0).toUpperCase() + user.username.slice(1) }

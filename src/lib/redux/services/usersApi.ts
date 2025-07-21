@@ -57,6 +57,30 @@ export const usersApi = createApi({
                 },
             }),
         }),
+        updateUserPassword: builder.mutation<TApiResponse<any>, { id: string; currentPassword: string; newPassword: string }>({
+            query: ({ id, currentPassword, newPassword }) => ({
+                url: `${USERS_ENDPOINT}/${id}/password`,
+                method: HttpMethod.PATCH,
+                body: { currentPassword, newPassword },
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`
+                },
+            }),
+        }),
+        uploadProfileImage: builder.mutation<TApiResponse<any>, { id: string; file: File }>({
+            query: ({ id, file }) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                return {
+                    url: `${USERS_ENDPOINT}/${id}/upload-profile-image`,
+                    method: HttpMethod.POST,
+                    body: formData,
+                    headers: {
+                        "Authorization": `Bearer ${getAccessToken()}`,
+                    },
+                };
+            },
+        }),
     }),
 });
 
@@ -66,4 +90,6 @@ export const {
     useCreateUserMutation,
     useUpdateUserMutation,
     useDeleteUserMutation,
+    useUpdateUserPasswordMutation,
+    useUploadProfileImageMutation,
 } = usersApi;

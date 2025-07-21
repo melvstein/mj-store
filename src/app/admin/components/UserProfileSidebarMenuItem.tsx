@@ -44,7 +44,8 @@ const UserProfileSidebarMenuItem = () => {
             <DropdownMenuTrigger asChild>
                 <SidebarMenuButton size="lg" className="flex items-center justify-center data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                     <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-8">
-                        <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" />
+                        {/* <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" /> */}
+                        <AvatarImage className="rounded-full" src={user?.profileImageUrl} alt="User Display Picture" />
                         <AvatarFallback>MJ</AvatarFallback>
                     </Avatar>
                     <div className={clsx("grid flex-1 text-left text-sm leading-tight", !open && !isMobile ? "hidden" : "block")}>
