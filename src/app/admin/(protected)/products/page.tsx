@@ -1,6 +1,7 @@
 import BreadCrumb from "@/components/Breadcrumb";
 import paths from "@/utils/paths";
 import path from "path";
+import { ProductDataTable } from "./components/ProductDataTable";
 
 const ProductPage = () => {
     const breadcrumbMain = {
@@ -18,7 +19,7 @@ const ProductPage = () => {
     return (
         <div>
             <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
-            Product Page
+            <ProductDataTable />
         </div>
     );
 };

@@ -24,7 +24,7 @@ export const usersApi = createApi({
             query: (id) => ({
                 url: USERS_ENDPOINT + `/${id}`,
                 headers: {
-                    "Authorization": `Bearer ${getRefreshToken()}`
+                    "Authorization": `Bearer ${getAccessToken()}`
                 },
             }),
         }),

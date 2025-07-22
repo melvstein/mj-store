@@ -1,5 +1,7 @@
 import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import type { TApiResponse, TProduct } from "@/types";
+import type { TApiResponse, TProduct, TUpdateProduct } from "@/types";
+import { getAccessToken, getRefreshToken } from "@/services/AuthenticationService";
+import HttpMethod from "@/constants/HttpMethod";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const REDUCER_PATH = "productsApi";
@@ -10,7 +12,7 @@ const baseQuery = fetchBaseQuery({
 });
 
 type TContent = {
-    content: TProduct;
+    content: TProduct[];
 }
 
 export const productsApi = createApi({
@@ -20,9 +22,50 @@ export const productsApi = createApi({
         getProducts: builder.query<TApiResponse<TContent>, void>({
             query: () => PRODUCTS_ENDPOINT,
         }),
+        getProduct: builder.query<TApiResponse<TProduct>, string>({
+            query: (id) => ({
+                url: PRODUCTS_ENDPOINT + `/${id}`,
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`
+                },
+            }),
+        }),
+        createProduct: builder.mutation<TApiResponse<TContent>, Partial<TContent>>({
+            query: (product) => ({
+                url: PRODUCTS_ENDPOINT,
+                method: HttpMethod.POST,
+                body: product,
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`
+                },
+            }),
+        }),
+        updateProduct: builder.mutation<TApiResponse<TUpdateProduct>, { id: string | undefined; product: Partial<TUpdateProduct> }>({
+            query: ({ id, product }) => ({
+                url: `${PRODUCTS_ENDPOINT}/${id}`,
+                method: HttpMethod.PATCH,
+                body: product,
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`
+                },
+            }),
+        }),
+        deleteProduct: builder.mutation<TApiResponse<any>, string>({
+            query: (id) => ({
+                url: `${PRODUCTS_ENDPOINT}/${id}`,
+                method: HttpMethod.DELETE,
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`
+                },
+            }),
+        }),
     }),
 });
 
 export const {
     useGetProductsQuery,
+    useGetProductQuery,
+    useCreateProductMutation,
+    useUpdateProductMutation,
+    useDeleteProductMutation
 } = productsApi;

@@ -4,7 +4,6 @@ import { useAuthLoginMutation } from "@/lib/redux/services/authenticationApi";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
-import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
@@ -16,9 +15,6 @@ const SignIn: React.FC = () => {
     const [password, setPassword] = useState("");
 	const [authLogin] = useAuthLoginMutation();
     const router = useRouter();
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const [successMessage, setSuccessMessage] = useState<string>("");
-	const { theme } = useTheme()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -35,30 +31,19 @@ const SignIn: React.FC = () => {
                 if (refreshToken) {
                     setRefreshToken(refreshToken);
                 }
-                setSuccessMessage("Login successful!");
+                
+                toast.success("Login Successful");
                 router.push("/admin");
             } else {
                 console.log("Invalid login response format:", response);
+                toast.error("Login Failed: Invalid response format");
             }
         } catch (error: any) {
             // console.log("Login Failed:", error);
-            setErrorMessage(error.data.message);
+            toast.error("Login Failed: " + error?.data?.message || "An error occurred");
         }
     };
 
-    useEffect(() => {
-        if (errorMessage) {
-            toast.error(errorMessage);
-            setErrorMessage(""); // Clear error message after showing toast
-        }
-
-        if (successMessage) {
-            toast.success(successMessage);
-            setSuccessMessage(""); // Clear success message after showing toast
-        }
-
-    }, [errorMessage, successMessage]);
- 
 	return (
 		<section className="flex flex-col items-center justify-center">
             <Card className="w-full max-w-sm mt-24">

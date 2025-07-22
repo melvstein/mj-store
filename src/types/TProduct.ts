@@ -1,5 +1,5 @@
 export type TProduct = {
-    id: string[];
+    id: string;
     tags: string[];
     sku: string;
     name: string;
@@ -9,6 +9,18 @@ export type TProduct = {
     brand?: string;
     images: string[];
     isActive: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
+};
+
+export type TUpdateProduct = {
+    tags?: string[];
+    sku?: string;
+    name?: string;
+    description?: string;
+    price?: number;
+    stock?: number;
+    brand?: string;
+    images?: string[];
+    isActive?: boolean;
 };
