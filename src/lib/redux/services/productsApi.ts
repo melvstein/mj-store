@@ -59,6 +59,22 @@ export const productsApi = createApi({
                 },
             }),
         }),
+        uploadProductImages: builder.mutation<TApiResponse<any>, { id: string | undefined; files: File[] }>({
+            query: ({ id, files }) => {
+                const formData = new FormData();
+                files.forEach(file => {
+                    formData.append("files", file); // key must match backend: "files"
+                });
+                return {
+                    url: `${PRODUCTS_ENDPOINT}/${id}/upload-product-images`,
+                    method: HttpMethod.POST,
+                    body: formData,
+                    headers: {
+                        "Authorization": `Bearer ${getAccessToken()}`,
+                    },
+                };
+            },
+        }),
     }),
 });
 
@@ -67,5 +83,6 @@ export const {
     useGetProductQuery,
     useCreateProductMutation,
     useUpdateProductMutation,
-    useDeleteProductMutation
+    useDeleteProductMutation,
+    useUploadProductImagesMutation,
 } = productsApi;

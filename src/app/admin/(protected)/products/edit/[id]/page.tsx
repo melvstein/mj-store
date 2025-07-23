@@ -2,7 +2,6 @@
 
 import BreadCrumb from "@/components/Breadcrumb";
 import Loading from "@/components/Loading/Loading";
-import Spinner from "@/components/Loading/Spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -20,6 +19,7 @@ import { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import ProductImagesCarousel from "../../components/ProductImagesCarousel";
 
 const breadcrumbMain = {
     path: paths.admin.dashboard.main.path,
@@ -64,8 +64,10 @@ const ProductEditPage = ({ params }: PageProps) => {
     }
 
     return (
-        <div>
-            <EditDetails product={product} />
+        <div className="flex flex-col items-center justify-start gap-4">
+            <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
+            <ProductDetails product={product} />
+            <ProductImagesCarousel product={product} />
         </div>
     );
 };
@@ -94,7 +96,7 @@ const formUpdateProductSchema = z.object({
     isActive: z.boolean(),
 });
 
-const EditDetails = ({ product }: { product: TProduct | null }) => {
+const ProductDetails = ({ product }: { product: TProduct | null }) => {
     const [doUpdate] = useUpdateProductMutation();
     const [productUpdateFormData, setProductUpdateFormData] = useState(updateProductDefault);
 
@@ -155,8 +157,7 @@ const EditDetails = ({ product }: { product: TProduct | null }) => {
     }, [product]);
 
     return (
-        <div className="flex flex-col items-center justify-start gap-4">
-            <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
+        <div className="flex flex-col items-center justify-start gap-4 w-full">
             <Form {...form}>
                 <form 
                     className="w-full"
@@ -166,7 +167,7 @@ const EditDetails = ({ product }: { product: TProduct | null }) => {
                         <CardHeader>
                             <CardTitle className="flex items-center justify-start gap-2">
                                 <FilePenLine className="size-4" />
-                                Edit
+                                Edit Details
                             </CardTitle>
                         </CardHeader>
                         <Separator />

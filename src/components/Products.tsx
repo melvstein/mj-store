@@ -14,15 +14,21 @@ const Products: React.FC = () => {
     const { status } = useSession();
     const router = useRouter();
     const { data: response, error, isLoading: productsLoading } = useGetProductsQuery();
+    const [products, setProducts] = useState<TProduct[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
-    const products: TProduct[] = Array.isArray(response?.data?.content) ? response.data.content : [];
 
     useEffect(() => {
         if (productsLoading) {
             setIsLoading(true);
+            return;
         }
-    }, [productsLoading]);
+
+        if (response?.data?.content) {
+            setProducts(response.data.content);
+            setIsLoading(false);
+        }
+    }, [productsLoading, response]);
 
     if (isLoading) {
         return (
@@ -61,7 +67,7 @@ const Products: React.FC = () => {
         <section>
             <div className="container mx-auto mt-[100px] grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
-                products.map((product : TProduct) => {
+                products.filter((product) => product.isActive).map((product : TProduct) => {
                     console.log(product);
                     return (
                         <div key={String(product.id)} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">
