@@ -35,6 +35,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge";
+import { set } from "mongoose";
 
 const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
     const [uploadProductImages, { isLoading: uploading }] = useUploadProductImagesMutation();
@@ -142,6 +143,7 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
 
     const handleDeleteImage = async (index: number) => {
         console.log("Deleting image at index:", index);
+        
         if (!product?.id) {
             toast.error("Product ID is required");
             return;
@@ -152,16 +154,30 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
                 id: product.id,
                 imageIndexes: [index],
             }).unwrap();
+            
             if (response?.code === Response.SUCCESS) {
                 toast.success("Image deleted successfully!");
-                // Remove the deleted image from the state
-
+                
                 if (response?.data.productImageUrls && Array.isArray(response.data.productImageUrls) && response.data.productImageUrls.length > 0) {
-                    setProductImages(prev => prev.filter((_, i) => (imagesToDisplay.length - 1 - i) !== index));
-                    setCurrent(1);
-                    setCount(imagesToDisplay.length - 1);
-                    setProductImages([...response.data.productImageUrls].reverse());
+                    const newImages = [...response.data.productImageUrls].reverse();
+                    setProductImages(newImages);
+                    setCount(newImages.length);
+                    
+                    // After deletion, adjust current position
+                    // If we deleted the last image, go to the previous one
+                    // If we deleted from the middle, stay at the same position (but content will shift)
+                    const newCurrent = Math.min(current, newImages.length);
+                    setCurrent(newCurrent > 0 ? newCurrent : 1);
+                    
+                    // Navigate carousel to the adjusted position
+                    if (api && newCurrent > 0) {
+                        // Use setTimeout to ensure state has updated
+                        setTimeout(() => {
+                            api.scrollTo(newCurrent - 1); // scrollTo uses 0-based index
+                        }, 100);
+                    }
                 } else {
+                    // No images left
                     setCurrent(0);
                     setCount(0);
                     setProductImages([]);
@@ -171,7 +187,7 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
             }
         } catch (err: any) {
             console.error("Error deleting image:", err);
-            toast.error("Failed to delete image: " + (err.data.message || "Unknown error"));
+            toast.error("Failed to delete image: " + (err.data?.message || "Unknown error"));
         }
     };
 
