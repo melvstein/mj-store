@@ -43,34 +43,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { MouseEvent, useEffect, useMemo, useState } from "react"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Response from "@/constants/Response"
 import Loading from "@/components/Loading/Loading"
-import { useForm } from "react-hook-form"
 import z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { FormField, FormItem, FormLabel, FormControl, Form } from "@/components/ui/form"
 import { useDeleteProductMutation, useGetProductsQuery, useUpdateProductMutation } from "@/lib/redux/services/productsApi"
 import Link from "next/link"
 import paths from "@/utils/paths"
-
-const updateProductDefault: TUpdateProduct = {
-    tags: [],
-    sku: "",
-    name: "",
-    description: "",
-    price: 0,
-    stock: 0,
-    brand: "",
-    images: [],
-    isActive: true,
-}
 
 const formUpdateProductSchema = z.object({
     sku: z.string().min(1, "SKU is required"),
@@ -85,11 +66,9 @@ const formUpdateProductSchema = z.object({
 
 export function ProductDataTable() {
     const { data: response, error, isLoading: productLoading } = useGetProductsQuery();
-    const [doUpdate] = useUpdateProductMutation();
     const [doDelete] = useDeleteProductMutation();
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState<TProduct[]>([]);
-    const [updateProductId, setUpdateProductId] = useState("");
     const [lastDeletedProduct, setLastDeletedProduct] = useState<TProduct | null>(null);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -98,39 +77,6 @@ export function ProductDataTable() {
     const [sorting, setSorting] = useState<SortingState>([
         { id: "updatedAt", desc: true },
     ]);
-
-    const [productUpdateFormData, setProductUpdateFormData] = useState(updateProductDefault);
-
-    const form = useForm<z.infer<typeof formUpdateProductSchema>>({
-        resolver: zodResolver(formUpdateProductSchema),
-        defaultValues: productUpdateFormData,
-    });
-
-    const onUpdateProduct = async (data: z.infer<typeof formUpdateProductSchema>) => {
-        try {
-            const response = await doUpdate({ id: updateProductId, product: data }).unwrap();
-
-            if (response?.code === Response.SUCCESS) {
-                toast.success(response.message || "Product updated successfully!");
-
-                setProducts((prevProducts) =>
-                    prevProducts.map((product) =>
-                        product.id === updateProductId ? {
-                            ...product,
-                            ...data,
-                            updatedAt: new Date().toLocaleString('sv-SE')
-                        } : product
-                    )
-                );
-            } else {
-                toast.error(response?.message || "Product failed to update!");
-            }
-        } catch (err: any) {
-            toast.error(err.message);
-        }
-
-        setProductUpdateFormData(updateProductDefault);
-    };
 
     const onError = (errors: any) => {
          console.log("Validation Errors:", errors);
@@ -190,7 +136,7 @@ export function ProductDataTable() {
                                     className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
                                     asChild
                                 >
-                                    <Link href={`${paths.admin.products.edit.path}/${product.id}`} target="__blank">
+                                    <Link href={`${paths.admin.products.edit.path}/${product.id}`} target="_blank">
                                         <FilePenLine className="size-4" />
                                         {paths.admin.products.edit.name}
                                     </Link>
@@ -441,83 +387,31 @@ export function ProductDataTable() {
 
     return (
         <div className="w-full">
-            { productUpdateFormData && updateProductId &&
-                (<Dialog open={!!productUpdateFormData.sku} onOpenChange={(open) => {
+            {lastDeletedProduct && (
+                <AlertDialog open={!!lastDeletedProduct} onOpenChange={(open) => {
                     if (!open) {
-                        setProductUpdateFormData(updateProductDefault);
+                        setLastDeletedProduct(null);
                     }
                 }}>
-                <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Edit Product Details</DialogTitle>
-                        <DialogDescription>
-                            Click save after updating the product details.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <Form {...form}>
-                        <form
-                            onSubmit={form.handleSubmit(onUpdateProduct, onError)}
-                            className="grid gap-4"
-                        >
-                            <div className="grid gap-4">
-                                <div className="grid gap-3">
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Name</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        id={`name-${updateProductId}`}
-                                                        type="text"
-                                                        placeholder="Name"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                            <DialogFooter>
-                                <DialogClose asChild>
-                                    <Button variant="outline">Cancel</Button>
-                                </DialogClose>
-                                <Button type="submit">Save changes</Button>
-                            </DialogFooter>
-                        </form>
-                    </Form>
-                </DialogContent>
-            </Dialog>)
-            }
-
-            {
-                lastDeletedProduct && (
-                    <AlertDialog open={!!lastDeletedProduct} onOpenChange={(open) => {
-                        if (!open) {
-                            setLastDeletedProduct(null);
-                        }
-                    }}>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete product {lastDeletedProduct.name} and remove the data from our servers.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={async (e) => {
-                                        await handleDelete(e, lastDeletedProduct);
-                                    }}
-                                >
-                                    Continue
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>)
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete product {lastDeletedProduct.name} and remove the data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={async (e) => {
+                                    await handleDelete(e, lastDeletedProduct);
+                                }}
+                            >
+                                Continue
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>)
             }
             <div className="flex items-center justify-center py-4">
                 <Input

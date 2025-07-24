@@ -1,8 +1,48 @@
-import React from 'react'
+import { useEffect, useState } from 'react'
 
-const Spinner: React.FC = () => {
+interface LoadingProps {
+  onComplete?: () => void;
+  duration?: number;
+  children?: React.ReactNode;
+}
+
+const Spinner = ({ onComplete, duration = 500, children }: LoadingProps) => {
+    const [progress, setProgress] = useState(0)
+    const [isComplete, setIsComplete] = useState(false)
+    const [showChildren, setShowChildren] = useState(false)
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+        setProgress((prevProgress) => {
+            if (prevProgress >= 100) {
+            clearInterval(interval)
+            setIsComplete(true)
+            return 100
+            }
+            return prevProgress + (100 / (duration / 100))
+        })
+        }, 100)
+
+        return () => clearInterval(interval)
+    }, [duration])
+
+    useEffect(() => {
+        if (isComplete) {
+        // Delay the callback and child render until after render cycle
+        const timeout = setTimeout(() => {
+            onComplete?.()
+            setShowChildren(true)
+        }, 0)
+        return () => clearTimeout(timeout)
+        }
+    }, [isComplete, onComplete])
+
+    if (showChildren && children) {
+        return <>{children}</>
+    }
+
     return (
-        <div className="fixed inset-0 flex items-center justify-center">
+        <div className="flex items-center justify-center w-full">
             <div role="status">
                 <svg aria-hidden="true" className="inline w-8 h-8 text-skin-muted animate-spin dark:text-skin-muted fill-skin-primary" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>

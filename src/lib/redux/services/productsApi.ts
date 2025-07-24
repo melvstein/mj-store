@@ -75,6 +75,16 @@ export const productsApi = createApi({
                 };
             },
         }),
+        deleteProductImages: builder.mutation<TApiResponse<any>, { id: string | undefined; imageIndexes: number[] }>({
+            query: ({ id, imageIndexes }) => ({
+                url: `${PRODUCTS_ENDPOINT}/${id}/delete-product-images`,
+                method: HttpMethod.DELETE,
+                body: imageIndexes,
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`,
+                },
+            }),
+        }),
     }),
 });
 
@@ -85,4 +95,5 @@ export const {
     useUpdateProductMutation,
     useDeleteProductMutation,
     useUploadProductImagesMutation,
+    useDeleteProductImagesMutation,
 } = productsApi;

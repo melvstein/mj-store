@@ -18,7 +18,7 @@ const ProductImageSlider: React.FC<ProductImageCarouselProps> = ({ images }) => 
     const nextRef = useRef<HTMLButtonElement>(null);
     const swiperRef = useRef<SwiperRef>(null);
 
-    if (images == null) {
+    if (!images || images.length === 0) {
         images = [
             '/images/products/default.jpg',
         ];
@@ -46,17 +46,17 @@ const ProductImageSlider: React.FC<ProductImageCarouselProps> = ({ images }) => 
             pagination={{ clickable: true }}
             className="w-full select-none"
         >
-            {images.map((img, index) => (
-            <SwiperSlide key={index} className="flex items-center justify-center p-4">
-                <Image
-                src={img}
-                width={500}
-                height={500}
-                alt={`Product image ${index + 1}`}
-                className="z-0"
-                priority
-                />
-            </SwiperSlide>
+            {images.map((image, index) => (
+                <SwiperSlide key={index} className="flex items-center justify-center p-4">
+                    <Image
+                        src={image}
+                        width={500}
+                        height={500}
+                        alt={`Product image ${index + 1}`}
+                        className="z-0"
+                        priority
+                    />
+                </SwiperSlide>
             ))}
         </Swiper>
 
