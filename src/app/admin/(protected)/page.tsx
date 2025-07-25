@@ -4,27 +4,27 @@ import DemoChartBarStacked from "@/components/Demo/DemoChartBarStacked"
 import DemoChartPieDonutText from "@/components/Demo/DemoChartPieDonutText"
 import DemoChartPieInteractive from "@/components/Demo/DemoChartPieInteractive"
 import DemoChartRadialShape from "@/components/Demo/DemoChartRadialShape"
+import UsersChart from "../components/charts/UsersChart"
+import CustomersChart from "../components/charts/CustomersChart"
+import ProductsChart from "../components/charts/ProductsChart"
 
 const AdminPage: React.FC = () => {
   return (
     <div className="flex items-center justify-center">
-        <div className="grid grid-cols-4 gap-4 w-full">
-            <div>
-                <DemoChartBarStacked />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+            <div className="w-full">
+                <UsersChart />
             </div>
-            <div>
-                <DemoChartPieDonutText />
+            <div className="w-full">
+                <CustomersChart />
             </div>
-            <div>
-                <DemoChartPieInteractive />
+            <div className="w-full">
+                <ProductsChart />
             </div>
-            <div>
-                <DemoChartRadialShape />
-            </div>
-            <div className="col-span-4">
+            <div className="col-span-full">
                 <DemoChartAreaInteractive />
             </div>
-            <div className="col-span-4">
+            <div className="col-span-full">
                 <DemoChartBarInteractive />
             </div>
         </div>

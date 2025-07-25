@@ -3,14 +3,16 @@
 import ProductRating from "./ProductRating"
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import ProductImageSlider from "./ProductImageSlider";
 import { TCurrencyCode, TProduct } from "@/types";
 import Config from "@/utils/config";
 import { useGetProductsQuery } from "@/lib/redux/services/productsApi";
 import Loading from "./Loading/Loading";
 import { useEffect, useState } from "react";
+import ProductImagesCarousel from "./ProductImagesCarousel";
+import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
+import { Button } from "./ui/button";
 
-const Products: React.FC = () => {
+const Products = () => {
     const { status } = useSession();
     const router = useRouter();
     const { data: response, error, isLoading: productsLoading } = useGetProductsQuery();
@@ -70,31 +72,33 @@ const Products: React.FC = () => {
                 products.filter((product) => product.isActive).map((product : TProduct) => {
                     console.log(product);
                     return (
-                        <div key={String(product.id)} className="flex flex-col items-center justify-between px-4 rounded-xl shadow border space-y-2">
-                            <div className="flex items-center justify-center w-full min-w-[200px] max-w-[300px]">
-                                {
-                                    /* product.images.map((images) => (
-                                        <Image src={images} width={500} height={500} key={index} alt={product.name} priority className="flex items-center justify-center" />
-                                    )) */
-                                   
-                                    <ProductImageSlider key={String(product.id)} images={product.images} />
-                                }
-                            </div>
-                            <div className="flex flex-col items-start justify-center w-full">
-                                <div className="flex items-center justify-between w-full font-bold">
-                                    <p>{ product.name }</p>
-                                    <p>{ Config.getCurrencySymbol(currencyCode) } { product.price }</p>
+                        <Card key={String(product.id)}>
+                            <CardHeader>
+                                <div className="flex items-center justify-center px-8 w-full">
+                                    <ProductImagesCarousel key={String(product.id)} images={product.images} />
                                 </div>
-                                <p className="text-sm">{ product.description }</p>
-                            </div>
-                            <div className="flex items-center justify-center space-x-2 text-yellow-500">
-                                <ProductRating rating={3.5}/>
-                            </div>
-                            <div className="flex items-center justify-between w-full py-4">
-                                <p className="text-sm">Stock:<span className="font-bold">{ product.stock }</span></p>
-                                <button onClick={handleAddToCart} className="bg-blue-400 text-white rounded-md px-2 py-1">Add to cart</button>
-                            </div>
-                        </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-center flex-col gap-4">
+                                    <div className="flex items-center justify-center space-x-2 text-yellow-500">
+                                        <ProductRating rating={3.5}/>
+                                    </div>
+                                    <div className="flex flex-col items-start justify-center w-full">
+                                        <div className="flex items-center justify-between w-full font-bold">
+                                            <p className="first-letter:uppercase">{ product.name }</p>
+                                            <p>{ Config.getCurrencySymbol(currencyCode) } { product.price }</p>
+                                        </div>
+                                        <p className="text-sm">{ product.description }</p>
+                                    </div>
+                                    <div className="flex items-center justify-between w-full py-4">
+                                        <p className="text-sm">Stock:<span className="font-bold">{ product.stock }</span></p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="flex items-center justify-end">
+                                <Button type="submit">Add to cart</Button>
+                            </CardFooter>
+                        </Card>
                     );
                 })
             }

@@ -52,6 +52,8 @@ import z from "zod"
 import { useDeleteProductMutation, useGetProductsQuery, useUpdateProductMutation } from "@/lib/redux/services/productsApi"
 import Link from "next/link"
 import paths from "@/utils/paths"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 
 const formUpdateProductSchema = z.object({
     sku: z.string().min(1, "SKU is required"),
@@ -185,8 +187,18 @@ export function ProductDataTable() {
             )
         },
         cell: ({ row }) => {
-            const tags = row.original.tags.join(', ');
-            return (<div>{tags}</div>)
+            const tags = row.original.tags;
+            return (
+                <div className="flex items-center justify-center gap-1">
+                    {tags.map((tag) => {
+                        return (
+                            <Badge variant="secondary" key={tag}>
+                                {tag}
+                            </Badge>
+                        )
+                    })}
+                </div>
+            );
         },
     },
     {
@@ -297,7 +309,29 @@ export function ProductDataTable() {
         },
         cell: ({ row }) => {
             const images = row.original.images;
-            return (<div>{images && images.join(", ")}</div>)
+            const maxVisible = 3;
+            const visibleImages = images.slice(0, maxVisible);
+            const remainingCount = images.length - maxVisible;
+            
+            return (
+                <div>
+                    <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
+                        {visibleImages.map((image, index: number) => (
+                            <Avatar key={index} className="size-8">
+                                <AvatarImage src={image} alt={`Product Image ${index + 1}`} />
+                                <AvatarFallback>{`Img ${index + 1}`}</AvatarFallback>
+                            </Avatar>
+                        ))}
+                        {remainingCount > 0 && (
+                            <Avatar className="size-8 bg-muted">
+                                <AvatarFallback className="text-xs font-medium">
+                                    +{remainingCount}
+                                </AvatarFallback>
+                            </Avatar>
+                        )}
+                    </div>
+                </div>
+            );
         },
     },
     {
