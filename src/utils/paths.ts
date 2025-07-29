@@ -50,6 +50,10 @@ const paths = {
                 path: "/admin/products",
                 name: "Products",
             },
+            add: {
+                path: "/admin/products/add",
+                name: "Add",
+            },
             edit: {
                 path: "/admin/products/edit",
                 name: "Edit"

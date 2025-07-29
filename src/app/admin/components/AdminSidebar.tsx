@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, List, UserRoundPlus, Users } from "lucide-react"
+import { ChevronLeft, List, PackagePlus, UserRoundPlus, Users } from "lucide-react"
  
 import {
     Sidebar,
@@ -22,12 +22,22 @@ import paths from "@/utils/paths";
 import Link from "next/link";
 import { FaProductHunt } from "react-icons/fa";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { title } from "process";
 import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
  
+type TMenuItem = {
+    title: string;
+    icon: React.ElementType;
+    url?: string;
+    dropdown?: {
+        title: string;
+        url: string;
+        icon: React.ElementType;
+    }[];
+};
+
 // Menu items.
-const items = [
+const items: TMenuItem[] = [
     {
         title: paths.admin.users.main.name,
         icon: Users,
@@ -46,8 +56,19 @@ const items = [
     },
     {
         title: paths.admin.products.main.name,
-        url: paths.admin.products.main.path,
         icon: FaProductHunt,
+        dropdown: [
+            {
+                title: "List",
+                url: paths.admin.products.main.path,
+                icon: List,
+            },
+            {
+                title: paths.admin.products.add.name,
+                url: paths.admin.products.add.path,
+                icon: PackagePlus,
+            },
+        ]
     },
 ];
 
@@ -115,7 +136,7 @@ const AdminSidebar = () => {
                             ) : (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
-                                        <Link href={item.url}>
+                                        <Link href={item.url || "#"}>
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </Link>
