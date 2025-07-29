@@ -54,6 +54,7 @@ import Link from "next/link"
 import paths from "@/utils/paths"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { formatDateTime } from "@/utils/helper"
 
 const formUpdateProductSchema = z.object({
     sku: z.string().min(1, "SKU is required"),
@@ -366,7 +367,7 @@ export function ProductDataTable() {
             const createdAt = row.original.createdAt;
             return (
                 <span className="whitespace-nowrap">
-                    { createdAt }
+                    { createdAt ? formatDateTime(createdAt) : "" }
                 </span>
             );
         },
@@ -388,7 +389,7 @@ export function ProductDataTable() {
             const updatedAt = row.original.updatedAt;
             return (
                 <span className="whitespace-nowrap">
-                    { updatedAt }
+                    { updatedAt ? formatDateTime(updatedAt) : "" }
                 </span>
             );
         },
@@ -412,7 +413,10 @@ export function ProductDataTable() {
             columnVisibility,
             rowSelection,
         },
-        //enableSortingRemoval: false
+        initialState: {
+            sorting: [{ id: "updatedAt", desc: true }],
+        },
+        enableSortingRemoval: false
     });
 
     if (isLoading) {

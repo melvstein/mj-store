@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import clsx from "clsx";
 import { toast } from "sonner";
+import { formatDateTime } from "@/utils/helper";
 
 const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id: string | null) => void }) => {
     const { deleteUser, isDeleted, extra } = useDeleteUser();
@@ -150,7 +151,7 @@ const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id:
                 const createdAt = row.original.createdAt;
                 return (
                     <span className="whitespace-nowrap">
-                        { createdAt }
+                        { createdAt ? formatDateTime(createdAt) : "" }
                     </span>
                 );
             },
@@ -162,7 +163,7 @@ const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id:
                 const updatedAt = row.original.updatedAt;
                 return (
                     <span className="whitespace-nowrap">
-                        { updatedAt }
+                        { updatedAt ? formatDateTime(updatedAt) : "" }
                     </span>
                 );
             },

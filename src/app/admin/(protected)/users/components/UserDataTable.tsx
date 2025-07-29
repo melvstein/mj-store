@@ -57,6 +57,8 @@ import { useForm } from "react-hook-form"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormField, FormItem, FormLabel, FormControl, Form } from "@/components/ui/form"
+import { format } from "path"
+import { formatDateTime } from "@/utils/helper"
 
 const updateUserDefault: TUpdateUser = {
   role: "",
@@ -108,11 +110,7 @@ export function UserDataTable() {
 
                 setUsers((prevUsers) =>
                     prevUsers.map((user) =>
-                        user.id === updateUserId ? { 
-                            ...user, 
-                            ...data, 
-                            updatedAt: new Date().toLocaleString('sv-SE') }
-                        : user
+                        user.id === updateUserId && response.data ? response.data as TUser : user
                     )
                 );
             } else {
@@ -333,7 +331,7 @@ export function UserDataTable() {
             const createdAt = row.original.createdAt;
             return (
                 <span className="whitespace-nowrap">
-                    { createdAt }
+                    { createdAt ? formatDateTime(createdAt) : "" }
                 </span>
             );
         },
@@ -355,7 +353,7 @@ export function UserDataTable() {
             const updatedAt = row.original.updatedAt;
             return (
                 <span className="whitespace-nowrap">
-                    { updatedAt }
+                    { updatedAt ? formatDateTime(updatedAt) : "" }
                 </span>
             );
         },
@@ -379,7 +377,10 @@ export function UserDataTable() {
             columnVisibility,
             rowSelection,
         },
-        //enableSortingRemoval: false
+        initialState: {
+            sorting: [{ id: "updatedAt", desc: true }],
+        },
+        enableSortingRemoval: false
     });
 
     if (isLoading) {

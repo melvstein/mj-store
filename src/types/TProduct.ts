@@ -9,8 +9,8 @@ export type TProduct = {
     brand?: string;
     images: string[];
     isActive: boolean;
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export type TUpdateProduct = {

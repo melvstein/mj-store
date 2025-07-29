@@ -12,9 +12,9 @@ export type TUser = {
     profileImageUrl: string;
     isActive: boolean;
     isVerified?: boolean;
-    lastLoginAt?: string;
-    createdAt?: string;
-    updatedAt?: string;
+    lastLoginAt?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 export type TUpdateUser = {

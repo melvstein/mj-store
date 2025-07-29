@@ -7,7 +7,15 @@ const UserSchema = new Schema<TUser>({
         type: String,
         required: true,
     },
-    name: {
+    firstName: {
+        type: String,
+        required: true,
+    },
+    middleName: {
+        type: String,
+        required: false,
+    },
+    lastName: {
         type: String,
         required: true,
     },
@@ -24,19 +32,12 @@ const UserSchema = new Schema<TUser>({
     password: {
         type: String,
     },
-    encryptedPassword: {
-        type: String,
-    },
     contactNumber: {
         type: String,
     },
-    image: {
+    profileImageUrl: {
         type: String,
         default: null,
-    },
-    provider: {
-        type: String,
-        required: true,
     },
     createdAt: {
         type: Date,
