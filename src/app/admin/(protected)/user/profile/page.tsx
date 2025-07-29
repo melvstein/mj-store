@@ -82,8 +82,8 @@ const UserProfileImageCard = ({ user }: { user: TUser }) => {
         // console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${fieldName}: ${error.message}`);
-            toast.error(`${fieldName}: ${error.message}`);
+            console.log(`${error.message}`);
+            toast.error(`${error.message}`);
         });
     };
 
@@ -192,8 +192,8 @@ const EditUserSheet = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: () 
         // console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${fieldName}: ${error.message}`);
-            toast.error(`${fieldName}: ${error.message}`);
+            console.log(`${error.message}`);
+            toast.error(`${error.message}`);
         });
     };
 
@@ -455,7 +455,7 @@ const ChangePasswordTabContent = ({ user } : { user: TUser }) => {
 
     const onError = (errors: any) => {
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            toast.error(`${fieldName}: ${error.message}`);
+            toast.error(`${error.message}`);
         });
     };
 
