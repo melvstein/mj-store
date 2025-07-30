@@ -21,6 +21,12 @@ const ProductImagesCarousel = ({ images }: ProductImageCarouselProps) => {
     const [current, setCurrent] = useState(0);
     const [count, setCount] = useState(0);
 
+    if (!images || images.length === 0) {
+        images = [
+            '/images/products/default.jpg',
+        ];
+    }
+
     useEffect(() => {
         if (!api) {
         return

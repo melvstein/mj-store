@@ -309,7 +309,14 @@ export function ProductDataTable() {
             )
         },
         cell: ({ row }) => {
-            const images = row.original.images;
+            let images = row.original.images;
+
+            if (!images || images.length === 0) {
+                images = [
+                    '/images/products/default.jpg',
+                ];
+            }
+
             const maxVisible = 3;
             const visibleImages = images.slice(0, maxVisible);
             const remainingCount = images.length - maxVisible;

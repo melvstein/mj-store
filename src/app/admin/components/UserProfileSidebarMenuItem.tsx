@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import { getInitials } from "@/lib/utils";
 import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
@@ -46,7 +47,9 @@ const UserProfileSidebarMenuItem = () => {
                     <Avatar className="flex items-center justify-center bg-foreground rounded-full border border-foreground size-8">
                         {/* <AvatarImage className="rounded-full" src="https://github.com/evilrabbit.png" alt="User Display Picture" /> */}
                         <AvatarImage className="rounded-full" src={user?.profileImageUrl} alt="User Display Picture" />
-                        <AvatarFallback>MJ</AvatarFallback>
+                        <AvatarFallback>
+                            {user ? getInitials(user) : "MJ"}
+                        </AvatarFallback>
                     </Avatar>
                     <div className={clsx("grid flex-1 text-left text-sm leading-tight", !open && !isMobile ? "hidden" : "block")}>
                         <span className="truncate font-medium">{ user?.username && user.username.charAt(0).toUpperCase() + user.username.slice(1) }</span>

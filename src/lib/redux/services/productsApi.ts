@@ -30,7 +30,7 @@ export const productsApi = createApi({
                 },
             }),
         }),
-        createProduct: builder.mutation<TApiResponse<TContent>, Partial<TContent>>({
+        addProduct: builder.mutation<TApiResponse<TProduct>, Partial<TProduct>>({
             query: (product) => ({
                 url: PRODUCTS_ENDPOINT,
                 method: HttpMethod.POST,
@@ -91,7 +91,7 @@ export const productsApi = createApi({
 export const {
     useGetProductsQuery,
     useGetProductQuery,
-    useCreateProductMutation,
+    useAddProductMutation,
     useUpdateProductMutation,
     useDeleteProductMutation,
     useUploadProductImagesMutation,

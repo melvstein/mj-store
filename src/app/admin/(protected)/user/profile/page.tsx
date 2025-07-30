@@ -30,6 +30,7 @@ import {
 import { useGetUserQuery, useUpdateUserMutation, useUpdateUserPasswordMutation, useUploadProfileImageMutation } from "@/lib/redux/services/usersApi";
 import Response from "@/constants/Response";
 import { useRouter } from "next/navigation";
+import { getInitials } from "@/lib/utils";
 
 const UserProfileImageCard = ({ user }: { user: TUser }) => {
     const [uploadProfileImage] = useUploadProfileImageMutation();
@@ -99,7 +100,9 @@ const UserProfileImageCard = ({ user }: { user: TUser }) => {
                     <div className="flex items-center justify-center w-full h-full p-4">
                         <Avatar className="flex bg-secondary size-32 sm:size-48 rounded-lg border border-primary">
                             <AvatarImage className="" src={profileImageUrl ?? undefined} alt="User Display Picture" />
-                            <AvatarFallback>MJ</AvatarFallback>
+                            <AvatarFallback>
+                                {getInitials(user)}
+                            </AvatarFallback>
                         </Avatar>
                     </div>
                     <div className="flex items-start justify-center w-full p-4">
@@ -217,6 +220,44 @@ const EditUserSheet = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: () 
                         <div>
                             <FormField
                                 control={form.control}
+                                name="username"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Username</FormLabel>
+                                        <FormControl>
+                                            <Input 
+                                                id="username"
+                                                type="text"
+                                                placeholder="Username" 
+                                                {...field} 
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                id="email"
+                                                type="email" 
+                                                placeholder="Email Address" 
+                                                {...field} 
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div>
+                            <FormField
+                                control={form.control}
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
@@ -271,44 +312,6 @@ const EditUserSheet = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: () 
                                 )}
                             />
                         </div>
-                        <div>
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="email"
-                                                type="email" 
-                                                placeholder="Email Address" 
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div>
-                            <FormField
-                                control={form.control}
-                                name="username"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Username</FormLabel>
-                                        <FormControl>
-                                            <Input 
-                                                id="username"
-                                                type="text"
-                                                placeholder="Username" 
-                                                {...field} 
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
                         <SheetFooter className="flex gap-2">
                             <Button type="submit">Save changes</Button>
                             <SheetClose asChild>
@@ -345,6 +348,28 @@ const UserDetailsCard = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: (
                     </CardHeader>
                     <TabsContent value="account">
                         <CardContent className="grid gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="username">Username</Label>
+                                    <Input 
+                                        id="username"
+                                        type="text"
+                                        value={user?.username}
+                                        placeholder="Username" 
+                                        disabled
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email" 
+                                        value={user?.email}
+                                        placeholder="Email Address" 
+                                        disabled
+                                    />
+                                </div>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="firstName">First Name</Label>
@@ -373,28 +398,6 @@ const UserDetailsCard = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: (
                                         type="text"
                                         value={user?.lastName}
                                         placeholder="Last Name" 
-                                        disabled
-                                    />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input
-                                        id="email"
-                                        type="email" 
-                                        value={user?.email}
-                                        placeholder="Email Address" 
-                                        disabled
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="username">Username</Label>
-                                    <Input 
-                                        id="username"
-                                        type="text"
-                                        value={user?.username}
-                                        placeholder="Username" 
                                         disabled
                                     />
                                 </div>
