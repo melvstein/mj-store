@@ -1,6 +1,6 @@
-import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { TApiResponse, TProduct, TUpdateProduct } from "@/types";
-import { getAccessToken, getRefreshToken } from "@/services/AuthenticationService";
+import { getAccessToken } from "@/services/AuthenticationService";
 import HttpMethod from "@/constants/HttpMethod";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;

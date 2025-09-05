@@ -17,24 +17,25 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { useEffect, useMemo, useState } from "react"
-import { useGetProductsQuery } from "@/lib/redux/services/productsApi"
+import { useGetCustomersQuery } from "@/lib/redux/services/customersApi"
 import { TProduct } from "@/types"
+import { TCustomer } from "@/types/TCustomer"
 
 export const description = "Customers chart showing active and inactive customers"
 
 const CustomersChart = () => {
-    const { data: response, error, isLoading } = useGetProductsQuery();
-    const [products, setProducts] = useState<TProduct[]>([]);
+    const { data: response, error, isLoading } = useGetCustomersQuery();
+    const [customers, setCustomers] = useState<TCustomer[]>([]);
     const [activeCount, setActiveCount] = useState(0);
     const [inactiveCount, setInactiveCount] = useState(0);
 
     useEffect(() => {
         if (response?.data?.content) {
-            setProducts(response.data.content);
-            setActiveCount(products.filter((product: TProduct) => product.isActive).length);
-            setInactiveCount(products.filter((product: TProduct) => !product.isActive).length);
+            setCustomers(response.data.content);
+            setActiveCount(customers.filter((customer: TCustomer) => customer.isActive).length);
+            setInactiveCount(customers.filter((customer: TCustomer) => !customer.isActive).length);
         }
-    }, [response, products]);
+    }, [response, customers]);
 
     const chartData = [
         { browser: "active", customers: activeCount, fill: "hsl(var(--primary))" },
