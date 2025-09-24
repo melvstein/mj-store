@@ -1,6 +1,5 @@
 import BreadCrumb from "@/components/Breadcrumb";
 import paths from "@/utils/paths";
-import path from "path";
 import { ProductDataTable } from "./components/ProductDataTable";
 
 const ProductPage = () => {

@@ -33,7 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { TProduct, TUpdateProduct } from "@/types"
+import { TProduct } from "@/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,14 +49,14 @@ import { MouseEvent, useEffect, useMemo, useState } from "react"
 import Response from "@/constants/Response"
 import Loading from "@/components/Loading/Loading"
 import z from "zod"
-import { useDeleteProductMutation, useGetProductsQuery, useUpdateProductMutation } from "@/lib/redux/services/productsApi"
+import { useDeleteProductMutation, useGetProductsQuery } from "@/lib/redux/services/productsApi"
 import Link from "next/link"
 import paths from "@/utils/paths"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { formatDateTime } from "@/utils/helper"
 
-const formUpdateProductSchema = z.object({
+/* const formUpdateProductSchema = z.object({
     sku: z.string().min(1, "SKU is required"),
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
@@ -65,10 +65,10 @@ const formUpdateProductSchema = z.object({
     brand: z.string().min(1, "Brand is required"),
     images: z.array(z.string().min(1, "Image URL is required")),
     isActive: z.boolean(),
-});
+}); */
 
 export function ProductDataTable() {
-    const { data: response, error, isLoading: productLoading } = useGetProductsQuery();
+    const { data: response, isLoading: productLoading } = useGetProductsQuery();
     const [doDelete] = useDeleteProductMutation();
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState<TProduct[]>([]);
@@ -81,14 +81,14 @@ export function ProductDataTable() {
         { id: "updatedAt", desc: true },
     ]);
 
-    const onError = (errors: any) => {
+    /* const onError = (errors: any) => {
          console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
             console.log(`${error.message}`);
             toast.error(`${error.message}`);
         });
-    };
+    }; */
 
     useEffect(() => {
         if (productLoading) {

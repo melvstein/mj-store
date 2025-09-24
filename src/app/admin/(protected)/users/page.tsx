@@ -1,8 +1,8 @@
 "use client";
 
-import UsersList from "./components/UsersList";
 import paths from "@/utils/paths";
 import BreadCrumb from "@/components/Breadcrumb";
+import { UserDataTable } from "./components/UserDataTable";
 
 const UsersPage = () => {
     const breadcrumbMain = {
@@ -18,9 +18,9 @@ const UsersPage = () => {
     ];
 
     return (
-        <div className="grid gap-4">
+        <div className="">
             <BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
-            <UsersList />
+            <UserDataTable />
         </div>
     );
 }
