@@ -119,7 +119,12 @@ export function CustomersDataTable() {
                 toast.error(response?.message || "Customer failed to update!");
             }
         } catch (err: any) {
-            toast.error(err.message);
+            if (err.data && err.data.message) {
+                console.log("DB error", err.data.message);
+                toast.error("Uknown error: Please contact the administrator.");
+            } else {
+                toast.error(err.message);
+            }
         }
 
         setCustomerUpdateFormData(updateCustomerDefault);
