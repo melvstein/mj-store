@@ -21,8 +21,21 @@ export type TAddress = {
     street: string;
     district: string;
     city: string;
-    provice: string;
+    province: string;
     country: string;
     zipCode: string;
     isDefault: boolean;
+}
+
+export type TUpdateCustomer = {
+    username: string;
+    email: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
+    contactNumber: string;
+    profileImageUrl?: string;
+    address?: TAddress;
+    isActive: boolean;
+    isVerified: boolean;
 }

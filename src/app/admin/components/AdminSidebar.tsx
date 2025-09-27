@@ -21,6 +21,7 @@ import AppLogo from "@/components/AppLogo";
 import paths from "@/utils/paths";
 import Link from "next/link";
 import { FaProductHunt } from "react-icons/fa";
+import { PiUsersThree } from "react-icons/pi";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
@@ -70,6 +71,17 @@ const items: TMenuItem[] = [
             },
         ]
     },
+    {
+        title: paths.admin.customers.main.name,
+        icon: PiUsersThree,
+        dropdown: [
+            {
+                title: "List",
+                url: paths.admin.customers.main.path,
+                icon: List,
+            }
+        ]
+    }
 ];
 
 const AdminSidebar = () => {

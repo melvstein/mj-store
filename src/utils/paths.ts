@@ -1,3 +1,5 @@
+import path from "path";
+
 const paths = {
     home: "/",
     customer: {
