@@ -108,15 +108,15 @@ export function CustomersDataTable() {
             const response = await doUpdate({ id: updateCustomerId, customer: data }).unwrap();
 
             if (response?.code === Response.SUCCESS) {
-                toast.success(response.message || "User updated successfully!");
+                toast.success(response.message || "Customer updated successfully!");
 
                 setCustomers((prevCustomers) =>
-                    prevCustomers.map((user) =>
-                        user.id === updateCustomerId && response.data ? response.data as TCustomer : user
+                    prevCustomers.map((customer) =>
+                        customer.id === updateCustomerId && response.data ? response.data as TCustomer : customer
                     )
                 );
             } else {
-                toast.error(response?.message || "User failed to update!");
+                toast.error(response?.message || "Customer failed to update!");
             }
         } catch (err: any) {
             toast.error(err.message);
@@ -154,7 +154,7 @@ export function CustomersDataTable() {
                 setCustomers((prev) => prev.filter((prevCustomer) => prevCustomer.id !== customer.id));
                 setLastDeletedCustomer(null);
             } else {
-                toast.error(response?.message || "User failed to delete!");
+                toast.error(response?.message || "Customer failed to delete!");
             }
         } catch (err: any) {
             toast.error(err.message);
@@ -224,7 +224,7 @@ export function CustomersDataTable() {
                                         };
 
                                         setCustomerUpdateFormData(customerData);
-                                        // Reset the form with the user data
+                                        // Reset the form with the customer data
                                         form.reset(customerData);
                                     }}
                                 >
@@ -236,7 +236,7 @@ export function CustomersDataTable() {
                                     onClick={() => {
                                         setLastDeletedCustomer(customer);
                                     }}
-                                    disabled={customer.username === "melvstein"} // Prevent deletion of the default user
+                                    disabled={customer.username === "melvstein"} // Prevent deletion of the default customer
                                 >
                                     <Trash2 className="size-4" />
                                     Delete
@@ -305,6 +305,36 @@ export function CustomersDataTable() {
         },
         cell: ({ row }) => <div>{row.getValue("username")}</div>,
     },
+    {
+        accessorKey: "isActive",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Active
+                    <ArrowUpDown />
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div>{row.getValue("isActive") ? "yes" : "no"}</div>,
+    },
+        {
+            accessorKey: "isVerified",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Verified
+                        <ArrowUpDown />
+                    </Button>
+                )
+            },
+            cell: ({ row }) => <div>{row.getValue("isVerified") ? "yes" : "no"}</div>,
+        },
     {
         accessorKey: "createdAt",
         header: ({ column }) => {
@@ -621,8 +651,7 @@ export function CustomersDataTable() {
                 </DropdownMenu>
             </div>
             <div className="flex items-center justify-center w-full overflow-auto">
-                <div className="flex items-center justify-center rounded-md border overflow-auto xl:w-full lg:w-[800px] md:w-[600px] sm:w-[500px] w-[250px]">
-
+                <div className="flex items-center justify-center rounded-md border overflow-auto w-full">
                     <Table>
                     <TableHeader className="bg-secondary">
                         {table.getHeaderGroups().map((headerGroup) => (

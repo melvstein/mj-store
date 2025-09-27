@@ -606,8 +606,7 @@ export function UserDataTable() {
                 </DropdownMenu>
             </div>
             <div className="flex items-center justify-center w-full overflow-auto">
-                <div className="flex items-center justify-center rounded-md border overflow-auto xl:w-full lg:w-[800px] md:w-[600px] sm:w-[500px] w-[250px]">
-
+                <div className="flex items-center justify-center rounded-md border overflow-auto w-full">
                     <Table>
                     <TableHeader className="bg-secondary">
                         {table.getHeaderGroups().map((headerGroup) => (
