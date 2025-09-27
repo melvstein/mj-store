@@ -57,6 +57,7 @@ import { formatDateTime } from "@/utils/helper"
 import { useDeleteCustomerMutation, useGetCustomersQuery, useUpdateCustomerMutation } from "@/lib/redux/services/customersApi"
 import { TCustomer, TUpdateCustomer } from "@/types/TCustomer"
 import { Switch } from "@/components/ui/switch"
+import { Title } from "@radix-ui/react-dialog"
 
 const updateCustomerDefault: TUpdateCustomer = {
     username: "",
@@ -65,6 +66,16 @@ const updateCustomerDefault: TUpdateCustomer = {
     middleName: "",
     lastName: "",
     contactNumber: "",
+    address: {
+        addressType: "",
+        street: "",
+        district: "",
+        city: "",
+        province: "",
+        country: "",
+        zipCode: 0,
+        isDefault: false,
+    },
     isActive: false,
     isVerified: false,
 }
@@ -76,6 +87,16 @@ const formUpdateCustomerSchema = z.object({
     middleName: z.string().optional(),
     lastName: z.string().min(1, "Last name is required"),
     contactNumber: z.string().optional(),
+    address: z.object({
+        addressType: z.string(),
+        street: z.string(),
+        district: z.string(),
+        city: z.string(),
+        province: z.string(),
+        country: z.string(),
+        zipCode: z.number(),
+        isDefault: z.boolean(),
+    }),
     isActive: z.boolean(),
     isVerified: z.boolean(),
 });
@@ -578,6 +599,169 @@ export function CustomersDataTable() {
                                             </FormItem>
                                         )}
                                     />
+                                </div>
+                            </div>
+                            <div className="grid gap-4">
+                                <Title>Address</Title>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.addressType"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Address Type</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`addressType-${updateCustomerId}`}
+                                                            type="text"
+                                                            placeholder="Address Type"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.street"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Street</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`street-${updateCustomerId}`}
+                                                            type="text"
+                                                            placeholder="Street"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.district"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>District</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`district-${updateCustomerId}`}
+                                                            type="text"
+                                                            placeholder="District"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.city"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>City</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`city-${updateCustomerId}`}
+                                                            type="text"
+                                                            placeholder="City"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.province"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Province</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`province-${updateCustomerId}`}
+                                                            type="text"
+                                                            placeholder="Province"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.country"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Country</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`country-${updateCustomerId}`}
+                                                            type="text"
+                                                            placeholder="Country"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.zipCode"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Zip Code</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id={`zipCode-${updateCustomerId}`}
+                                                            type="number"
+                                                            placeholder="Zip Code"
+                                                            value={field.value === 0 ? '' : field.value}
+                                                            onChange={e => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="col-span-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="address.isDefault"
+                                            render={({ field }) => (
+                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel>
+                                                        {field.value ? "Default" : "Not Default" }
+                                                    </FormLabel>
+                                                    <FormDescription>
+                                                        Toggle to set address as default or not default.
+                                                    </FormDescription>
+                                                </div>
+                                                <FormControl>
+                                                    <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                </FormItem>
+                                            )}
+                                            />
+                                    </div>
                                 </div>
                             </div>
                             <DialogFooter className="gap-4 sm:gap-0">

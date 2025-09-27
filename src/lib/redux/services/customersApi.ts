@@ -1,7 +1,7 @@
 import HttpMethod from "@/constants/HttpMethod";
 import { getAccessToken } from "@/services/AuthenticationService";
 import { TApiResponse } from "@/types";
-import { TCustomer } from "@/types/TCustomer";
+import { TCustomer, TUpdateCustomer } from "@/types/TCustomer";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -41,7 +41,7 @@ export const customersApi = createApi({
                 body: customer
             }),
         }),
-        updateCustomer: builder.mutation<TApiResponse<TCustomer>, { id: string; customer: Partial<TCustomer> }>({
+        updateCustomer: builder.mutation<TApiResponse<TCustomer>, { id: string; customer: Partial<TUpdateCustomer> }>({
             query: ({ id, customer }) => ({
                 url: `${CUSTOMERS_ENDPOINT}/${id}`,
                 method: HttpMethod.PATCH,

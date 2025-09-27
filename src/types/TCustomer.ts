@@ -23,7 +23,7 @@ export type TAddress = {
     city: string;
     province: string;
     country: string;
-    zipCode: string;
+    zipCode: number;
     isDefault: boolean;
 }
 
@@ -34,8 +34,7 @@ export type TUpdateCustomer = {
     middleName?: string;
     lastName: string;
     contactNumber: string;
-    profileImageUrl?: string;
-    address?: TAddress;
+    address: TAddress;
     isActive: boolean;
     isVerified: boolean;
 }
