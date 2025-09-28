@@ -23,9 +23,17 @@ export const customersApi = createApi({
         getCustomers: builder.query<TApiResponse<TContent>, void>({
             query: () => CUSTOMERS_ENDPOINT,
         }),
-        getCustomer: builder.query<TApiResponse<any>, string>({
+        getCustomerById: builder.query<TApiResponse<any>, string>({
             query: (id) => ({
                 url: CUSTOMERS_ENDPOINT + `/${id}`,
+                headers: {
+                    "Authorization": `Bearer ${getAccessToken()}`
+                },
+            }),
+        }),
+        getCustomerByEmail: builder.query<TApiResponse<any>, string>({
+            query: (email) => ({
+                url: CUSTOMERS_ENDPOINT + `/email/${email}`,
                 headers: {
                     "Authorization": `Bearer ${getAccessToken()}`
                 },
@@ -65,7 +73,8 @@ export const customersApi = createApi({
 
 export const {
     useGetCustomersQuery,
-    useGetCustomerQuery,
+    useGetCustomerByIdQuery,
+    useGetCustomerByEmailQuery,
     useCreateCustomerMutation,
     useUpdateCustomerMutation,
     useDeleteCustomerMutation

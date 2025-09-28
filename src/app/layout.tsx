@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 	return (
 		<html lang="en" className="dark">
-			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-background min-h-screen w-auto text-foreground antialiased`}>
+			<body className={`${geistSans.variable} ${geistMono.variable} relative bg-background min-h-screen w-auto text-foreground antialiased`} suppressHydrationWarning>
 				<SessionProvider>
 					<ClientProviders>
                         <SidebarProvider defaultOpen={true}>

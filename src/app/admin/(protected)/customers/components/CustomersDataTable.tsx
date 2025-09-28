@@ -74,9 +74,9 @@ const updateCustomerDefault: TUpdateCustomer = {
         province: "",
         country: "",
         zipCode: 0,
-        isDefault: false,
+        isDefault: true,
     },
-    isActive: false,
+    isActive: true,
     isVerified: false,
 }
 
@@ -742,24 +742,27 @@ export function CustomersDataTable() {
                                         <FormField
                                             control={form.control}
                                             name="address.isDefault"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                                <div className="space-y-0.5">
-                                                    <FormLabel>
-                                                        {field.value ? "Default" : "Not Default" }
-                                                    </FormLabel>
-                                                    <FormDescription>
-                                                        Toggle to set address as default or not default.
-                                                    </FormDescription>
-                                                </div>
-                                                <FormControl>
-                                                    <Switch
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                    />
-                                                </FormControl>
-                                                </FormItem>
-                                            )}
+                                            render={({ field }) => {
+                                                console.log("Default Address Field Value:", field.value);
+                                                return (
+                                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                                        <div className="space-y-0.5">
+                                                            <FormLabel>
+                                                                {field.value ? "Default" : "Not Default" }
+                                                            </FormLabel>
+                                                            <FormDescription>
+                                                                Toggle to set address as default or not default.
+                                                            </FormDescription>
+                                                        </div>
+                                                        <FormControl>
+                                                            <Switch
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                );
+                                            }}
                                             />
                                     </div>
                                 </div>

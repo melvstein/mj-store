@@ -1,11 +1,28 @@
 import NextAuth from "next-auth";
-import { connectDB } from "./mongoose";
-import User from "@/models/User";
 import type { Account, User as NextAuthUser, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
 import ApiResponse from "./apiResponse";
+
+const getCustomerByEmail = async (email: string) => {
+	try {
+		console.log("Fetching customer by email:", email);
+		console.log("Using AUTH_BASE_URL:", process.env.AUTH_BASE_URL);
+		const response = await axios.post(`${process.env.AUTH_BASE_URL}/api/customers/email`, {
+			email
+		});
+
+		if (response.data.code === ApiResponse.success.code) {
+			return response.data.data;
+		}
+
+		return null;
+	} catch (error) {
+		console.error("Error fetching customer by email:", error);
+		return null;
+	}
+};
 
 export const config = {
 	debug: true,
@@ -55,7 +72,10 @@ export const config = {
 			}
 
 			try {
-				await connectDB();
+				const customer = user.email ? await getCustomerByEmail(user.email) : null;
+
+				console.log('Customer', customer);
+				/* await connectDB();
 
 				const existingUser = await User.findOne({ email: user.email });
 
@@ -67,7 +87,9 @@ export const config = {
 						image: user.image,
 						provider: "google",
 					});
-				}
+				} */
+
+				
 
 				return true;
 			} catch (error) {
