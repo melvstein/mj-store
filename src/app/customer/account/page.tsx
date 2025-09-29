@@ -2,26 +2,32 @@
 
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from "react-redux";
-import type { RootState, AppDispatch } from "@/lib/redux/store";
-import { getUser } from '@/lib/redux/slices/userSlice';
 import clsx from "clsx";
 import Loading from '@/components/Loading/Loading';
+import { useGetCustomerByEmailQuery } from '@/lib/redux/services/customersApi';
+import { TCustomer } from '@/types/TCustomer';
 
 const Account: React.FC = () => {
 	const { data: session } = useSession();
 	const [tab, setTab] = useState<string>('userProfile');
-	const dispatch = useDispatch<AppDispatch>();
-    const { user, loading, error } = useSelector((state: RootState) => state.user);
-
-    useEffect(() => {
-        if (session?.user?.email) {
-			dispatch(getUser(session.user.email));
+	const [customer, setCustomer] = useState<TCustomer>();
+	/* const dispatch = useDispatch<AppDispatch>();
+    const { user, loading, error } = useSelector((state: RootState) => state.user); */
+	const {data: response, error, isLoading: isUserLoading} = useGetCustomerByEmailQuery(
+		session?.user?.email ?? "", // fallback to empty string if undefined or null
+		{
+			skip: !session?.user?.email,
 		}
+	);
+		
+	useEffect(() => {
+		if (response?.data) {
+			/* console.log("User data fetched:", response.data); */
+			setCustomer(response.data);
+		}
+	}, [response]);
 
-    }, [dispatch, session?.user?.email]);
-
-    if (loading) {
+    if (isUserLoading) {
         return (
             <div className="flex items-center justify-center pt-[180px]">
                 <Loading />
@@ -29,13 +35,17 @@ const Account: React.FC = () => {
         );
     }
 
-    if (error) {
-        return (
-            <div>
-                <p>Error: {error}</p>
-            </div>
-        );
-    }
+	if (error) {
+		return (
+			<div>
+				<p>
+					Error: {typeof error === "string"
+						? error
+						: JSON.stringify(error)}
+				</p>
+			</div>
+		);
+	}
 
 	return (
 		<section className="flex flex-col items-center justify-center w-full max-w-3xl mx-auto space-y-4">
@@ -69,7 +79,7 @@ const Account: React.FC = () => {
 						</div>
 						<div>
 							<label htmlFor="username" className="text-xs uppercase">Username</label>
-							<input type="text" id="username" name="username" placeholder="Username" className="input-skin" defaultValue={user?.username ?? ""} />
+							<input type="text" id="username" name="username" placeholder="Username" className="input-skin" defaultValue={customer?.username ?? ""} />
 						</div>
 						<div>
 							<label htmlFor="email" className="text-xs uppercase">Email</label>

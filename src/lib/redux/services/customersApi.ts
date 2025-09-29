@@ -26,26 +26,17 @@ export const customersApi = createApi({
         getCustomerById: builder.query<TApiResponse<any>, string>({
             query: (id) => ({
                 url: CUSTOMERS_ENDPOINT + `/${id}`,
-                headers: {
-                    "Authorization": `Bearer ${getAccessToken()}`
-                },
             }),
         }),
         getCustomerByEmail: builder.query<TApiResponse<any>, string>({
             query: (email) => ({
                 url: CUSTOMERS_ENDPOINT + `/email/${email}`,
-                headers: {
-                    "Authorization": `Bearer ${getAccessToken()}`
-                },
             }),
         }),
         createCustomer: builder.mutation<TApiResponse<TCustomer>, Partial<TCustomer>>({
             query: (customer) => ({
                 url: CUSTOMERS_ENDPOINT,
                 method: HttpMethod.POST,
-                headers: {
-                    "Authorization": `Bearer ${getAccessToken()}`
-                },
                 body: customer
             }),
         }),
@@ -53,9 +44,6 @@ export const customersApi = createApi({
             query: ({ id, customer }) => ({
                 url: `${CUSTOMERS_ENDPOINT}/${id}`,
                 method: HttpMethod.PATCH,
-                headers: {
-                    "Authorization": `Bearer ${getAccessToken()}`
-                },
                 body: customer
             }),
         }),
@@ -63,9 +51,6 @@ export const customersApi = createApi({
             query: (id) => ({
                 url: `${CUSTOMERS_ENDPOINT}/${id}`,
                 method: HttpMethod.DELETE,
-                headers: {
-                    "Authorization": `Bearer ${getAccessToken()}`
-                }
             })
         }),
     }),
