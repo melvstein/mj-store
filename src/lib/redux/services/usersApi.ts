@@ -1,11 +1,9 @@
-import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { TApiResponse, TUpdateUser, TUser } from "@/types";
-import { TTokens } from "@/types/TAuth";
-import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
+import { getAccessToken} from "@/services/AuthenticationService";
 import HttpMethod from "@/constants/HttpMethod";
-import { use } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/v1";
 const REDUCER_PATH = "usersApi";
 const USERS_ENDPOINT = "/users";
 

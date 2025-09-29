@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import type { Account, User as NextAuthUser, Session } from "next-auth";
+import type { Account, User as NextAuthUser, Profile, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
@@ -7,11 +7,7 @@ import ApiResponse from "./apiResponse";
 
 const getCustomerByEmail = async (email: string) => {
 	try {
-		console.log("Fetching customer by email:", email);
-		console.log("Using AUTH_BASE_URL:", process.env.AUTH_BASE_URL);
-		const response = await axios.post(`${process.env.AUTH_BASE_URL}/api/customers/email`, {
-			email
-		});
+		const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customers/email/${email}`);
 
 		if (response.data.code === ApiResponse.success.code) {
 			return response.data.data;
@@ -20,6 +16,33 @@ const getCustomerByEmail = async (email: string) => {
 		return null;
 	} catch (error) {
 		console.error("Error fetching customer by email:", error);
+		return null;
+	}
+};
+
+type TSaveCustomer = {
+    provider: string;
+    firstName: string | null | undefined;
+    lastName: string | null | undefined;
+	username: string | null | undefined;
+    email: string | null | undefined;
+    profileImageUrl: string;
+    isActive: boolean;
+    isVerified: boolean;
+};
+
+const saveCustomer = async (customer: TSaveCustomer) => {
+	try {
+		console.log("Saving new customer:", customer);
+		const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customers`, customer);
+
+		if (response.data.code === ApiResponse.success.code) {
+			return response.data.data;
+		}
+
+		return null;
+	} catch (error) {
+		console.error("Error saving new customer:", error);
 		return null;
 	}
 };
@@ -65,7 +88,7 @@ export const config = {
 		signOut: "/",
 	}, */
 	callbacks: {
-		async signIn({ account, user }: { account: Account | null, user: NextAuthUser }) {
+		async signIn({ account, user, profile }: { account: Account | null, user: NextAuthUser, profile: Profile }) {
 			
 			if (account) {
 				console.log('Provider', account.provider);
@@ -73,8 +96,8 @@ export const config = {
 
 			try {
 				const customer = user.email ? await getCustomerByEmail(user.email) : null;
-
 				console.log('Customer', customer);
+
 				/* await connectDB();
 
 				const existingUser = await User.findOne({ email: user.email });
@@ -89,7 +112,26 @@ export const config = {
 					});
 				} */
 
-				
+				if (!customer) {
+					const customerData = {
+						provider: account?.provider ? account.provider : "credentials",
+						firstName: profile?.given_name ? profile.given_name : user.name,
+						lastName: profile?.family_name ? profile.family_name : user.email,
+						username: profile?.email ? profile.email : user.email,
+						email: profile?.email ? profile.email : user.email,
+						profileImageUrl: profile?.picture ? profile.picture : user.image,
+						isActive: true,
+						isVerified: profile?.email_verified ? profile.email_verified : false,
+					}
+
+					const newCustomer = await saveCustomer(customerData);
+					console.log('New Customer', newCustomer);
+
+					if (!newCustomer) {
+						console.log('Failed to save the new customer', newCustomer);
+						return false;
+					}
+				}
 
 				return true;
 			} catch (error) {

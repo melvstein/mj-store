@@ -4,7 +4,7 @@ import { TApiResponse } from "@/types";
 import { TCustomer, TUpdateCustomer } from "@/types/TCustomer";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/v1";
 const REDUCER_PATH = "customersApi";
 const CUSTOMERS_ENDPOINT = "/customers";
 

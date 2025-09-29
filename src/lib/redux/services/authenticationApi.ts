@@ -1,10 +1,10 @@
 import { BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import type { TApiResponse, TUser } from "@/types";
 import { TTokens } from "@/types/TAuth";
-import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
+import { clearTokens, getRefreshToken, setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
 import HttpMethod from "@/constants/HttpMethod";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/v1";
 const REDUCER_PATH = "authenticationApi";
 const AUTH_REGISTER_ENDPOINT = "/auth/register";
 const AUTH_LOGIN_ENDPOINT = "/auth/login";

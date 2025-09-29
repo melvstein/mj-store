@@ -3,7 +3,7 @@ import type { TApiResponse, TProduct, TUpdateProduct } from "@/types";
 import { getAccessToken } from "@/services/AuthenticationService";
 import HttpMethod from "@/constants/HttpMethod";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/v1";
 const REDUCER_PATH = "productsApi";
 const PRODUCTS_ENDPOINT = "/products";
 
