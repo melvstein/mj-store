@@ -1,50 +1,52 @@
 "use client"
 
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 import clsx from "clsx";
 import Loading from '@/components/Loading/Loading';
 import { useGetCustomerByEmailQuery } from '@/lib/redux/services/customersApi';
 import { TCustomer } from '@/types/TCustomer';
+import { toast } from 'sonner';
+import { TErrorResponse } from '@/types';
+import paths from '@/utils/paths';
 
 const Account: React.FC = () => {
 	const { data: session } = useSession();
 	const [tab, setTab] = useState<string>('userProfile');
 	const [customer, setCustomer] = useState<TCustomer>();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	/* const dispatch = useDispatch<AppDispatch>();
     const { user, loading, error } = useSelector((state: RootState) => state.user); */
-	const {data: response, error, isLoading: isUserLoading} = useGetCustomerByEmailQuery(
+	const {data: response, error: apiError, isLoading: isCustomerLoading} = useGetCustomerByEmailQuery(
 		session?.user?.email ?? "", // fallback to empty string if undefined or null
 		{
 			skip: !session?.user?.email,
 		}
 	);
+
+	const error = apiError as TErrorResponse;
 		
 	useEffect(() => {
+		if (isCustomerLoading) {
+			setIsLoading(true);
+		}
+
+		if (apiError) {
+			toast.error(error?.data?.message || "Failed to load user data.");
+		}
+
 		if (response?.data) {
 			/* console.log("User data fetched:", response.data); */
 			setCustomer(response.data);
 		}
-	}, [response]);
+	}, [isCustomerLoading, apiError, response, error]);
 
-    if (isUserLoading) {
-        return (
-            <div className="flex items-center justify-center pt-[180px]">
-                <Loading />
-            </div>
-        );
+    if (isLoading) {
+        return <Loading onComplete={() => setIsLoading(false)} />;
     }
 
-	if (error) {
-		return (
-			<div>
-				<p>
-					Error: {typeof error === "string"
-						? error
-						: JSON.stringify(error)}
-				</p>
-			</div>
-		);
+	if (apiError) {
+		signOut({ callbackUrl: paths.customer.login });
 	}
 
 	return (

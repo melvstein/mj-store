@@ -3,6 +3,7 @@
 import React from "react";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import { Button } from "./ui/button";
 
 const GoogleSignin: React.FC = () => {
     const handleClick = async () => {
@@ -12,10 +13,10 @@ const GoogleSignin: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} className="flex items-center justify-center bg-background px-10 py-2 rounded-lg text-skin-muted border shadow gap-2 w-full">
+        <Button onClick={handleClick} className="w-full flex items-center justify-center">
             <FcGoogle className="size-[25px]" />
             Sign in with Google
-        </button>
+        </Button>
     );
 };
 

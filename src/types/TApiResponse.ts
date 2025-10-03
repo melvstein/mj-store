@@ -3,3 +3,8 @@ export type TApiResponse<T = null> = {
     message: string;
     data?: T;
 }
+
+export type TErrorResponse = {
+    status: number;
+    data: TApiResponse<null>;
+};

@@ -1,5 +1,4 @@
 import HttpMethod from "@/constants/HttpMethod";
-import { getAccessToken } from "@/services/AuthenticationService";
 import { TApiResponse } from "@/types";
 import { TCustomer, TUpdateCustomer } from "@/types/TCustomer";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";

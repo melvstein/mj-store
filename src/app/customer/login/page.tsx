@@ -6,6 +6,7 @@ import { signIn, useSession } from "next-auth/react";
 import React, { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Path from "@/utils/paths";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SignIn: React.FC = () => {
 	const { status } = useSession();
@@ -31,8 +32,8 @@ const SignIn: React.FC = () => {
 	}
 
 	return (
-		<section className="flex items-center justify-center text-skin-muted m-4">
-			<div className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]">
+		<section className="flex items-start justify-center w-full min-h-screen">
+			{/* <div className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]">
 				<div>
 					<h1>Customer Login</h1>
 				</div>
@@ -48,7 +49,15 @@ const SignIn: React.FC = () => {
 						</button>
 					</div>
 				</form>
-			</div>
+			</div> */}
+			<Card className="w-full max-w-md mt-60">
+				<CardHeader>
+					<CardTitle>Customer Login</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<GoogleSignin />
+				</CardContent>
+			</Card>
 		</section>
 	)
 }
