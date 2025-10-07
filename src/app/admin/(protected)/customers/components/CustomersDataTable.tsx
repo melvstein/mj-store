@@ -730,8 +730,8 @@ export function CustomersDataTable() {
                                                             id={`zipCode-${updateCustomerId}`}
                                                             type="number"
                                                             placeholder="Zip Code"
-                                                            value={field.value === 0 ? '' : field.value}
-                                                            onChange={e => field.onChange(e.target.value === '' ? 0 : Number(e.target.value))}
+                                                            {...field}
+  												            onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                         />
                                                     </FormControl>
                                                 </FormItem>

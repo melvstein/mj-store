@@ -1,11 +1,30 @@
-import path from "path";
-
 const paths = {
     home: "/",
     customer: {
-        account: "/customer/account",
-        cart: "/customer/cart",
-        login: "/customer/login",
+        home: {
+            main: {
+                path: "/",
+                name: "Home",
+            }
+        },
+        account: {
+            main: {
+                path: "/customer/account",
+                name: "Account",
+            }
+        },
+        cart: {
+            main: {
+                path: "/customer/cart",
+                name: "Cart",
+            }
+        },
+        login: {
+            main: {
+                path: "/customer/login",
+                name: "Login",
+            }
+        },
         logout: "/customer/logout",
     },
     admin: {

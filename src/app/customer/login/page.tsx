@@ -3,9 +3,9 @@
 import GoogleSignin from "@/components/GoogleSignin";
 import Var from "@/utils/Var";
 import { signIn, useSession } from "next-auth/react";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Path from "@/utils/paths";
+import paths from "@/utils/paths";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SignIn: React.FC = () => {
@@ -14,9 +14,11 @@ const SignIn: React.FC = () => {
 	const [password, setPassword] = useState<string>("");
 	const router = useRouter();
 
-	if (status == Var.status.authenticated) {
-		router.push(Path.home);
-	}
+	useEffect(() => {
+		if (status == Var.status.authenticated) {
+			router.push(paths.customer.home.main.path);
+		}
+	}, [status, router]);
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

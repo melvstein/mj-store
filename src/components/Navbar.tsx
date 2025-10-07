@@ -60,13 +60,13 @@ const Navbar: React.FC = () => {
         },
         {
             id: 2,
-            name: Var.cart,
-            href: paths.customer.cart,
+            name: paths.customer.cart.main.name,
+            href: paths.customer.cart.main.path,
         },
         {
             id: 3,
             name: "Sign in",
-            href: paths.customer.login,
+            href: paths.customer.login.main.path,
         },
     ];
 
@@ -126,10 +126,10 @@ const Navbar: React.FC = () => {
                                             <p className="font-semibold">{ session.user.name }</p>
                                             <p className="text-skin-muted">{ session.user.email }</p>
                                         </div>
-                                        <Link href={ paths.customer.account } className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
+                                        <Link href={ paths.customer.account.main.path } className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2">
                                             <FaRegUser /> <p>{ Var.manageAccount }</p>
                                         </Link>
-                                        <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: paths.customer.login }) }>
+                                        <div className="flex items-center justify-start px-4 py-2 cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: paths.customer.login.main.path }) }>
                                             <FiLogOut /> <p>{ Var.logOut }</p>
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@ const Navbar: React.FC = () => {
 
                     <div ref={menuDropDownRef} className="sm:hidden flex items-center justify-center gap-2">
                         <Link 
-                            href={ paths.customer.cart }
+                            href={ paths.customer.cart.main.path }
                             className="relative p-2 flex items-center justify-center"
                         >
                             <p>{ Var.cart }</p>
@@ -164,14 +164,14 @@ const Navbar: React.FC = () => {
                                 >
                                     <div className="w-full p-4 space-y-4">
                                         <p className="text-skin-muted text-xs uppercase font-semibold">{ Var.main }</p>
-                                        <Link href={ paths.customer.cart } className="flex items-center justify-start w-full gap-2">
+                                        <Link href={ paths.customer.cart.main.path } className="flex items-center justify-start w-full gap-2">
                                             <FaProductHunt /> <p>{ Var.products }</p>
                                         </Link>
-                                        <Link href={ paths.customer.cart } className="flex items-center justify-start w-full gap-2">
+                                        <Link href={ paths.customer.cart.main.path } className="flex items-center justify-start w-full gap-2">
                                             <FiShoppingCart /> <p>{ Var.cart } <span>3</span></p>
                                         </Link>
                                         {!session?.user && (
-                                            <Link href={ paths.customer.login } className="flex items-center justify-start w-full gap-2">
+                                            <Link href={ paths.customer.login.main.path } className="flex items-center justify-start w-full gap-2">
                                                 <FiLogIn /> <p>{ Var.signIn }</p>
                                             </Link>
                                         )}
@@ -188,10 +188,10 @@ const Navbar: React.FC = () => {
                                                     <p className="text-skin-muted text-[10px]">{ session.user.email }</p>
                                                 </div>
                                             </div>
-                                            <Link href={ paths.customer.account } className="flex items-center justify-start w-full gap-2">
+                                            <Link href={ paths.customer.account.main.path } className="flex items-center justify-start w-full gap-2">
                                                 <FaRegUser /> <p>{ Var.manageAccount }</p>
                                             </Link>
-                                            <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: paths.customer.login }) }>
+                                            <div className="flex items-center justify-start cursor-pointer w-full gap-2" onClick={ async () => await signOut({ callbackUrl: paths.customer.login.main.path }) }>
                                                 <FiLogOut /> <p>{ Var.logOut }</p>
                                             </div>
                                         </div>
