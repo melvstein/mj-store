@@ -3,7 +3,7 @@ import Products from "../components/Products";
 
 export default function Home() {
   return (
-    <div className="container mx-auto min-h-screen flex flex-col py-20">
+    <div className="container mx-auto min-h-screen flex flex-col py-20 px-4 md:px-0">
         <header>
            <Navbar />
         </header>

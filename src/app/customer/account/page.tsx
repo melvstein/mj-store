@@ -82,7 +82,7 @@ const Account: React.FC = () => {
     ];
 
 	return (
-		<section className="container mx-auto py-20">
+		<section className="container mx-auto py-20 px-4 md:px-0 min-h-screen">
 			<Navbar />
 			<BreadCrumb main={breadcrumbMain} paths={breadcrumbPaths} />
 			<div className='space-y-4 my-4'>

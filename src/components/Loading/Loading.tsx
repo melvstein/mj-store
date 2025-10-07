@@ -45,7 +45,7 @@ const Loading = ({ onComplete, duration = 500, children }: LoadingProps) => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4">
+    <div className="flex flex-col items-center justify-center min-h-[500px] space-y-4 px-8">
       <div className="w-full max-w-md">
         <Progress value={progress} className="w-full" />
       </div>
