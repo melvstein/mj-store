@@ -13,13 +13,43 @@ import { FiShoppingCart } from "react-icons/fi";
 import { RiMenuFold4Line as CloseMenu, RiMenuFold3Line as OpenMenu } from "react-icons/ri";
 import paths from "@/utils/paths";
 import Var from "@/utils/Var";
+import { useGetCartByCustomerIdQuery } from "@/lib/redux/services/cartsApi";
+import { useGetCustomerByEmailQuery } from "@/lib/redux/services/customersApi";
+import { TCustomer } from "@/types/TCustomer";
+import { TCartItem } from "@/types/TCart";
+
+type TCart = {
+    items: TCartItem[] | [];
+    itemCount: number;
+};
 
 const Navbar: React.FC = () => {
     const { data: session, status } = useSession();
+    const [customer, setCustomer] = useState<TCustomer>({} as TCustomer);
+    const [cart, setCart] = useState<TCart>({
+        items: [],
+        itemCount: 0
+    });
+    const {data: customerData} = useGetCustomerByEmailQuery(session?.user?.email as string, { skip: !session?.user?.email });
+    const {data: cartData} = useGetCartByCustomerIdQuery(customer.id, { skip: !customer.id });
+
     const [openUserMenu, setOpenUserMenu] = useState<boolean>(false);
     const [toggleMenu, setToggleMenu] = useState<boolean>(false);
     const userDropDownRef = useRef<HTMLDivElement>(null);
     const menuDropDownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (customerData && customerData.data) {
+            setCustomer(customerData.data);
+        }
+
+        if (cartData && cartData.data) {
+            setCart({
+                items: cartData.data.items,
+                itemCount: cartData.data.items.length
+            });
+        }
+    }, [customerData, cartData]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -48,8 +78,12 @@ const Navbar: React.FC = () => {
           };
     }, []);
 
-    if (status == Var.status.loading) {
+    if (status === Var.status.loading) {
         return null; // Or a loading spinner
+    }
+
+    if (status === Var.status.authenticated) {} {
+
     }
 
     const links: TNavLink[] = [
@@ -83,7 +117,7 @@ const Navbar: React.FC = () => {
                 {link.name}
                 {link.name == Var.cart && (
                     <p className="absolute top-1 right-2 bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
-                        3
+                        { cart.itemCount }
                     </p>
                 )}
             </Link>
@@ -145,7 +179,7 @@ const Navbar: React.FC = () => {
                         >
                             <p>{ Var.cart }</p>
                             <p className="absolute top-[-1px] right-[-6px] bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
-                                3
+                                { cart.itemCount }
                             </p>
                         </Link>
 
@@ -168,7 +202,7 @@ const Navbar: React.FC = () => {
                                             <FaProductHunt /> <p>{ Var.products }</p>
                                         </Link>
                                         <Link href={ paths.customer.cart.main.path } className="flex items-center justify-start w-full gap-2">
-                                            <FiShoppingCart /> <p>{ Var.cart } <span>3</span></p>
+                                            <FiShoppingCart /> <p>{ Var.cart } <span>{ cart.itemCount }</span></p>
                                         </Link>
                                         {!session?.user && (
                                             <Link href={ paths.customer.login.main.path } className="flex items-center justify-start w-full gap-2">

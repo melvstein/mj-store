@@ -7,6 +7,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import paths from "@/utils/paths";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Navbar from "@/components/Navbar";
 
 const SignIn: React.FC = () => {
 	const { status } = useSession();
@@ -35,6 +36,9 @@ const SignIn: React.FC = () => {
 
 	return (
 		<section className="flex items-start justify-center w-full min-h-screen">
+			<header>
+				<Navbar />
+			</header>
 			{/* <div className="flex flex-col items-center justify-center p-4 rounded-lg border shadow-lg w-[500px] gap-y-4 mt-[80px]">
 				<div>
 					<h1>Customer Login</h1>

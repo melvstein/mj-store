@@ -25,9 +25,11 @@ export const productsApi = createApi({
         getProduct: builder.query<TApiResponse<TProduct>, string>({
             query: (id) => ({
                 url: PRODUCTS_ENDPOINT + `/${id}`,
-                headers: {
-                    "Authorization": `Bearer ${getAccessToken()}`
-                },
+            }),
+        }),
+        getProductBySku: builder.query<TApiResponse<TProduct>, string>({
+            query: (sku) => ({
+                url: PRODUCTS_ENDPOINT + `/sku/${sku}`,
             }),
         }),
         addProduct: builder.mutation<TApiResponse<TProduct>, Partial<TProduct>>({
@@ -91,6 +93,7 @@ export const productsApi = createApi({
 export const {
     useGetProductsQuery,
     useGetProductQuery,
+    useGetProductBySkuQuery,
     useAddProductMutation,
     useUpdateProductMutation,
     useDeleteProductMutation,

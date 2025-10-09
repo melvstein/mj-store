@@ -1,54 +1,42 @@
 import HttpMethod from "@/constants/HttpMethod";
 import { TApiResponse } from "@/types";
-import { TCustomer, TUpdateCustomer } from "@/types/TCustomer";
+import { TCart, TRemoveItemFromCartRequest, TUpdateCart } from "@/types/TCart";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/v1";
-const REDUCER_PATH = "customersApi";
-const CUSTOMERS_ENDPOINT = "/customers";
+const REDUCER_PATH = "cartsApi";
+const CARTS_ENDPOINT = "/carts";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: API_URL,
 });
 
-type TContent = {
-    content: TCustomer[];
-}
-
-export const customersApi = createApi({
+export const cartsApi = createApi({
     reducerPath: REDUCER_PATH,
     baseQuery,
     endpoints: (builder) => ({
-        getCustomers: builder.query<TApiResponse<TContent>, void>({
-            query: () => CUSTOMERS_ENDPOINT,
-        }),
-        getCustomerById: builder.query<TApiResponse<any>, string>({
+        getCartByCustomerId: builder.query<TApiResponse<TCart>, string>({
             query: (id) => ({
-                url: CUSTOMERS_ENDPOINT + `/${id}`,
+                url: CARTS_ENDPOINT + `/customer/${id}`,
             }),
         }),
-        getCustomerByEmail: builder.query<TApiResponse<any>, string>({
-            query: (email) => ({
-                url: CUSTOMERS_ENDPOINT + `/email/${email}`,
-            }),
-        }),
-        createCustomer: builder.mutation<TApiResponse<TCustomer>, Partial<TCustomer>>({
-            query: (customer) => ({
-                url: CUSTOMERS_ENDPOINT,
+        updateCart: builder.mutation<TApiResponse<TCart>, Partial<TUpdateCart>>({
+            query: (items) => ({
+                url: CARTS_ENDPOINT + `/update`,
                 method: HttpMethod.POST,
-                body: customer
+                body: items
             }),
         }),
-        updateCustomer: builder.mutation<TApiResponse<TCustomer>, { id: string; customer: Partial<TUpdateCustomer> }>({
-            query: ({ id, customer }) => ({
-                url: `${CUSTOMERS_ENDPOINT}/${id}`,
-                method: HttpMethod.PATCH,
-                body: customer
+        removeItemFromCart: builder.mutation<TApiResponse<TCart>, Partial<TRemoveItemFromCartRequest>>({
+            query: (item) => ({
+                url: CARTS_ENDPOINT + `/remove-item`,
+                method: HttpMethod.POST,
+                body: item
             }),
         }),
-        deleteCustomer: builder.mutation<TApiResponse<any>, string>({
+        deleteCartByCustomerID: builder.mutation<TApiResponse<TCart>, string>({
             query: (id) => ({
-                url: `${CUSTOMERS_ENDPOINT}/${id}`,
+                url: `${CARTS_ENDPOINT}/customer/${id}`,
                 method: HttpMethod.DELETE,
             })
         }),
@@ -56,10 +44,8 @@ export const customersApi = createApi({
 });
 
 export const {
-    useGetCustomersQuery,
-    useGetCustomerByIdQuery,
-    useGetCustomerByEmailQuery,
-    useCreateCustomerMutation,
-    useUpdateCustomerMutation,
-    useDeleteCustomerMutation
-} = customersApi;
+    useGetCartByCustomerIdQuery,
+    useUpdateCartMutation,
+    useRemoveItemFromCartMutation,
+    useDeleteCartByCustomerIDMutation
+} = cartsApi;
