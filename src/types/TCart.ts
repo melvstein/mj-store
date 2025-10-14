@@ -13,6 +13,10 @@ export type TCartItem = {
     updatedAt?: Date;
 }
 
+export type TCartItemWithPrice = TCartItem & {
+    price?: number;
+}
+
 export type TUpdateCart = {
     customerId: string;
     action: "increase" | "decrease";

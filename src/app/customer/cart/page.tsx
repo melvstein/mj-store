@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import paths from "@/utils/paths";
 import { TCustomer } from "@/types/TCustomer";
-import { TCartItem } from "@/types/TCart";
+import { TCartItem, TCartItemWithPrice } from "@/types/TCart";
 import { useGetCustomerByEmailQuery } from "@/lib/redux/services/customersApi";
 import { useGetCartByCustomerIdQuery, useRemoveItemFromCartMutation, useUpdateCartMutation } from "@/lib/redux/services/cartsApi";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 
 type TCart = {
-    items: TCartItem[] | [];
+    items: TCartItemWithPrice[] | [];
     itemCount: number;
     totalAmount?: number;
 };
@@ -47,28 +47,50 @@ const Cart: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-      // ✅ Only redirect when status is fully known
-      if (status === "unauthenticated") {
-        router.push(paths.customer.login.main.path);
-      }
+        // ✅ Only redirect when status is fully known
+        if (status === "unauthenticated") {
+            router.push(paths.customer.login.main.path);
+        }
 
-      if (status === "loading" || customerLoading || cartLoading) {
-          setIsLoading(true);
-          return;
-      }
+        if (status === "loading" || customerLoading || cartLoading) {
+            setIsLoading(true);
+            return;
+        }
 
-      if (customerData && customerData.data) {
-          setCustomer(customerData.data);
-      }
+        if (customerData && customerData.data) {
+            setCustomer(customerData.data);
+        }
 
-      if (cartData && cartData.data) {
-          setCart({
-              items: cartData.data.items,
-              itemCount: cartData.data.items.length,
-              totalAmount: 0
-          });
-      }
+        if (cartData && cartData.data) {
+            const itemsWithPrice = cartData.data.items.map((item: TCartItemWithPrice) => ({
+                ...item,
+                price: item.price ?? 0
+            }));
+
+            const totalAmount = cartData.data.items.reduce((sum: number, item: TCartItemWithPrice) => sum + ((item.price ?? 0) * (item.quantity || 1)), 0);
+            
+            setCart({
+                items: itemsWithPrice,
+                itemCount: cartData.data.items.length,
+                totalAmount
+            });
+        }
     }, [status, router, customerData, cartData, customerLoading, cartLoading]);
+
+    useEffect(() => {
+        if (cart.items.length > 0) {
+            const totalAmount = cart.items.reduce(
+            (sum, item: TCartItemWithPrice) => sum + ((item.price ?? 0) * (item.quantity || 1)),
+            0
+            );
+
+            setCart(prev => ({
+                ...prev,
+                totalAmount,
+                itemCount: prev.items.length
+            }));
+        }
+    }, [cart.items, cart.totalAmount]);
 
     if (isLoading) {
         return <Loading onComplete={ () => setIsLoading(false) } />;
@@ -112,7 +134,7 @@ const Cart: React.FC = () => {
 type TGetProductItemProps = {
     customer: TCustomer;
     item: TCartItem;
-    setCart?: React.Dispatch<React.SetStateAction<TCart>>;
+    setCart: React.Dispatch<React.SetStateAction<TCart>>;
 }
 
 const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
@@ -123,6 +145,12 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [quantity, setQuantity] = useState(item.quantity);
     const [isRemoved, setIsRemoved] = useState(false);
+    const subTotal = Number(quantity) * Number(product.price) || 0;
+
+    // Keep local quantity in sync when parent updates the cart item
+    useEffect(() => {
+        setQuantity(item.quantity);
+    }, [item.quantity]);
 
     useEffect(() => {
         if (productLoading || updateLoading) {
@@ -135,19 +163,92 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
             setProduct(productData.data);
         }
 
-        if (setCart) {
-            setCart(prev => {
-                if (prev) {
-                    return {
-                        ...prev,
-                        totalAmount: (prev.totalAmount || 0) + (item.quantity * product.price)
+        setCart((prev) => {
+            const itemsWithPrice = prev.items.map((item: TCartItemWithPrice) => (item.sku === product.sku ? { ...item, price: product.price } : item));
+
+            return {
+                ...prev,
+                items: itemsWithPrice,
+            }
+        });
+
+    }, [productLoading, updateLoading, productData, setCart, product.price, product.sku]);
+
+    const handleUpdateCartItems = async (action : string) => {
+        if (action == "decrease") {
+            if (quantity > 1) {
+                const result = await updateItem({ 
+                    customerId: customer.id,
+                    action,
+                    items: [
+                        {
+                            sku: product.sku,
+                            quantity: 1
+                        }
+                    ] 
+                }).unwrap();
+
+                if (result && result.code == ApiResponse.success.code) {
+                    if (result.data) {
+                        setQuantity(quantity - 1);
+
+                        setCart((prev) => {
+                            const itemsWithPrice = prev.items.map((item) =>
+                                item.sku === product.sku
+                                ? { ...item, quantity: item.quantity - 1 }
+                                : item
+                            );
+
+                            return {
+                                ...prev,
+                                items: itemsWithPrice
+                            };
+                        });
+
+                        toast.success(`Item ${capitalize(product.name)} quantity decreased`);
                     }
+                } else {
+                    toast.error(result?.message || "Failed to decrease item quantity");
                 }
-                return prev;
-            });
+            }
         }
 
-    }, [productLoading, updateLoading, productData, item.quantity, product.price, setCart]);
+        if (action == "increase") {
+            const result = await updateItem({ 
+                customerId: customer.id,
+                action: "increase",
+                items: [
+                    {
+                        sku: product.sku,
+                        quantity: 1
+                    }
+                ] 
+            }).unwrap();
+
+            if (result && result.code == ApiResponse.success.code) {
+                if (result.data) {
+                    setQuantity(quantity + 1);
+
+                    setCart((prev) => {
+                        const itemsWithPrice = prev.items.map((item) =>
+                            item.sku === product.sku
+                            ? { ...item, quantity: item.quantity + 1 }
+                            : item
+                        );
+
+                        return {
+                            ...prev,
+                            items: itemsWithPrice
+                        };
+                    });
+
+                    toast.success(`Item ${capitalize(product.name)} quantity increased`);
+                }
+            } else {
+                toast.error(result?.message || "Failed to increase item quantity");
+            }
+        }
+    };
 
     if (error) return <p>Error loading product.</p>;
 
@@ -183,7 +284,7 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
                             <p className="text-sm">
                                 Total Amount:
                                 <span className="font-bold">
-                                    { Number(quantity) * Number(product.price) || 0 }
+                                    { subTotal }
                                 </span>
                             </p>
                         </div>
@@ -211,7 +312,15 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
                                         }).unwrap();
 
                                         if (result && result.code == ApiResponse.success.code) {
+                                            // Update local removed state for immediate UI feedback
                                             setIsRemoved(true);
+
+                                            setCart((prev) => ({
+                                                ...prev,
+                                                items: prev.items.filter((item) => item.sku !== product.sku),
+                                                itemCount: prev.items.filter((item) => item.sku !== product.sku).length
+                                            }));
+
                                             toast.success(`Item ${capitalize(product.name)} removed from cart`);
                                         } else {
                                             toast.error(result?.message || "Failed to remove item from cart");
@@ -227,85 +336,13 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
                     <ButtonGroup>
                         <Button 
                             className={clsx({ "opacity-50 cursor-not-allowed": quantity <= 1 })}
-                            onClick={
-                                async () => {
-                                    if (quantity > 1) {
-                                        const result = await updateItem({ 
-                                            customerId: customer.id,
-                                            action: "decrease",
-                                            items: [
-                                                {
-                                                    sku: product.sku,
-                                                    quantity: 1
-                                                }
-                                            ] 
-                                        }).unwrap();
-
-                                        if (result && result.code == ApiResponse.success.code) {
-                                            if (result.data) {
-                                                setQuantity(result.data.items.find(i => i.sku === item.sku)?.quantity || quantity - 1);
-                                                
-                                                if (setCart) {
-                                                    setCart(prev => {
-                                                        if (prev) {
-                                                            return {
-                                                                ...prev,
-                                                                totalAmount: prev.totalAmount ? prev.totalAmount - product.price : 0
-                                                            }
-                                                        }
-                                                        return prev;
-                                                    });
-                                                }
-
-                                                toast.success(`Item ${capitalize(product.name)} quantity decreased`);
-                                            }
-                                        } else {
-                                            toast.error(result?.message || "Failed to decrease item quantity");
-                                        }
-                                    }
-                                }
-                            }
+                            onClick={() => handleUpdateCartItems("decrease")}
                         >
                             <FaMinus />
                         </Button>
                         <ButtonGroupSeparator />
                         <Button 
-                            onClick={
-                                async () => {
-                                    const result = await updateItem({ 
-                                        customerId: customer.id,
-                                        action: "increase",
-                                        items: [
-                                            {
-                                                sku: product.sku,
-                                                quantity: 1
-                                            }
-                                        ] 
-                                    }).unwrap();
-
-                                    if (result && result.code == ApiResponse.success.code) {
-                                        if (result.data) {
-                                            setQuantity(result.data.items.find(i => i.sku === item.sku)?.quantity || quantity + 1);
-                                            
-                                            if (setCart) {
-                                                setCart(prev => {
-                                                    if (prev) {
-                                                        return {
-                                                            ...prev,
-                                                            totalAmount: prev.totalAmount ? prev.totalAmount + product.price : 0
-                                                        }
-                                                    }
-                                                    return prev;
-                                                });
-                                            }
-                                            
-                                            toast.success(`Item ${capitalize(product.name)} quantity increased`);
-                                        }
-                                    } else {
-                                        toast.error(result?.message || "Failed to increase item quantity");
-                                    }
-                                }
-                            }
+                            onClick={() => handleUpdateCartItems("increase")}
                         >
                             <FaPlus />
                         </Button>
