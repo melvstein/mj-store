@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { capitalize } from "@/lib/utils";
 import clsx from "clsx";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import useToaster from "@/hooks/useToaster";
 
 const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 
@@ -138,6 +139,7 @@ type TGetProductItemProps = {
 }
 
 const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
+    const [setToasterMessage] = useToaster();
     const { data: productData, error, isLoading: productLoading } = useGetProductBySkuQuery(item.sku, { skip: !item.sku });
     const [product, setProduct] = useState({} as TProduct);
     const [updateItem, { isLoading: updateLoading }] = useUpdateCartMutation();
@@ -250,6 +252,28 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
         }
     };
 
+    const handleRemoveItem = async () => {
+        const result = await removeItem({ 
+            customerId: customer.id,
+            sku: product.sku
+        }).unwrap();
+
+        if (result && result.code == ApiResponse.success.code) {
+            // Update local removed state for immediate UI feedback
+            setIsRemoved(true);
+
+            setCart((prev) => ({
+                ...prev,
+                items: prev.items.filter((item) => item.sku !== product.sku),
+                itemCount: prev.items.filter((item) => item.sku !== product.sku).length
+            }));
+
+            setToasterMessage("success", `Item ${capitalize(product.name)} removed from cart`, true);
+        } else {
+            toast.error(result?.message || "Failed to remove item from cart");
+        }
+    };
+
     if (error) return <p>Error loading product.</p>;
 
     if (isLoading) {
@@ -304,29 +328,7 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
                             <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                                onClick={
-                                    async () => {
-                                        const result = await removeItem({ 
-                                            customerId: customer.id,
-                                            sku: product.sku
-                                        }).unwrap();
-
-                                        if (result && result.code == ApiResponse.success.code) {
-                                            // Update local removed state for immediate UI feedback
-                                            setIsRemoved(true);
-
-                                            setCart((prev) => ({
-                                                ...prev,
-                                                items: prev.items.filter((item) => item.sku !== product.sku),
-                                                itemCount: prev.items.filter((item) => item.sku !== product.sku).length
-                                            }));
-
-                                            toast.success(`Item ${capitalize(product.name)} removed from cart`);
-                                        } else {
-                                            toast.error(result?.message || "Failed to remove item from cart");
-                                        }
-                                    }
-                                }
+                                onClick={handleRemoveItem}
                             >
                                 Continue
                             </AlertDialogAction>
@@ -337,12 +339,15 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
                         <Button 
                             className={clsx({ "opacity-50 cursor-not-allowed": quantity <= 1 })}
                             onClick={() => handleUpdateCartItems("decrease")}
+                            disabled={ quantity <= 1}
                         >
                             <FaMinus />
                         </Button>
                         <ButtonGroupSeparator />
                         <Button 
                             onClick={() => handleUpdateCartItems("increase")}
+                            className={clsx({ "opacity-50 cursor-not-allowed": quantity >= product.stock })}
+                            disabled={quantity >= product.stock}
                         >
                             <FaPlus />
                         </Button>
