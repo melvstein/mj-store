@@ -93,6 +93,10 @@ const Cart: React.FC = () => {
         }
     }, [cart.items, cart.totalAmount]);
 
+    const handleCheckout = () => {
+        
+    };
+
     if (isLoading) {
         return <Loading onComplete={ () => setIsLoading(false) } />;
     }
@@ -104,7 +108,14 @@ const Cart: React.FC = () => {
                 {cart.itemCount > 0 ? (
                     <div>
                         <div>
-                            <h1 className="text-2xl font-bold mb-4">Your Shopping Cart</h1>
+                            <h1 className="text-2xl font-bold mb-4 flex items-center justify-between">
+                                Your Shopping Cart
+                                <Button
+                                    onClick={() => handleCheckout()}
+                                >
+                                    Checkout
+                                </Button>
+                            </h1>
                             <p className="mb-4">You have {cart.itemCount} {cart.itemCount === 1 ? "item" : "items"} in your cart.</p>
                             <p className="mb-4 font-bold">Total Amount: { Config.getCurrencySymbol(currencyCode) } { cart.totalAmount }</p>
                         </div>

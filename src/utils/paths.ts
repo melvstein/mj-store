@@ -1,32 +1,5 @@
 const paths = {
     home: "/",
-    customer: {
-        home: {
-            main: {
-                path: "/",
-                name: "Home",
-            }
-        },
-        account: {
-            main: {
-                path: "/customer/account",
-                name: "Account",
-            }
-        },
-        cart: {
-            main: {
-                path: "/customer/cart",
-                name: "Cart",
-            }
-        },
-        login: {
-            main: {
-                path: "/customer/login",
-                name: "Login",
-            }
-        },
-        logout: "/customer/logout",
-    },
     admin: {
         dashboard: {
             main: {
@@ -80,6 +53,39 @@ const paths = {
                 name: "Edit"
             },
         },
+    },
+    customer: {
+        home: {
+            main: {
+                path: "/",
+                name: "Home",
+            }
+        },
+        account: {
+            main: {
+                path: "/customer/account",
+                name: "Account",
+            }
+        },
+        cart: {
+            main: {
+                path: "/customer/cart",
+                name: "Cart",
+            }
+        },
+        order: {
+            main: {
+                path: "/customer/order",
+                name: "Order",
+            }
+        },
+        login: {
+            main: {
+                path: "/customer/login",
+                name: "Login",
+            }
+        },
+        logout: "/customer/logout",
     },
 };
 

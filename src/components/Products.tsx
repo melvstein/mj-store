@@ -165,7 +165,11 @@ const AddToCart = ({ customer, product } : { customer: TCustomer; product: TProd
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button type="submit">Add to cart</Button>
+                <Button 
+                    type="submit"
+                    className={clsx({ "opacity-50 cursor-not-allowed": product.stock == 0 })}
+                    disabled={product.stock == 0}
+                >Add to cart</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
@@ -227,6 +231,8 @@ const AddToCart = ({ customer, product } : { customer: TCustomer; product: TProd
                         </ButtonGroup>
                         <Button
                             onClick={handleAddToCart}
+                            className={clsx({ "opacity-50 cursor-not-allowed": product.stock == 0 })}
+                            disabled={product.stock == 0}
                         >
                             Add to cart
                         </Button>

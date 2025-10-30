@@ -99,6 +99,11 @@ const Navbar: React.FC = () => {
         },
         {
             id: 3,
+            name: paths.customer.order.main.name,
+            href: paths.customer.order.main.path,
+        },
+        {
+            id: 4,
             name: "Sign in",
             href: paths.customer.login.main.path,
         },
