@@ -15,6 +15,11 @@ export const ordersApi = createApi({
     reducerPath: REDUCER_PATH,
     baseQuery,
     endpoints: (builder) => ({
+        getOrdersByCustomerId: builder.query<TApiResponse<TOrder[]>, string>({
+            query: (customerId) => ({
+                url: ORDERS_ENDPOINT + `/customer/${customerId}`,
+            }),
+        }),
         getOrderById: builder.query<TApiResponse<TOrder>, string>({
             query: (id) => ({
                 url: ORDERS_ENDPOINT + `/${id}`,
@@ -27,10 +32,19 @@ export const ordersApi = createApi({
                 body: request
             }),
         }),
+        checkoutItems: builder.mutation<TApiResponse<TOrder>, Partial<{ customerId: string, paymentMethod: string }>>({
+            query: (request) => ({
+                url: ORDERS_ENDPOINT + `/checkout`,
+                method: HttpMethod.POST,
+                body: request
+            }),
+        }),
     }),
 });
 
 export const {
+    useGetOrdersByCustomerIdQuery,
     useGetOrderByIdQuery,
-    useUpdateOrderStatusMutation
+    useUpdateOrderStatusMutation,
+    useCheckoutItemsMutation
 } = ordersApi;

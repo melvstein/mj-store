@@ -104,7 +104,7 @@ const Cart: React.FC = () => {
     return (
         <section className="container mx-auto min-h-screen">
             <Navbar />
-            <div className="pt-20 px-4">
+            <div className="py-20 px-4">
                 {cart.itemCount > 0 ? (
                     <div>
                         <div>

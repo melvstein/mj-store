@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { FiLogOut, FiLogIn } from "react-icons/fi";
-import { FaRegUser, FaProductHunt } from "react-icons/fa";
+import { FaRegUser, FaProductHunt, FaClipboardList } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { RiMenuFold4Line as CloseMenu, RiMenuFold3Line as OpenMenu } from "react-icons/ri";
 import paths from "@/utils/paths";
@@ -17,6 +17,8 @@ import { useGetCartByCustomerIdQuery } from "@/lib/redux/services/cartsApi";
 import { useGetCustomerByEmailQuery } from "@/lib/redux/services/customersApi";
 import { TCustomer } from "@/types/TCustomer";
 import { TCartItem } from "@/types/TCart";
+import { useGetOrdersByCustomerIdQuery } from "@/lib/redux/services/ordersApi";
+import { TOrder } from "@/types/TOrder";
 
 type TCart = {
     items: TCartItem[] | [];
@@ -30,8 +32,10 @@ const Navbar: React.FC = () => {
         items: [],
         itemCount: 0
     });
+    const [orders, setOrders] = useState<TOrder[]>([]);
     const {data: customerData} = useGetCustomerByEmailQuery(session?.user?.email as string, { skip: !session?.user?.email });
     const {data: cartData} = useGetCartByCustomerIdQuery(customer.id, { skip: !customer.id });
+    const {data: ordersData} = useGetOrdersByCustomerIdQuery(customer.id, { skip: !customer.id });
 
     const [openUserMenu, setOpenUserMenu] = useState<boolean>(false);
     const [toggleMenu, setToggleMenu] = useState<boolean>(false);
@@ -49,7 +53,11 @@ const Navbar: React.FC = () => {
                 itemCount: cartData.data.items.length
             });
         }
-    }, [customerData, cartData]);
+
+        if (ordersData && ordersData.data) {
+            setOrders(ordersData.data);
+        }
+    }, [customerData, cartData, ordersData]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -120,9 +128,14 @@ const Navbar: React.FC = () => {
                 className={`relative px-6 flex items-center justify-center gap-2`}
             >
                 {link.name}
-                {link.name == Var.cart && (
+                {link.name == paths.customer.cart.main.name && (
                     <p className="absolute top-1 right-2 bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
                         { cart.itemCount }
+                    </p>
+                )}
+                {link.name == paths.customer.order.main.name && (
+                    <p className="absolute top-1 right-2 bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
+                        { orders.length }
                     </p>
                 )}
             </Link>
@@ -182,7 +195,7 @@ const Navbar: React.FC = () => {
                             href={ paths.customer.cart.main.path }
                             className="relative p-2 flex items-center justify-center"
                         >
-                            <p>{ Var.cart }</p>
+                            <p>{ paths.customer.cart.main.name }</p>
                             <p className="absolute top-[-1px] right-[-6px] bg-secondary/0 px-1.5 rounded-full border border-skin-base shadow shadow-skin-base text-sm backdrop-blur-sm">
                                 { cart.itemCount }
                             </p>
@@ -207,7 +220,10 @@ const Navbar: React.FC = () => {
                                             <FaProductHunt /> <p>{ Var.products }</p>
                                         </Link>
                                         <Link href={ paths.customer.cart.main.path } className="flex items-center justify-start w-full gap-2">
-                                            <FiShoppingCart /> <p>{ Var.cart } <span>{ cart.itemCount }</span></p>
+                                            <FiShoppingCart /> <p>{ paths.customer.cart.main.name } <span>{ cart.itemCount }</span></p>
+                                        </Link>
+                                        <Link href={ paths.customer.order.main.path } className="flex items-center justify-start w-full gap-2">
+                                            <FaClipboardList /> <p>{ paths.customer.order.main.name } <span>{ orders.length }</span></p>
                                         </Link>
                                         {!session?.user && (
                                             <Link href={ paths.customer.login.main.path } className="flex items-center justify-start w-full gap-2">

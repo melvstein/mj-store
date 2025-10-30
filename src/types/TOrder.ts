@@ -2,6 +2,7 @@ import { TCartItem } from "./TCart";
 
 export type TOrder = {
     id: string;
+    orderNumber: number;
     customerId: string;
     paymentMethod: string;
     status: number;
@@ -12,6 +13,6 @@ export type TOrder = {
 };
 
 export type TUpdateOrderStatus = {
-    customerId: string;
-    paymentMethod: string;
+    orderId: string;
+    status: number;
 };
