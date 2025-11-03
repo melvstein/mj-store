@@ -19,6 +19,7 @@ import { TCustomer } from "@/types/TCustomer";
 import { TCartItem } from "@/types/TCart";
 import { useGetOrdersByCustomerIdQuery } from "@/lib/redux/services/ordersApi";
 import { TOrder } from "@/types/TOrder";
+import { OrderStatusCode } from "@/enums/OrderStatus";
 
 type TCart = {
     items: TCartItem[] | [];
@@ -33,9 +34,10 @@ const Navbar: React.FC = () => {
         itemCount: 0
     });
     const [orders, setOrders] = useState<TOrder[]>([]);
+    const customerId = customer.id ?? null;
     const {data: customerData} = useGetCustomerByEmailQuery(session?.user?.email as string, { skip: !session?.user?.email });
-    const {data: cartData} = useGetCartByCustomerIdQuery(customer.id, { skip: !customer.id });
-    const {data: ordersData} = useGetOrdersByCustomerIdQuery(customer.id, { skip: !customer.id });
+    const {data: cartData} = useGetCartByCustomerIdQuery(customerId, { skip: !customerId });
+    const {data: ordersData} = useGetOrdersByCustomerIdQuery({customerId, status: OrderStatusCode.CANCELLED, excludeStatus: true});
 
     const [openUserMenu, setOpenUserMenu] = useState<boolean>(false);
     const [toggleMenu, setToggleMenu] = useState<boolean>(false);

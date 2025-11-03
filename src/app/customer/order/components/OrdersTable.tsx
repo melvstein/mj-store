@@ -40,12 +40,11 @@ import { useGetOrdersByCustomerIdQuery } from "@/lib/redux/services/ordersApi"
 import { TOrder } from "@/types/TOrder"
 import OrderStatusBadge from "./OrderStatusBadge"
 import { OrderStatusCode } from "@/enums/OrderStatus"
-import OrderDetails from "./OrderDetails"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import ViewInvoice from "./ViewInvoice"
+import ViewItems from "./ViewItems"
 
 export function OrdersTable({ customerId }: { customerId: string }) {
-    const { data: response, isLoading: ordersLoading } = useGetOrdersByCustomerIdQuery(customerId, { skip: !customerId });
+    const { data: response, isLoading: ordersLoading } = useGetOrdersByCustomerIdQuery({customerId, status: null, excludeStatus: false});
     const [isLoading, setIsLoading] = useState(false);
     const [orders, setOrders] = useState<TOrder[]>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -94,8 +93,9 @@ export function OrdersTable({ customerId }: { customerId: string }) {
                                         (
                                             <DropdownMenuItem
                                                 className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                                asChild
                                             >
-                                                View Invoice
+                                                <ViewInvoice order={order} />
                                             </DropdownMenuItem>
                                         )
                                     }
@@ -395,23 +395,3 @@ export function OrdersTable({ customerId }: { customerId: string }) {
         </div>
     )
 };
-
-const ViewItems = ({ order }: { order: TOrder }) => {
-    return (
-        <Drawer>
-            <DrawerTrigger asChild>
-                <Button variant="ghost" className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer text-sm">
-                    View Items
-                </Button>
-            </DrawerTrigger>
-            <DrawerContent className="p-4">
-                <DrawerHeader>
-                    <DrawerTitle>All Items</DrawerTitle>
-                </DrawerHeader>
-                <ScrollArea className="h-[600px]">
-                    <OrderDetails order={order} />
-                </ScrollArea>
-            </DrawerContent>
-        </Drawer>
-    );
-}

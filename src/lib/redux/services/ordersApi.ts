@@ -1,6 +1,6 @@
 import HttpMethod from "@/constants/HttpMethod";
 import { TApiResponse } from "@/types";
-import { TOrder, TUpdateOrderStatus } from "@/types/TOrder";
+import { TCheckoutOrder, TOrder, TUpdateOrderStatus } from "@/types/TOrder";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/v1";
@@ -15,10 +15,22 @@ export const ordersApi = createApi({
     reducerPath: REDUCER_PATH,
     baseQuery,
     endpoints: (builder) => ({
-        getOrdersByCustomerId: builder.query<TApiResponse<TOrder[]>, string>({
-            query: (customerId) => ({
-                url: ORDERS_ENDPOINT + `/customer/${customerId}`,
-            }),
+        getOrdersByCustomerId: builder.query<TApiResponse<TOrder[]>, { customerId: string; status: number | null; excludeStatus: boolean; }>({
+            query: ({customerId , status, excludeStatus}) => {
+                let url = `${ORDERS_ENDPOINT}/customer/${customerId}`;
+
+                if (status !== null) {
+                    if (excludeStatus === true) {
+                        url += `?status=${status}&excludeStatus=${excludeStatus}`;
+                    } else {
+                        url += `?status=${status}`;
+                    }
+                }
+
+                return {
+                    url,
+                };
+            },
         }),
         getOrderById: builder.query<TApiResponse<TOrder>, string>({
             query: (id) => ({
@@ -32,7 +44,7 @@ export const ordersApi = createApi({
                 body: request
             }),
         }),
-        checkoutItems: builder.mutation<TApiResponse<TOrder>, Partial<{ customerId: string, paymentMethod: string }>>({
+        checkoutItems: builder.mutation<TApiResponse<TOrder>, Partial<TCheckoutOrder>>({
             query: (request) => ({
                 url: ORDERS_ENDPOINT + `/checkout`,
                 method: HttpMethod.POST,

@@ -21,21 +21,19 @@ const useToaster = () => {
     }, []);
 
     // Function to set a message and optionally reload the page
-    const setToasterMessage = useCallback((type: "success" | "error", message: string, reload = false) => {
-        if (reload) {
-            if (type === "success") {
-                localStorage.setItem("toaster_success_message", message);
-            } else if (type === "error") {
-                localStorage.setItem("toaster_error_message", message);
-            }
+    const setToasterMessage = useCallback((type: "success" | "error" | "info" | "warning", message: string, reload = false) => {
+        const showToast = () => {
+            if (type === "success") toast.success(message);
+            else if (type === "error") toast.error(message);
+            else if (type === "info") toast.info(message);
+            else toast.warning(message);
+        };
 
+        if (reload) {
+            localStorage.setItem(`toaster_${type}_message`, message);
             window.location.reload();
         } else {
-            if (type === "success") {
-                toast.success(message);
-            } else if (type === "error") {
-                toast.error(message);
-            }
+            showToast();
         }
     }, []);
 

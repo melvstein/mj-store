@@ -11,19 +11,19 @@ import { Button } from "@/components/ui/button";
 import Loading from "@/components/Loading/Loading";
 import { TOrder } from "@/types/TOrder";
 import { useGetOrdersByCustomerIdQuery } from "@/lib/redux/services/ordersApi";
-import { OrderStatusCode } from "@/enums/OrderStatus";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrdersTable } from "./components/OrdersTable";
 import OrderDetails from "./components/OrderDetails";
+import { OrderStatusCode } from "@/enums/OrderStatus";
 
 const Order: React.FC = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
     const [customer, setCustomer] = useState<TCustomer>({} as TCustomer);
     const [orders, setOrders] = useState<TOrder[]>([]);
-
+    const customerId = customer.id ?? null;
     const {data: customerData, isLoading: customerLoading} = useGetCustomerByEmailQuery(session?.user?.email as string, { skip: !session?.user?.email });
-    const {data: ordersData, isLoading: ordersLoading} = useGetOrdersByCustomerIdQuery(customer.id, { skip: !customer.id });
+    const {data: ordersData, isLoading: ordersLoading} = useGetOrdersByCustomerIdQuery({customerId, status: OrderStatusCode.CANCELLED, excludeStatus: true});
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -51,9 +51,9 @@ const Order: React.FC = () => {
         return <Loading onComplete={ () => setIsLoading(false) } />;
     }
     // Filter out orders that are delivered or cancelled
-    const activeOrders = orders.filter(o => 
+    /* const activeOrders = orders.filter(o => 
         o.status !== OrderStatusCode.DELIVERED && o.status !== OrderStatusCode.CANCELLED
-    );
+    ); */
 
     return (
         <section className="container mx-auto min-h-screen">
@@ -64,13 +64,13 @@ const Order: React.FC = () => {
                     <TabsTrigger value="order_list">Order List</TabsTrigger>
                 </TabsList>
                 <TabsContent value="ongoing_orders">
-                    {activeOrders.length > 0 ? (
+                    {orders.length > 0 ? (
                         <div>
                             <div>
-                                <p className="mb-4">You have {activeOrders.length} {activeOrders.length === 1 ? "active order" : "active orders"}.</p>
+                                <p className="mb-4">You have {orders.length} {orders.length === 1 ? "active order" : "active orders"}.</p>
                             </div>
                             <div className="flex flex-col items-center justify-center gap-4">
-                                {activeOrders.map((order) => {
+                                {orders.map((order) => {
                                     return (
                                         <OrderDetails key={order.id} order={order} />
                                     );
@@ -80,7 +80,7 @@ const Order: React.FC = () => {
                     ) : (
                     <div className="text-center mt-20">
                         <h1 className="text-2xl font-bold mb-4">Your Order is Empty</h1>
-                        <p className="mb-4">Looks like you havenot added any items to your cart yet.</p>
+                        <p className="mb-4">Looks like you have not added any items to your cart yet.</p>
                         <Button 
                             onClick={() => router.push(paths.home)}
                         >

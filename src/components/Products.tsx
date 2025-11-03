@@ -19,8 +19,8 @@ import { useUpdateCartMutation } from "@/lib/redux/services/cartsApi";
 import { useGetCustomerByEmailQuery } from "@/lib/redux/services/customersApi";
 import { TCustomer } from "@/types/TCustomer";
 import { isEmpty } from "lodash"
-import useToaster from "@/hooks/useToaster";
 import clsx from "clsx";
+import { toastMessage } from "@/lib/toaster";
 
 const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 
@@ -117,7 +117,7 @@ const Products = () => {
 }
 
 const AddToCart = ({ customer, product } : { customer: TCustomer; product: TProduct }) => {
-    const [setToasterMessage] = useToaster();
+    //const [setToasterMessage] = useToaster();
     const [updateItem, { isLoading: updateLoading }] = useUpdateCartMutation();
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +155,7 @@ const AddToCart = ({ customer, product } : { customer: TCustomer; product: TProd
                 }).unwrap();
 
                 console.log("result", result);
-                setToasterMessage("success", "Added to cart successfully!", true);
+                toastMessage("success", "Added to cart successfully!", true);
     };
 
     if (isLoading) {
@@ -194,7 +194,7 @@ const AddToCart = ({ customer, product } : { customer: TCustomer; product: TProd
                     </div>
                 </div>
                 <DialogFooter>
-                    <div className="flex items-center justify-between w-full gap-28">
+                    <div className="flex items-center justify-between w-full gap-4">
                         <ButtonGroup>
                             <Button 
                                 onClick={decrease}
@@ -209,6 +209,7 @@ const AddToCart = ({ customer, product } : { customer: TCustomer; product: TProd
                                 min={1}
                                 max={product.stock}
                                 className="
+                                    w-16
                                     appearance-none
                                     [&::-webkit-inner-spin-button]:appearance-none
                                     [&::-webkit-outer-spin-button]:appearance-none

@@ -24,7 +24,27 @@ import { toast } from "sonner";
 import { capitalize } from "@/lib/utils";
 import clsx from "clsx";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import useToaster from "@/hooks/useToaster";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import z from "zod";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSeparator, FieldSet } from "@/components/ui/field";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { TCheckoutOrder } from "@/types/TOrder";
+import { useCheckoutItemsMutation } from "@/lib/redux/services/ordersApi";
+import { toastMessage } from "@/lib/toaster";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 
@@ -81,9 +101,7 @@ const Cart: React.FC = () => {
     useEffect(() => {
         if (cart.items.length > 0) {
             const totalAmount = cart.items.reduce(
-            (sum, item: TCartItemWithPrice) => sum + ((item.price ?? 0) * (item.quantity || 1)),
-            0
-            );
+            (sum, item: TCartItemWithPrice) => sum + ((item.price ?? 0) * (item.quantity || 1)), 0);
 
             setCart(prev => ({
                 ...prev,
@@ -92,10 +110,6 @@ const Cart: React.FC = () => {
             }));
         }
     }, [cart.items, cart.totalAmount]);
-
-    const handleCheckout = () => {
-        
-    };
 
     if (isLoading) {
         return <Loading onComplete={ () => setIsLoading(false) } />;
@@ -110,11 +124,7 @@ const Cart: React.FC = () => {
                         <div>
                             <h1 className="text-2xl font-bold mb-4 flex items-center justify-between">
                                 Your Shopping Cart
-                                <Button
-                                    onClick={() => handleCheckout()}
-                                >
-                                    Checkout
-                                </Button>
+                                <CheckoutItems customer={customer} />
                             </h1>
                             <p className="mb-4">You have {cart.itemCount} {cart.itemCount === 1 ? "item" : "items"} in your cart.</p>
                             <p className="mb-4 font-bold">Total Amount: { Config.getCurrencySymbol(currencyCode) } { cart.totalAmount }</p>
@@ -143,6 +153,412 @@ const Cart: React.FC = () => {
     )
 }
 
+const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
+    //const [setToasterMessage] = useToaster();
+    const [checkoutItems] = useCheckoutItemsMutation();
+
+    const formSchema = z.object({
+        customerId: z.string(),
+        paymentMethod: z.string().min(3, "Payment method is required"),
+        shippingDetails: z.object({
+            receiverFirstName: z.string().min(1, "First name is required"),
+            receiverMiddleName: z.string().optional(),
+            receiverLastName: z.string().min(1, "Last name is required"),
+            receiverContactNumber: z.string().min(11, "Contact number is required"),
+            shippingAddress: z.object({
+                addressType: z.string(),
+                street: z.string(),
+                district: z.string(),
+                city: z.string(),
+                province: z.string(),
+                country: z.string(),
+                zipCode: z.number(),
+            }),
+            isDefault: z.boolean().optional(),
+        }),
+    });
+
+    const form = useForm<TCheckoutOrder>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            customerId: customer?.id || "",
+            paymentMethod: "",
+            shippingDetails: {
+            receiverFirstName: customer?.firstName || "",
+            receiverMiddleName: customer?.middleName || "",
+            receiverLastName: customer?.lastName || "",
+            receiverContactNumber: customer?.contactNumber || "",
+            shippingAddress: {
+                addressType: customer?.address?.addressType || "",
+                street: customer?.address?.street || "",
+                district: customer?.address?.district || "",
+                city: customer?.address?.city || "",
+                province: customer?.address?.province || "",
+                country: customer?.address?.country || "",
+                zipCode: customer?.address?.zipCode || 0,
+            },
+            isDefault: false,
+            },
+        },
+    });
+
+    useEffect(() => {
+        if (customer) {
+            form.reset({
+            customerId: customer.id,
+            paymentMethod: "",
+            shippingDetails: {
+                receiverFirstName: customer.firstName,
+                receiverMiddleName: customer.middleName || "",
+                receiverLastName: customer.lastName,
+                receiverContactNumber: customer.contactNumber,
+                shippingAddress: {
+                    addressType: customer.address?.addressType || "",
+                    street: customer.address?.street || "",
+                    district: customer.address?.district || "",
+                    city: customer.address?.city || "",
+                    province: customer.address?.province || "",
+                    country: customer.address?.country || "",
+                    zipCode: customer.address?.zipCode || 0,
+                },
+                isDefault: false,
+            },
+            });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [customer]);
+
+    const onSubmit = async (data: TCheckoutOrder, event?: React.BaseSyntheticEvent) => {
+        event?.preventDefault();
+        
+        try {
+            const response = await checkoutItems(data).unwrap();
+
+            if (response && response.code == ApiResponse.success.code) {
+                toastMessage("success", "Checkout successful!", true);
+            } else {
+                toastMessage("error", response?.message || "Checkout failed. Please try again.", true);
+            }
+        } catch {
+            toastMessage("error", "An error occurred during checkout. Please try again.", true);
+        }
+    }
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button>Checkout</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[1200px]">
+                <DialogHeader>
+                    <DialogTitle>Shipping Details</DialogTitle>
+                    <DialogDescription>
+                        Please provide your shipping details to complete the purchase.
+                    </DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="h-96">
+                    <form id="form-checkout-items"  onSubmit={form.handleSubmit(onSubmit)}>
+                        <FieldGroup>
+                            <FieldSet>
+                                <FieldGroup className="grid grid-cols-1 md:grid-cols-4">
+                                    <Controller
+                                        name="paymentMethod"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => {
+                                            return (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="form-checkout-items-payment-method">
+                                                        Payment Method
+                                                    </FieldLabel>
+                                                    <Select
+                                                        {...field}
+                                                        value={field.value}
+                                                        onValueChange={field.onChange}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select Payment Method" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                <SelectLabel>Payment Methods</SelectLabel>
+                                                                <SelectItem value="cod">COD</SelectItem>
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    {fieldState.invalid && (
+                                                    <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
+                                            );
+                                        }}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.receiverFirstName"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-receiver-first-name">
+                                                Receiver First Name
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-receiver-first-name"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Receiver First Name"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.receiverMiddleName"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-receiver-middle-name">
+                                                Receiver Middle Name
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-receiver-middle-name"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Receiver Middle Name (Optional)"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.receiverLastName"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-receiver-last-name">
+                                                Receiver Last Name
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-receiver-last-name"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Receiver Last Name"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.receiverContactNumber"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-receiver-contact-number">
+                                                Receiver Contact Number
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                type="number"
+                                                id="form-checkout-items-receiver-contact-number"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Receiver Contact Number"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                </FieldGroup>
+                            </FieldSet>
+                            <FieldSeparator />
+                            <FieldSet>
+                                <FieldLegend>Shipping Address</FieldLegend>
+                                <FieldGroup className="grid grid-cols-1 md:grid-cols-4">
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.addressType"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => {
+                                            return (
+                                                <Field data-invalid={fieldState.invalid}>
+                                                    <FieldLabel htmlFor="form-checkout-items-address-type">
+                                                        Address Types
+                                                    </FieldLabel>
+                                                    <Select
+                                                        {...field}
+                                                        value={field.value}
+                                                        onValueChange={field.onChange}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select Address Type" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                <SelectLabel>Address Types</SelectLabel>
+                                                                <SelectItem value="home">Home</SelectItem>
+                                                                <SelectItem value="work">work</SelectItem>
+                                                                <SelectItem value="other">other</SelectItem>
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    {fieldState.invalid && (
+                                                    <FieldError errors={[fieldState.error]} />
+                                                    )}
+                                                </Field>
+                                            );
+                                        }}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.street"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-street">
+                                                Street
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-street"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Street"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.district"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-district">
+                                                District
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-district"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="District"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.city"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-city">
+                                                City
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-city"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="City"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.province"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-province">
+                                                Province
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-province"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Province"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.country"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-country">
+                                                Country
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id="form-checkout-items-country"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Country"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.shippingAddress.zipCode"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-zipCode">
+                                                Zip Code
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                type="number"
+                                                id="form-checkout-items-zipCode"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Zip Code"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                </FieldGroup>
+                            </FieldSet>
+                        </FieldGroup>
+                    </form>
+                </ScrollArea>
+                <DialogFooter className="flex gap-2">
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                        <Button type="submit" form="form-checkout-items">proceed</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
 type TGetProductItemProps = {
     customer: TCustomer;
     item: TCartItem;
@@ -150,7 +566,7 @@ type TGetProductItemProps = {
 }
 
 const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
-    const [setToasterMessage] = useToaster();
+    //const [setToasterMessage] = useToaster();
     const { data: productData, error, isLoading: productLoading } = useGetProductBySkuQuery(item.sku, { skip: !item.sku });
     const [product, setProduct] = useState({} as TProduct);
     const [updateItem, { isLoading: updateLoading }] = useUpdateCartMutation();
@@ -279,7 +695,7 @@ const GetProductItem = ({ customer, item, setCart } : TGetProductItemProps) => {
                 itemCount: prev.items.filter((item) => item.sku !== product.sku).length
             }));
 
-            setToasterMessage("success", `Item ${capitalize(product.name)} removed from cart`, true);
+            toastMessage("success", `Item ${capitalize(product.name)} removed from cart`, true);
         } else {
             toast.error(result?.message || "Failed to remove item from cart");
         }
