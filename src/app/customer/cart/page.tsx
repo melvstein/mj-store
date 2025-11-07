@@ -165,6 +165,7 @@ const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
             receiverMiddleName: z.string().optional(),
             receiverLastName: z.string().min(1, "Last name is required"),
             receiverContactNumber: z.string().min(11, "Contact number is required"),
+            receiverEmailAddress: z.string().email("Invalid email address"),
             shippingAddress: z.object({
                 addressType: z.string(),
                 street: z.string(),
@@ -188,6 +189,7 @@ const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
             receiverMiddleName: customer?.middleName || "",
             receiverLastName: customer?.lastName || "",
             receiverContactNumber: customer?.contactNumber || "",
+            receiverEmailAddress: customer?.email || "",
             shippingAddress: {
                 addressType: customer?.address?.addressType || "",
                 street: customer?.address?.street || "",
@@ -212,6 +214,7 @@ const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
                 receiverMiddleName: customer.middleName || "",
                 receiverLastName: customer.lastName,
                 receiverContactNumber: customer.contactNumber,
+                receiverEmailAddress: customer.email,
                 shippingAddress: {
                     addressType: customer.address?.addressType || "",
                     street: customer.address?.street || "",
@@ -369,6 +372,28 @@ const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
                                                 id="form-checkout-items-receiver-contact-number"
                                                 aria-invalid={fieldState.invalid}
                                                 placeholder="Receiver Contact Number"
+                                                autoComplete="on"
+                                            />
+                                            {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="shippingDetails.receiverEmailAddress"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="form-checkout-items-receiver-email-address">
+                                                Receiver Email Address
+                                            </FieldLabel>
+                                            <Input
+                                                {...field}
+                                                type="number"
+                                                id="form-checkout-items-receiver-email-address"
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Receiver Email Address"
                                                 autoComplete="on"
                                             />
                                             {fieldState.invalid && (

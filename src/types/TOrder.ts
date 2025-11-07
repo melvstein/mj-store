@@ -8,6 +8,24 @@ export type TOrder = {
     status: number;
     items: TCartItem[] | [];
     totalAmount: bigint;
+    invoice: TInvoice;
+    receipt: TReceipt;
+    shippingDetails: ShippingDetails;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export type TInvoice = {
+    invoiceNumber: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export type TReceipt = {
+    receiptNumber: string;
+    remarks?: string;
+    transactionId?: string;
+    refundedAt?: Date;
     createdAt?: Date;
     updatedAt?: Date;
 };
@@ -22,6 +40,7 @@ export type ShippingDetails = {
     receiverMiddleName?: string;
     receiverLastName: string;
     receiverContactNumber: string;
+    receiverEmailAddress: string;
     shippingAddress: ShippingAddress;
     isDefault?: boolean;
 }

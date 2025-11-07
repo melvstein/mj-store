@@ -42,7 +42,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { MouseEvent, useEffect, useMemo, useState } from "react"
@@ -518,6 +517,7 @@ export function CustomersDataTable() {
                                                         type="text"
                                                         placeholder="First Name"
                                                         {...field}
+                                                        value={field.value ?? ""}
                                                     />
                                                 </FormControl>
                                             </FormItem>
@@ -537,6 +537,7 @@ export function CustomersDataTable() {
                                                         type="text"
                                                         placeholder="Middle Name"
                                                         {...field}
+                                                        value={field.value ?? ""}
                                                     />
                                                 </FormControl>
                                             </FormItem>
@@ -556,6 +557,7 @@ export function CustomersDataTable() {
                                                         type="text"
                                                         placeholder="Last Name"
                                                         {...field}
+                                                        value={field.value ?? ""}
                                                     />
                                                 </FormControl>
                                             </FormItem>
@@ -575,6 +577,7 @@ export function CustomersDataTable() {
                                                         type="text"
                                                         placeholder="Username"
                                                         {...field}
+                                                        value={field.value ?? ""}
                                                     />
                                                 </FormControl>
                                             </FormItem>
@@ -594,6 +597,7 @@ export function CustomersDataTable() {
                                                         type="email"
                                                         placeholder="Email Address"
                                                         {...field}
+                                                        value={field.value ?? ""}
                                                     />
                                                 </FormControl>
                                             </FormItem>
@@ -617,6 +621,7 @@ export function CustomersDataTable() {
                                                             type="text"
                                                             placeholder="Address Type"
                                                             {...field}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -636,6 +641,7 @@ export function CustomersDataTable() {
                                                             type="text"
                                                             placeholder="Street"
                                                             {...field}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -655,6 +661,7 @@ export function CustomersDataTable() {
                                                             type="text"
                                                             placeholder="District"
                                                             {...field}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -674,6 +681,7 @@ export function CustomersDataTable() {
                                                             type="text"
                                                             placeholder="City"
                                                             {...field}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -693,6 +701,7 @@ export function CustomersDataTable() {
                                                             type="text"
                                                             placeholder="Province"
                                                             {...field}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -712,6 +721,7 @@ export function CustomersDataTable() {
                                                             type="text"
                                                             placeholder="Country"
                                                             {...field}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -731,6 +741,7 @@ export function CustomersDataTable() {
                                                             type="number"
                                                             placeholder="Zip Code"
                                                             {...field}
+                                                            value={field.value ?? ""}
   												            onChange={(e) => field.onChange(e.target.valueAsNumber)}
                                                         />
                                                     </FormControl>

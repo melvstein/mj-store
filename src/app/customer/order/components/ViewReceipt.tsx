@@ -28,37 +28,36 @@ import clsx from "clsx";
 const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 const currencySymbol = Config.getCurrencySymbol(currencyCode);
 
-const ViewInvoice = ({ order, variant, className } : { order: TOrder; variant: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined; className?: string; }) => {
+const ViewReceipt = ({ order, variant, className } : { order: TOrder; variant: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost" | null | undefined; className?: string; }) => {
 
     return (
         <div>
             <Dialog>
                 <DialogTrigger asChild>
                     <Button variant={variant} className={clsx("flex items-center justify-center gap-2 w-full p-2 cursor-pointer text-sm", className)}>
-                        View Invoice
+                        View Receipt
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] sm:min-w-[700px] sm:min-h-[700px]">
                     <div className="flex items-start justify-between flex-col">
-                        <DialogHeader>
-                            <div className="flex items-center gap-4">
-                                <AppLogo className="size-[40px] sm:size-[80px] fill-skin-primary stroke-skin-primary" />
-                                <div>
-                                    <DialogTitle className="flex flex-col">
-                                        <p className="text-xl sm:text-3xl font-bold">INVOICE</p>
-                                    </DialogTitle>
-                                        <p className="text-sm sm:text-lg">{order.invoice.invoiceNumber}</p>
+                        <DialogHeader className="w-full">
+                            <div className="flex items-center justify-start sm:justify-between w-full flex-col sm:flex-row">
+                                <div className="flex items-center gap-4 w-full">
+                                    <AppLogo className="size-[40px] sm:size-[80px] fill-skin-primary stroke-skin-primary" />
+                                    <div>
+                                        <DialogTitle className="flex flex-col">
+                                            <p className="text-xl sm:text-3xl font-bold">RECEIPT</p>
+                                        </DialogTitle>
+                                            <p className="text-sm sm:text-lg">{order.receipt.receiptNumber}</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 mt-4 sm:mt-0">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 mt-4 sm:mt-0">
                                 <div className="flex items-start flex-col">
                                     <p className="mt-4">Billed To:</p>
                                     <p className="font-bold">{order.shippingDetails.receiverFirstName} {order.shippingDetails.receiverLastName}</p>
                                     <p>{order.shippingDetails.receiverEmailAddress}</p>
                                     <p>{order.shippingDetails.receiverContactNumber}</p>
-                                    <p>
-                                        Payment Method: {order.paymentMethod}
-                                    </p>
                                 </div>
                                 <div className="flex items-start flex-col">
                                     <p className="mt-4">Address Type: {order.shippingDetails.shippingAddress.addressType}</p>
@@ -66,6 +65,12 @@ const ViewInvoice = ({ order, variant, className } : { order: TOrder; variant: "
                                     <p>{order.shippingDetails.shippingAddress.street}, {order.shippingDetails.shippingAddress.district}</p>
                                     <p>{order.shippingDetails.shippingAddress.city}, {order.shippingDetails.shippingAddress.zipCode}</p>
                                     <p>{order.shippingDetails.shippingAddress.country}</p>
+                                </div>
+                                <div className="flex items-start flex-col">
+                                    <p className="mt-4">Payment Method: {order.paymentMethod}</p>
+                                    <p>
+                                        Receipt Date: {order.receipt.createdAt ? new Date(order.receipt.createdAt).toLocaleDateString() + " " + new Date(order.receipt.createdAt).toLocaleTimeString() : ''}
+                                    </p>
                                 </div>
                             </div>
                         </DialogHeader>
@@ -95,7 +100,7 @@ const ViewInvoice = ({ order, variant, className } : { order: TOrder; variant: "
                                 </TableFooter>
                             </Table>
                         </div>
-                        <div className="flex items-center justify-end w-full mt-4 sm:mt-0">
+                        <div className="flex items-center justify-center sm:justify-end w-full py-4 sm:mt-0">
                             <p className="text-xl sm:text-3xl font-bold">Thank you!</p>
                         </div>
                     </div>
@@ -121,4 +126,4 @@ const TableRows = ({item} : {item: TCartItem}) => {
     );
 }
 
-export default ViewInvoice;
+export default ViewReceipt;

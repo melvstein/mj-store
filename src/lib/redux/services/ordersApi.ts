@@ -1,3 +1,4 @@
+import { use } from 'react';
 import HttpMethod from "@/constants/HttpMethod";
 import { TApiResponse } from "@/types";
 import { TCheckoutOrder, TOrder, TUpdateOrderStatus } from "@/types/TOrder";
@@ -15,16 +16,29 @@ export const ordersApi = createApi({
     reducerPath: REDUCER_PATH,
     baseQuery,
     endpoints: (builder) => ({
-        getOrdersByCustomerId: builder.query<TApiResponse<TOrder[]>, { customerId: string; status: number | null; excludeStatus: boolean; }>({
-            query: ({customerId , status, excludeStatus}) => {
+        getOrders: builder.query<TApiResponse<TOrder[]>, { status: number[] | null; }>({
+            query: ({status}) => {
+                let url = ORDERS_ENDPOINT;
+
+                if (status && status.length > 0) {
+                    // Join array values into repeated query params
+                    const params = status.map(stat => `status=${stat}`).join("&");
+                    url += `?${params}`;
+                }
+
+                return {
+                    url,
+                };
+            },
+        }),
+        getOrdersByCustomerId: builder.query<TApiResponse<TOrder[]>, { customerId: string; status: number[] | null; }>({
+            query: ({customerId , status}) => {
                 let url = `${ORDERS_ENDPOINT}/customer/${customerId}`;
 
-                if (status !== null) {
-                    if (excludeStatus === true) {
-                        url += `?status=${status}&excludeStatus=${excludeStatus}`;
-                    } else {
-                        url += `?status=${status}`;
-                    }
+                if (status && status.length > 0) {
+                    // Join array values into repeated query params
+                    const params = status.map(stat => `status=${stat}`).join("&");
+                    url += `?${params}`;
                 }
 
                 return {
@@ -55,6 +69,7 @@ export const ordersApi = createApi({
 });
 
 export const {
+    useGetOrdersQuery,
     useGetOrdersByCustomerIdQuery,
     useGetOrderByIdQuery,
     useUpdateOrderStatusMutation,

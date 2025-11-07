@@ -20,7 +20,7 @@ import clsx from "clsx";
 import AppLogo from "@/components/AppLogo";
 import paths from "@/utils/paths";
 import Link from "next/link";
-import { FaProductHunt } from "react-icons/fa";
+import { FaClipboardList, FaProductHunt } from "react-icons/fa";
 import { PiUsersThree } from "react-icons/pi";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
@@ -79,6 +79,11 @@ const items: TMenuItem[] = [
                 title: "List",
                 url: paths.admin.customers.main.path,
                 icon: List,
+            },
+            {
+                title: "Orders",
+                url: paths.admin.customers.orders.path,
+                icon: FaClipboardList,
             }
         ]
     }

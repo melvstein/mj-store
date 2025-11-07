@@ -42,9 +42,10 @@ import OrderStatusBadge from "./OrderStatusBadge"
 import { OrderStatusCode } from "@/enums/OrderStatus"
 import ViewInvoice from "./ViewInvoice"
 import ViewItems from "./ViewItems"
+import ViewReceipt from "./ViewReceipt"
 
 export function OrdersTable({ customerId }: { customerId: string }) {
-    const { data: response, isLoading: ordersLoading } = useGetOrdersByCustomerIdQuery({customerId, status: null, excludeStatus: false});
+    const { data: response, isLoading: ordersLoading } = useGetOrdersByCustomerIdQuery({customerId, status: null});
     const [isLoading, setIsLoading] = useState(false);
     const [orders, setOrders] = useState<TOrder[]>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -95,7 +96,7 @@ export function OrdersTable({ customerId }: { customerId: string }) {
                                                 className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
                                                 asChild
                                             >
-                                                <ViewInvoice order={order} />
+                                                <ViewInvoice order={order} variant="ghost" className="flex items-center justify-start" />
                                             </DropdownMenuItem>
                                         )
                                     }
@@ -104,8 +105,9 @@ export function OrdersTable({ customerId }: { customerId: string }) {
                                         (
                                             <DropdownMenuItem
                                                 className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                                asChild
                                             >
-                                                View Receipt
+                                                <ViewReceipt order={order} variant="ghost" className="flex items-center justify-start" />
                                             </DropdownMenuItem>
                                         )
                                     }

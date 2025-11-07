@@ -34,6 +34,7 @@ export type TUpdateCustomer = {
     middleName?: string;
     lastName: string;
     contactNumber: string;
+    profileImageUrl?: string;
     address: TAddress;
     isActive: boolean;
     isVerified: boolean;

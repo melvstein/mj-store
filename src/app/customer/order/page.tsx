@@ -23,7 +23,7 @@ const Order: React.FC = () => {
     const [orders, setOrders] = useState<TOrder[]>([]);
     const customerId = customer.id ?? null;
     const {data: customerData, isLoading: customerLoading} = useGetCustomerByEmailQuery(session?.user?.email as string, { skip: !session?.user?.email });
-    const {data: ordersData, isLoading: ordersLoading} = useGetOrdersByCustomerIdQuery({customerId, status: OrderStatusCode.CANCELLED, excludeStatus: true});
+    const {data: ordersData, isLoading: ordersLoading} = useGetOrdersByCustomerIdQuery({customerId, status: [OrderStatusCode.PENDING, OrderStatusCode.PROCESSING, OrderStatusCode.SHIPPED]}, { skip: !customerId });
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {

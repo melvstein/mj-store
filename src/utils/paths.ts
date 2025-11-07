@@ -1,3 +1,5 @@
+import path from "path";
+
 const paths = {
     home: "/",
     admin: {
@@ -37,6 +39,10 @@ const paths = {
             main: {
                 path: "/admin/customers",
                 name: "Customers",
+            },
+            orders: {
+                path: "/admin/customers/orders",
+                name: "Orders",
             }
         },
         products: {
