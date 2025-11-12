@@ -165,15 +165,15 @@ const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
             receiverMiddleName: z.string().optional(),
             receiverLastName: z.string().min(1, "Last name is required"),
             receiverContactNumber: z.string().min(11, "Contact number is required"),
-            receiverEmailAddress: z.string().email("Invalid email address"),
+            receiverEmailAddress: z.string().min(1, "Email address is required").email("Invalid email address"),
             shippingAddress: z.object({
-                addressType: z.string(),
-                street: z.string(),
-                district: z.string(),
-                city: z.string(),
-                province: z.string(),
-                country: z.string(),
-                zipCode: z.number(),
+                addressType: z.string().min(1, "Address type is required"),
+                street: z.string().min(1, "Street is required"),
+                district: z.string().min(1, "District is required"),
+                city: z.string().min(1, "City is required"),
+                province: z.string().min(1, "Province is required"),
+                country: z.string().min(1, "Country is required"),
+                zipCode: z.number().min(1, "Zip code is required"),
             }),
             isDefault: z.boolean().optional(),
         }),
@@ -390,7 +390,7 @@ const CheckoutItems = ({ customer } : {customer:TCustomer}) => {
                                             </FieldLabel>
                                             <Input
                                                 {...field}
-                                                type="number"
+                                                type="email"
                                                 id="form-checkout-items-receiver-email-address"
                                                 aria-invalid={fieldState.invalid}
                                                 placeholder="Receiver Email Address"
