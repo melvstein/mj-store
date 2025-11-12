@@ -1,4 +1,4 @@
-import { TLoginResponse } from "@/types";
+import { TApiResponse } from "@/types";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -25,7 +25,7 @@ export const login = createAsyncThunk("auth/login", async ({ username, password 
 });
 
 type loginState = {
-    response: TLoginResponse | null;
+    response: TApiResponse | null;
     loading: boolean;
     error: string | null;
 }
@@ -48,7 +48,7 @@ const loginSlice = createSlice({
         })
         .addCase(login.fulfilled, (state, action) => {
             state.loading = false;
-            state.response = action.payload;
+            state.response = action.payload.data;
         })
         .addCase(login.rejected, (state, action) => {
             state.loading = false;
