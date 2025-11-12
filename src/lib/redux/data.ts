@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+/* import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "@/lib/redux/store";
 import { getProducts } from "@/lib/redux/slices/productSlice";
@@ -14,3 +14,4 @@ export const useProducts = () => {
 
     return { items, loading, error };
 };
+ */
