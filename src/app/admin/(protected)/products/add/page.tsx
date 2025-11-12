@@ -93,6 +93,7 @@ const ProductAddPage = () => {
         { value: 'accessories', label: 'Accessories', color: '#F59E0B' },
         { value: 'sports', label: 'Sports', color: '#10B981' },
         { value: 'books', label: 'Books', color: '#F97316' },
+        { value: 'fruits', label: 'Fruits', color: '#22C55E' },
         { value: 'home-garden', label: 'Home & Garden', color: '#84CC16' },
         { value: 'beauty', label: 'Beauty & Health', color: '#EC4899' },
         { value: 'automotive', label: 'Automotive', color: '#6B7280' },
