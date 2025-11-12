@@ -34,7 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Loading from "@/components/Loading/Loading"
 import { formatDateTime } from "@/utils/helper"
 import { TOrder } from "@/types/TOrder"
@@ -77,7 +77,7 @@ export function OrdersDataTable() {
         }
     }, [ordersLoading]);
 
-    const handleDeleteOrder = async (orderId: string) => {
+    const handleDeleteOrder = useCallback(async (orderId: string) => {
         // Implement delete order functionality here
         try {
             const result = await deleteOrder(orderId).unwrap();
@@ -92,7 +92,7 @@ export function OrdersDataTable() {
             const errorMessage = error instanceof Error ? error.message : "Failed to delete order.";
             toastMessage("error", errorMessage);
         }
-    }
+    }, [deleteOrder]);
 
     const columns = useMemo<ColumnDef<TOrder, any>[]>(() => [
     {

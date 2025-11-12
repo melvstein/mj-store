@@ -356,7 +356,7 @@ export function UserDataTable() {
             );
         },
     },
-    ], []);
+    ], [form]);
 
     const table = useReactTable<TUser>({
         data: users,
