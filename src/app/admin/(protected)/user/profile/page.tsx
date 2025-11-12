@@ -4,12 +4,12 @@ import BreadCrumb from "@/components/Breadcrumb";
 import Loading from "@/components/Loading/Loading";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuthenticatedUser, useAuthenticatedUserId } from "@/services/AuthenticationService";
+import { useAuthenticatedUserId } from "@/services/AuthenticationService";
 import { TUser } from "@/types";
 import paths from "@/utils/paths";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/sheet"
 import { useGetUserQuery, useUpdateUserMutation, useUpdateUserPasswordMutation, useUploadProfileImageMutation } from "@/lib/redux/services/usersApi";
 import Response from "@/constants/Response";
-import { useRouter } from "next/navigation";
 import { getInitials } from "@/lib/utils";
 
 const UserProfileImageCard = ({ user }: { user: TUser }) => {

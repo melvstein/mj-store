@@ -12,13 +12,16 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, Trash2 } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -34,8 +37,24 @@ import { useEffect, useMemo, useState } from "react"
 import Loading from "@/components/Loading/Loading"
 import { formatDateTime } from "@/utils/helper"
 import { TOrder } from "@/types/TOrder"
-import { useGetOrdersQuery } from "@/lib/redux/services/ordersApi"
+import { useDeleteOrderMutation, useGetOrdersQuery } from "@/lib/redux/services/ordersApi"
 import OrderStatusBadge from "@/app/customer/order/components/OrderStatusBadge"
+import { OrderStatusCode } from "@/enums/OrderStatus"
+import ViewInvoice from "@/app/customer/order/components/ViewInvoice"
+import ViewReceipt from "@/app/customer/order/components/ViewReceipt"
+import ViewItems from "./ViewItems"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import ApiResponse from "@/lib/apiResponse"
+import { toastMessage } from "@/lib/toaster"
 
 export function OrdersDataTable() {
     const { data: response, isLoading: ordersLoading } = useGetOrdersQuery({ status: null });
@@ -44,6 +63,7 @@ export function OrdersDataTable() {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
+    const [deleteOrder] = useDeleteOrderMutation();
 
     const [sorting, setSorting] = useState<SortingState>([
         { id: "updatedAt", desc: true },
@@ -56,15 +76,94 @@ export function OrdersDataTable() {
         }
     }, [ordersLoading]);
 
+    const handleDeleteOrder = async (orderId: string) => {
+        // Implement delete order functionality here
+        try {
+            const result = await deleteOrder(orderId).unwrap();
+            console.log("Delete result:", result);
+
+            if (result && result.code == ApiResponse.success.code) {
+                toastMessage("success", result.message || "Order deleted successfully.", true);
+            } else {
+                toastMessage("error", result.message || "Failed to delete order.", true);
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "Failed to delete order.";
+            toastMessage("error", errorMessage);
+        }
+    }
+
     const columns = useMemo<ColumnDef<TOrder, any>[]>(() => [
     {
         header: "Actions",
         cell: ({ row }) => {
             const order = row.original;
-
+    
             return (
                 <div className="flex items-center space-x-2">
-                    View
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                asChild
+                            >
+                                <ViewItems order={order} />
+                            </DropdownMenuItem>
+                            {
+                                (order.status === OrderStatusCode.SHIPPED) &&
+                                (
+                                    <DropdownMenuItem
+                                        className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                        asChild
+                                    >
+                                        <ViewInvoice order={order} variant="ghost" className="flex items-center justify-start" />
+                                    </DropdownMenuItem>
+                                )
+                            }
+                            {
+                                (order.status === OrderStatusCode.DELIVERED) &&
+                                (
+                                    <DropdownMenuItem
+                                        className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                        asChild
+                                    >
+                                        <ViewReceipt order={order} variant="ghost" className="flex items-center justify-start" />
+                                    </DropdownMenuItem>
+                                )
+                            }
+                            <DropdownMenuItem
+                                className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                asChild
+                            >
+                                <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer text-sm">Delete</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure you want to delete this order?</AlertDialogTitle>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>No</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={() => handleDeleteOrder(order.id)}
+                                        >
+                                            Yes
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             );
         },

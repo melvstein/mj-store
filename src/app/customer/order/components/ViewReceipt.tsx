@@ -39,7 +39,7 @@ const ViewReceipt = ({ order, variant, className } : { order: TOrder; variant: "
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] sm:min-w-[700px] sm:min-h-[700px]">
-                    <div className="flex items-start justify-between flex-col">
+                    <div className="flex items-center justify-between flex-col">
                         <DialogHeader className="w-full">
                             <div className="flex items-center justify-start sm:justify-between w-full flex-col sm:flex-row">
                                 <div className="flex items-center gap-4 w-full">

@@ -39,8 +39,8 @@ const ViewInvoice = ({ order, variant, className } : { order: TOrder; variant: "
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] sm:min-w-[700px] sm:min-h-[700px]">
-                    <div className="flex items-start justify-between flex-col">
-                        <DialogHeader>
+                    <div className="flex items-center justify-between flex-col">
+                        <DialogHeader className="w-full">
                             <div className="flex items-center gap-4">
                                 <AppLogo className="size-[40px] sm:size-[80px] fill-skin-primary stroke-skin-primary" />
                                 <div>
@@ -69,31 +69,33 @@ const ViewInvoice = ({ order, variant, className } : { order: TOrder; variant: "
                                 </div>
                             </div>
                         </DialogHeader>
-                        <div className="flex items-center justify-center overflow-x-auto w-[350px] sm:w-full mt-4 sm:mt-0">
-                            <Table>
-                                <TableCaption>A list of your items.</TableCaption>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-[100px]">SKU</TableHead>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Description</TableHead>
-                                        <TableHead className="text-right">Quantity</TableHead>
-                                        <TableHead className="text-right">Price</TableHead>
-                                        <TableHead className="text-right">Total</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {order.items.map((item) => (
-                                        <TableRows key={item.sku} item={item} />
-                                    ))}
-                                </TableBody>
-                                <TableFooter>
-                                    <TableRow>
-                                        <TableCell colSpan={5}>Total</TableCell>
-                                        <TableCell className="text-right">{currencySymbol} {order.totalAmount}</TableCell>
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
+                        <div className="flex justify-center mt-4 sm:mt-0">
+                            <div className="overflow-x-auto w-[350px] sm:w-full">
+                                <Table className="min-w-[600px]">
+                                    <TableCaption>A list of your items.</TableCaption>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">SKU</TableHead>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Description</TableHead>
+                                            <TableHead className="text-right">Quantity</TableHead>
+                                            <TableHead className="text-right">Price</TableHead>
+                                            <TableHead className="text-right">Total</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {order.items.map((item) => (
+                                            <TableRows key={item.sku} item={item} />
+                                        ))}
+                                    </TableBody>
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TableCell colSpan={5}>Total</TableCell>
+                                            <TableCell className="text-right">{currencySymbol} {order.totalAmount}</TableCell>
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            </div>
                         </div>
                         <div className="flex items-center justify-end w-full mt-4 sm:mt-0">
                             <p className="text-xl sm:text-3xl font-bold">Thank you!</p>

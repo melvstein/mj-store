@@ -9,7 +9,7 @@ import Config from "@/utils/config";
 import { Button } from "@/components/ui/button";
 import { OrderStatusCode } from "@/enums/OrderStatus";
 import OrderItemCard from "./OrderItemCard";
-import Invoice from "./ViewInvoice";
+import ViewInvoice from "./ViewInvoice";
 import { useUpdateOrderStatusMutation } from "@/lib/redux/services/ordersApi";
 import ApiResponse from "@/lib/apiResponse";
 import { TCartItem } from "@/types/TCart";
@@ -89,7 +89,7 @@ const OrderDetails = ({ order } : { order: TOrder }) => {
                                 </AlertDialogContent>
                                 </AlertDialog>
                             )
-                            : (order.status !== OrderStatusCode.CANCELLED && order.status !== OrderStatusCode.DELIVERED && <Invoice order={order} />)
+                            : (order.status !== OrderStatusCode.CANCELLED && order.status !== OrderStatusCode.PROCESSING && order.status !== OrderStatusCode.DELIVERED && <ViewInvoice variant="default" order={order} />)
                         }
                     </CardTitle>
                 </CardHeader>

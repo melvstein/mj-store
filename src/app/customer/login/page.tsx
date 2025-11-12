@@ -2,8 +2,8 @@
 
 import GoogleSignin from "@/components/GoogleSignin";
 import Var from "@/utils/Var";
-import { signIn, useSession } from "next-auth/react";
-import React, { FormEvent, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import React, { useEffect} from "react";
 import { useRouter } from "next/navigation";
 import paths from "@/utils/paths";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +11,6 @@ import Navbar from "@/components/Navbar";
 
 const SignIn: React.FC = () => {
 	const { status } = useSession();
-	const [email, setEmail] = useState<string>("");
-	const [password, setPassword] = useState<string>("");
 	const router = useRouter();
 
 	useEffect(() => {
@@ -20,19 +18,6 @@ const SignIn: React.FC = () => {
 			router.push(paths.customer.home.main.path);
 		}
 	}, [status, router]);
-
-	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-
-		const result = signIn("credentials", {
-			redirect: true,
-			email,
-			password,
-			callbackUrl: Path.home
-		});
-
-		console.log(result);
-	}
 
 	return (
 		<section className="flex items-start justify-center w-full min-h-screen">

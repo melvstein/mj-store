@@ -65,6 +65,12 @@ export const ordersApi = createApi({
                 body: request
             }),
         }),
+        deleteOrder: builder.mutation<TApiResponse<TOrder>, string>({
+            query: (orderId) => ({
+                url: ORDERS_ENDPOINT + `/${orderId}`,
+                method: HttpMethod.DELETE,
+            }),
+        }),
     }),
 });
 
@@ -73,5 +79,6 @@ export const {
     useGetOrdersByCustomerIdQuery,
     useGetOrderByIdQuery,
     useUpdateOrderStatusMutation,
-    useCheckoutItemsMutation
+    useCheckoutItemsMutation,
+    useDeleteOrderMutation
 } = ordersApi;
