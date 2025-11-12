@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import BreadCrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ import Loading from "@/components/Loading/Loading";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 
 const breadcrumbMain = {
     path: paths.admin.dashboard.main.path,
@@ -31,17 +31,6 @@ const breadcrumbPaths = [
         name: paths.admin.users.register.name,
     },
 ];
-
-type RegisterUserFormProps = {
-    role: string;
-    email: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    username: string;
-    password: string;
-    confirmPassword: string;
-}
 
 const formSchema = z.object({
     role: z.string().min(1, "Role is required"),
@@ -92,7 +81,7 @@ const RegisterUserForm = () => {
         // console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${fieldName}: ${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${fieldName}: ${error.message}`);
         });
     };

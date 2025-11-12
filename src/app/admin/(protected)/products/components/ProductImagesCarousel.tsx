@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Spinner from "@/components/Loading/Spinner";
@@ -17,7 +18,7 @@ import Response from "@/constants/Response";
 import { useDeleteProductImagesMutation, useUploadProductImagesMutation } from "@/lib/redux/services/productsApi";
 import { TProduct } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleX, Images, X } from "lucide-react";
+import { Images, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -35,7 +36,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge";
-import { set } from "mongoose";
 
 const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
     const [uploadProductImages, { isLoading: uploading }] = useUploadProductImagesMutation();
@@ -117,7 +117,7 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
         console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${error.message}`);
         });
     };

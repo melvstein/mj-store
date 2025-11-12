@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -44,12 +45,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { MouseEvent, useEffect, useMemo, useState } from "react"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Response from "@/constants/Response"
 import Loading from "@/components/Loading/Loading"
@@ -57,7 +56,6 @@ import { useForm } from "react-hook-form"
 import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormField, FormItem, FormLabel, FormControl, Form } from "@/components/ui/form"
-import { format } from "path"
 import { formatDateTime } from "@/utils/helper"
 
 const updateUserDefault: TUpdateUser = {
@@ -79,7 +77,7 @@ const formUpdateUserSchema = z.object({
 })
 
 export function UserDataTable() {
-    const { data: response, error, isLoading: userLoading } = useGetUsersQuery();
+    const { data: response, isLoading: userLoading } = useGetUsersQuery();
     const [doUpdate] = useUpdateUserMutation();
     const [doDelete] = useDeleteUserMutation();
     const [isLoading, setIsLoading] = useState(false);
@@ -127,7 +125,7 @@ export function UserDataTable() {
          console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${error.message}`);
         });
     };

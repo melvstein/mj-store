@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, FieldErrors } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import Select from 'react-select';
@@ -13,8 +13,7 @@ import { themeStyles } from "@/app/admin/components/react-select/themeStyles";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAddProductMutation } from "@/lib/redux/services/productsApi";
 import Loading from "@/components/Loading/Loading";
 
@@ -79,12 +78,12 @@ const ProductAddPage = () => {
         }
     };
 
-    const onError = (errors: any) => {
+    const onError = (errors: FieldErrors<z.infer<typeof formSchema>>) => {
          console.log("Validation Errors:", errors);
 
-        Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${error.message}`);
-            toast.error(`${error.message}`);
+        Object.entries(errors).forEach(([fieldName, error]) => {
+            console.log("Field Error:", fieldName, error?.message);
+            toast.error(`${error?.message}`);
         });
     };
 
@@ -181,6 +180,7 @@ const ProductAddPage = () => {
                                                         field.value?.includes(option.value)
                                                     )}
                                                     onChange={(newValue, _actionMeta) => {
+                                                        console.log("_actionMeta", _actionMeta)
                                                         const selectedOptions = newValue as readonly IOptions[] | null;
                                                         const values = selectedOptions ? 
                                                             selectedOptions.map((option) => option.value) : 

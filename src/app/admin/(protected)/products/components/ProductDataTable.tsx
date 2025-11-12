@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -48,24 +49,12 @@ import { toast } from "sonner"
 import { MouseEvent, useEffect, useMemo, useState } from "react"
 import Response from "@/constants/Response"
 import Loading from "@/components/Loading/Loading"
-import z from "zod"
 import { useDeleteProductMutation, useGetProductsQuery } from "@/lib/redux/services/productsApi"
 import Link from "next/link"
 import paths from "@/utils/paths"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { formatDateTime } from "@/utils/helper"
-
-/* const formUpdateProductSchema = z.object({
-    sku: z.string().min(1, "SKU is required"),
-    name: z.string().min(1, "Name is required"),
-    description: z.string().min(1, "Description is required"),
-    price: z.number().min(0, "Price must be positive"),
-    stock: z.number().min(0, "Stock must be positive"),
-    brand: z.string().min(1, "Brand is required"),
-    images: z.array(z.string().min(1, "Image URL is required")),
-    isActive: z.boolean(),
-}); */
 
 export function ProductDataTable() {
     const { data: response, isLoading: productLoading } = useGetProductsQuery();

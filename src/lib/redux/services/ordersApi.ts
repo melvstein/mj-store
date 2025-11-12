@@ -1,4 +1,3 @@
-import { use } from 'react';
 import HttpMethod from "@/constants/HttpMethod";
 import { TApiResponse } from "@/types";
 import { TCheckoutOrder, TOrder, TUpdateOrderStatus } from "@/types/TOrder";

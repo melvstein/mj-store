@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { signOut, useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
-import clsx from "clsx";
 import Loading from '@/components/Loading/Loading';
 import { useGetCustomerByEmailQuery, useUpdateCustomerMutation } from '@/lib/redux/services/customersApi';
 import { TAddress, TCustomer } from '@/types/TCustomer';
@@ -161,7 +161,7 @@ const PersonalInformationForm = ({ customer } : { customer: TCustomer | undefine
 		console.log("Form errors:", errors);
 		
 		Object.entries(errors).forEach(([fieldName, error]: any) => {
-			console.log(`${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
 			toast.error(`${fieldName}: ${error.message}`);
 		});
 	}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -45,7 +46,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { MouseEvent, useEffect, useMemo, useState } from "react"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Response from "@/constants/Response"
 import Loading from "@/components/Loading/Loading"
 import { useForm } from "react-hook-form"
@@ -101,7 +102,7 @@ const formUpdateCustomerSchema = z.object({
 });
 
 export function CustomersDataTable() {
-    const { data: response, error, isLoading: customersLoading } = useGetCustomersQuery();
+    const { data: response, isLoading: customersLoading } = useGetCustomersQuery();
     const [doUpdate] = useUpdateCustomerMutation();
     const [doDelete] = useDeleteCustomerMutation();
     const [isLoading, setIsLoading] = useState(false);
@@ -154,6 +155,7 @@ export function CustomersDataTable() {
          console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
+            console.log("fieldName: ", fieldName);
             console.log(`${error.message}`);
             toast.error(`${error.message}`);
         });

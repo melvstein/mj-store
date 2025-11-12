@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import BreadCrumb from "@/components/Breadcrumb";
@@ -82,7 +83,7 @@ const UserProfileImageCard = ({ user }: { user: TUser }) => {
         // console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${error.message}`);
         });
     };
@@ -194,7 +195,7 @@ const EditUserSheet = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: () 
         // console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${error.message}`);
         });
     };
@@ -414,7 +415,7 @@ const UserDetailsCard = ({ user, onUserUpdate }: { user: TUser; onUserUpdate?: (
 };
 
 const ChangePasswordTabContent = ({ user } : { user: TUser }) => {
-    const [changePassword, { error }] = useUpdateUserPasswordMutation();
+    const [changePassword] = useUpdateUserPasswordMutation();
 
     const formSchema = z.object({
         currentPassword: z.string().min(1, "Current password is required"),
@@ -457,6 +458,7 @@ const ChangePasswordTabContent = ({ user } : { user: TUser }) => {
 
     const onError = (errors: any) => {
         Object.entries(errors).forEach(([fieldName, error]: any) => {
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${error.message}`);
         });
     };
@@ -527,7 +529,7 @@ const ChangePasswordTabContent = ({ user } : { user: TUser }) => {
 const UserProfilePage = () => {
     const userId = useAuthenticatedUserId();
     const [user, setUser] = useState<TUser | null>(null);
-    const {data: response, error, isLoading: isUserLoading, refetch} = useGetUserQuery(userId!, {
+    const {data: response, isLoading: isUserLoading, refetch} = useGetUserQuery(userId!, {
         skip: !userId,
     });
     

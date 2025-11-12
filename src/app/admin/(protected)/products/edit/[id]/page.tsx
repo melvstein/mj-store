@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import BreadCrumb from "@/components/Breadcrumb";
 import Loading from "@/components/Loading/Loading";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -40,7 +41,7 @@ interface PageProps {
 const ProductEditPage = ({ params }: PageProps) => {
     const { id } = use(params);
 
-    const { data: response, error, isLoading: productLoading, refetch } = useGetProductQuery(id, {
+    const { data: response, isLoading: productLoading } = useGetProductQuery(id, {
         skip: !id,
     });
 
@@ -137,7 +138,7 @@ const ProductDetails = ({ product }: { product: TProduct | null }) => {
          console.log("Validation Errors:", errors);
 
         Object.entries(errors).forEach(([fieldName, error]: any) => {
-            console.log(`${error.message}`);
+            console.log("Field Error:", fieldName, error?.message);
             toast.error(`${error.message}`);
         });
     };

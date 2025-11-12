@@ -1,5 +1,5 @@
 "use client";
-import { clearTokens, isAuthenticated, setAccessToken, setRefreshToken, useAuthenticatedUser, useAuthRefreshToken } from "@/services/AuthenticationService";
+import { clearTokens, isAuthenticated, setAccessToken, setRefreshToken, useAuthenticatedUser } from "@/services/AuthenticationService";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import paths from "@/utils/paths";
@@ -13,8 +13,7 @@ import { toast } from "sonner";
 
 const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     const [authRefreshToken, { error: authError, isLoading: authLoading }] = useAuthRefreshTokenMutation();
-    const { user, extra: {
-            error: userError,
+    const { extra: {
             isLoading: isUserLoading
         } } = useAuthenticatedUser();
     const [authenticated, setAuthenticated] = useState(false);
@@ -78,7 +77,7 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
                     router.replace(paths.admin.login.path);
                     toast.error("Auth failed");
                 }
-            } catch (error) {
+            } catch {
                 clearTokens();
                 setIsLoading(false);
                 router.replace(paths.admin.login.path);
@@ -87,7 +86,7 @@ const ProtectedLayout = ({ children }: Readonly<{ children: React.ReactNode }>) 
         }
 
         validateSession();
-    }, [authLoading, authRefreshToken, router, isUserLoading]);
+    }, [authLoading, authRefreshToken, router, isUserLoading, authError]);
 
     if (isLoading) return <Loading duration={300} onComplete={ () => setIsLoading(false) } />
 
