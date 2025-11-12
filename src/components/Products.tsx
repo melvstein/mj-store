@@ -77,11 +77,11 @@ const Products = () => {
 
     return (
         <section>
-            <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+            <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
             {
                 products.filter((product) => product.isActive).map((product : TProduct) => {
                     return (
-                        <Card key={String(product.id)}>
+                        <Card key={String(product.id)} className="flex flex-col justify-between">
                             <CardHeader>
                                 <div className="flex items-center justify-center px-8 w-full">
                                     <ProductImagesCarousel key={String(product.id)} images={product.images} />
@@ -92,10 +92,10 @@ const Products = () => {
                                     <div className="flex items-center justify-center space-x-2 text-yellow-500">
                                         <ProductRating rating={3.5}/>
                                     </div>
-                                    <div className="flex flex-col items-start justify-center w-full">
+                                    <div className="flex flex-col items-start justify-center w-full space-y-4">
                                         <div className="flex items-center justify-between w-full font-bold">
                                             <p className="first-letter:uppercase">{ product.name }</p>
-                                            <p>{ Config.getCurrencySymbol(currencyCode) } { product.price }</p>
+                                            <p className="whitespace-nowrap">{ Config.getCurrencySymbol(currencyCode) } { product.price }</p>
                                         </div>
                                         <p className="text-sm">{ product.description }</p>
                                     </div>

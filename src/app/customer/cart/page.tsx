@@ -129,7 +129,7 @@ const Cart: React.FC = () => {
                             <p className="mb-4">You have {cart.itemCount} {cart.itemCount === 1 ? "item" : "items"} in your cart.</p>
                             <p className="mb-4 font-bold">Total Amount: { Config.getCurrencySymbol(currencyCode) } { cart.totalAmount }</p>
                         </div>
-                        <div className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
+                        <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
                             {cart.items.map((item) => {
                                 return (
                                     <GetProductItem key={item.sku} customer={customer} item={item} setCart={setCart} />
