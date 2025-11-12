@@ -20,7 +20,9 @@ const UserProfileNavigationMenuItem = () => {
             setSuccessMessage("You have been logged out successfully.");
             router.replace(paths.admin.login.path);
         }
+    }, [isLogout, router]);
 
+    useEffect(() => {
         if (errorMessage) {
             toast.error(errorMessage);
             setErrorMessage(""); // Clear error message after showing toast
@@ -30,7 +32,7 @@ const UserProfileNavigationMenuItem = () => {
             toast.success(successMessage);
             setSuccessMessage(""); // Clear success message after showing toast
         }
-    }, [isLogout]);
+    }, [errorMessage, successMessage]);
 
   return (
     <NavigationMenuItem>

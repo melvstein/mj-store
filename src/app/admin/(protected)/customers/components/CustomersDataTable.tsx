@@ -406,7 +406,7 @@ export function CustomersDataTable() {
             );
         },
     },
-    ], []);
+    ], [form]);
 
     const table = useReactTable<TCustomer>({
         data: customers,

@@ -18,13 +18,12 @@ import {
 } from "@/components/ui/chart"
 import { useEffect, useMemo, useState } from "react"
 import { useGetCustomersQuery } from "@/lib/redux/services/customersApi"
-import { TProduct } from "@/types"
 import { TCustomer } from "@/types/TCustomer"
 
 export const description = "Customers chart showing active and inactive customers"
 
 const CustomersChart = () => {
-    const { data: response, error, isLoading } = useGetCustomersQuery();
+    const { data: response } = useGetCustomersQuery();
     const [customers, setCustomers] = useState<TCustomer[]>([]);
     const [activeCount, setActiveCount] = useState(0);
     const [inactiveCount, setInactiveCount] = useState(0);
@@ -37,10 +36,10 @@ const CustomersChart = () => {
         }
     }, [response, customers]);
 
-    const chartData = [
+    const chartData = useMemo(() => [
         { browser: "active", customers: activeCount, fill: "hsl(var(--primary))" },
         { browser: "inactive", customers: inactiveCount, fill: "hsl(var(--secondary))" },
-    ]
+    ], [activeCount, inactiveCount])
 
     const chartConfig = {
         customers: {
@@ -58,7 +57,7 @@ const CustomersChart = () => {
 
     const totalCustomers = useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.customers, 0)
-    }, [activeCount, inactiveCount])
+    }, [chartData])
 
     return (
         <Card className="flex flex-col w-full">

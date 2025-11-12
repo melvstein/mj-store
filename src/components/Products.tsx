@@ -25,7 +25,7 @@ import { toastMessage } from "@/lib/toaster";
 const currencyCode = process.env.NEXT_PUBLIC_CURRENCY_CODE as TCurrencyCode;
 
 const Products = () => {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const {data: customerData, isLoading: customerLoading} = useGetCustomerByEmailQuery(session?.user?.email as string, { skip: !session?.user?.email });
     const { data: response, error, isLoading: productsLoading } = useGetProductsQuery();
     const [products, setProducts] = useState<TProduct[]>([]);

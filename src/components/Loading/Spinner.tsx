@@ -12,6 +12,7 @@ const Spinner = ({ onComplete, duration = 500, children }: LoadingProps) => {
     const [showChildren, setShowChildren] = useState(false)
 
     useEffect(() => {
+        console.log("progress", progress);
         const interval = setInterval(() => {
         setProgress((prevProgress) => {
             if (prevProgress >= 100) {
@@ -24,7 +25,7 @@ const Spinner = ({ onComplete, duration = 500, children }: LoadingProps) => {
         }, 100)
 
         return () => clearInterval(interval)
-    }, [duration])
+    }, [duration, progress])
 
     useEffect(() => {
         if (isComplete) {

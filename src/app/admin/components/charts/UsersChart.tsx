@@ -23,7 +23,7 @@ import { TUser } from "@/types"
 export const description = "Users chart showing admin and staff users"
 
 const UsersChart = () => {
-    const { data: response, error, isLoading } = useGetUsersQuery();
+    const { data: response } = useGetUsersQuery();
     const [users, setUsers] = useState<TUser[]>([]);
     const [adminCount, setAdminCount] = useState(0);
     const [staffCount, setStaffCount] = useState(0);
@@ -36,10 +36,10 @@ const UsersChart = () => {
         }
     }, [response, users]);
 
-    const chartData = [
+    const chartData = useMemo(() => [
         { browser: "admin", users: adminCount, fill: "hsl(var(--primary))" },
         { browser: "staff", users: staffCount, fill: "hsl(var(--secondary))" },
-    ];
+    ], [adminCount, staffCount]);
 
     const chartConfig = {
         users: {
@@ -57,7 +57,7 @@ const UsersChart = () => {
 
     const totalUsers = useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.users, 0)
-    }, [adminCount, staffCount])
+    }, [chartData])
 
     return (
         <Card className="flex flex-col w-full">

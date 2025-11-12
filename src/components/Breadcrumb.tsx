@@ -1,4 +1,3 @@
-import paths from "@/utils/paths";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "./ui/breadcrumb";
 import React from "react";
 

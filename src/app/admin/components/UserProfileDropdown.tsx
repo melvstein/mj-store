@@ -4,12 +4,10 @@ import UserImageDefault from "@/components/UserImageDefault";
 import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationService";
 import paths from "@/utils/paths";
 import clsx from "clsx";
-import { set } from "mongoose";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FaCaretLeft, FaCaretDown } from "react-icons/fa6";
 import { toast } from "react-toastify";
-import { ClassNameValue } from "tailwind-merge";
 
 const UserProfileDropdown = () => {
     const router = useRouter();
@@ -22,26 +20,38 @@ const UserProfileDropdown = () => {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
 
+    // Handle logout side-effect
     useEffect(() => {
         if (isLogout) {
             setSuccessMessage("You have been logged out successfully.");
             router.replace(paths.admin.login.path);
         }
+    }, [isLogout, router]);
 
+    // Handle error toast
+    useEffect(() => {
         if (errorMessage) {
             toast.error(errorMessage);
-            setErrorMessage(""); // Clear error message after showing toast
+            setErrorMessage("");
         }
+    }, [errorMessage]);
 
+    // Handle success toast
+    useEffect(() => {
         if (successMessage) {
             toast.success(successMessage);
-            setSuccessMessage(""); // Clear success message after showing toast
+            setSuccessMessage("");
         }
+    }, [successMessage]);
 
+    // Handle submenu open state based on pathname
+    useEffect(() => {
         if (pathname.startsWith(paths.admin.user.profile.main.path)) {
             setIsSubMenuOpen(true);
+        } else {
+            setIsSubMenuOpen(false);
         }
-    }, [isLogout, pathname]);
+    }, [pathname]);
 
     useEffect(() => {
         if (!openProfile) return;

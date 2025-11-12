@@ -8,7 +8,7 @@ import Logo from "@/components/AppLogo";
 import { FaUsers, FaProductHunt } from "react-icons/fa";
 
 const AdminSidebar = () => {
-    const { user, extra } = useAuthenticatedUser();
+    const { extra } = useAuthenticatedUser();
     const pathname = usePathname();
 
     if (extra.isLoading) return null;

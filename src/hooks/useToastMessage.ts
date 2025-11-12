@@ -1,7 +1,7 @@
 // hooks/useToastMessage.ts
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
-import { Bounce, toast, TypeOptions } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 
 type ToastType = "success" | "error" | "info" | "warning";
 
@@ -25,5 +25,5 @@ export const useToastMessage = (
         transition: Bounce,
       });
     }
-  }, [message, type]);
+  }, [message, type, theme]);
 };

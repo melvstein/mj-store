@@ -1,6 +1,5 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
 
 import {
@@ -24,7 +23,7 @@ import { useGetProductsQuery } from "@/lib/redux/services/productsApi"
 export const description = "Products chart showing enabled and disabled products"
 
 const ProductsChart = () => {
-    const { data: response, error, isLoading } = useGetProductsQuery();
+    const { data: response } = useGetProductsQuery();
     const [products, setProducts] = useState<TProduct[]>([]);
     const [enabledCount, setEnabledCount] = useState(0);
     const [disabledCount, setDisabledCount] = useState(0);
@@ -37,10 +36,10 @@ const ProductsChart = () => {
         }
     }, [response, products]);
 
-    const chartData = [
+    const chartData = useMemo(() => [
         { browser: "enabled", products: enabledCount, fill: "hsl(var(--primary))" },
         { browser: "disabled", products: disabledCount, fill: "hsl(var(--secondary))" },
-    ]
+    ], [enabledCount, disabledCount])
 
     const chartConfig = {
         products: {
@@ -58,7 +57,7 @@ const ProductsChart = () => {
 
     const totalProducts = useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.products, 0)
-    }, [enabledCount, disabledCount])
+    }, [chartData])
 
     return (
         <Card className="flex flex-col w-full">

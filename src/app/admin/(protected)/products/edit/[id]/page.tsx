@@ -155,7 +155,7 @@ const ProductDetails = ({ product }: { product: TProduct | null }) => {
                 isActive: product.isActive,
             });
         }
-    }, [product]);
+    }, [product, form]);
 
     return (
         <div className="flex flex-col items-center justify-start gap-4 w-full">

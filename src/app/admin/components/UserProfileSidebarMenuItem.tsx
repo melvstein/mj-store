@@ -6,7 +6,7 @@ import { useAuthenticatedUser, useLogout } from "@/services/AuthenticationServic
 import paths from "@/utils/paths";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
-import { ChevronsUpDown, ChevronUp, LogOut, User, User2 } from "lucide-react";
+import { ChevronsUpDown, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ const UserProfileSidebarMenuItem = () => {
             setSuccessMessage("You have been logged out successfully.");
             router.replace(paths.admin.login.path);
         }
-    }, [isLogout]);
+    }, [isLogout, router]);
 
     useEffect(() => {
         if (errorMessage) {

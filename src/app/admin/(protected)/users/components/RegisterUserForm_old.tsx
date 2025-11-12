@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useRegisterUserHandler } from "@/services/AuthenticationService";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import paths from "@/utils/paths";
 import BreadCrumb from "@/components/Breadcrumb";
 import { Button } from "@/components/ui/button";

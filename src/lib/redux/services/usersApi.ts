@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { TApiResponse, TUpdateUser, TUser } from "@/types";
 import { getAccessToken} from "@/services/AuthenticationService";

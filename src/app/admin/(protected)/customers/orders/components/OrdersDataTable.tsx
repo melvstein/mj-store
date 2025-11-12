@@ -305,7 +305,7 @@ export function OrdersDataTable() {
             );
         },
     },
-    ], []);
+    ], [handleDeleteOrder]);
 
     const table = useReactTable<TOrder>({
         data: orders,

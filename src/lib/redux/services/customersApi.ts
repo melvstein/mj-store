@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import HttpMethod from "@/constants/HttpMethod";
 import { TApiResponse } from "@/types";
 import { TCustomer, TUpdateCustomer } from "@/types/TCustomer";

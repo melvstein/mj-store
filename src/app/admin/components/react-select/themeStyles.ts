@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { StylesConfig, GroupBase } from 'react-select';
 
 export const themeStyles: StylesConfig<any, boolean, GroupBase<any>> = {

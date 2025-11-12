@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { setCookie, getCookie, deleteCookie } from "cookies-next";
 import { extractUserId, isTokenExpired } from "./JwtService";
@@ -88,7 +89,7 @@ export const useAuthentication = () => {
     const isMounted = useRef(true);
 
     const userId = extractUserId(accessToken) ?? null;
-    const { user, extra } = useUser({ id: userId });
+    const { user } = useUser({ id: userId });
 
     useEffect(() => {
         setUserDetails(user ?? null);
@@ -143,8 +144,6 @@ export const useAuthenticationWithRefreshToken = ({ enableRefreshToken }: UseAut
     const userId = extractUserId(accessToken) ?? null;
     const { user,
         extra: {
-            error: userError,
-            isLoading: isUserLoading,
         } } = useUser({ id: userId });
 
     useEffect(() => {
@@ -273,7 +272,7 @@ export const useAuthRefreshToken = (enabled: boolean = true) => {
 };
 
 export const useLogout = () => {
-    const [authLogout, { data, error, isLoading }] = useAuthLogoutMutation();
+    const [authLogout, { error, isLoading }] = useAuthLogoutMutation();
     const [isLogout, setIsLogout] = useState(false);
     const router = useRouter();
 

@@ -233,7 +233,7 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
             setIsLoading(true);
             return;
         }
-    }, [productImages, uploading, deleting]);
+    }, [productImages, uploading, deleting, form]);
 
     // Use productImages state for display to show updated images
     const imagesToDisplay = productImages.length > 0 ? productImages : (product?.images || []).slice().reverse();

@@ -9,7 +9,7 @@ import {
   SortingState,
   getSortedRowModel,
 } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FilePenLine, Trash2, ArrowDown, ArrowUp} from 'lucide-react';
 import { useDeleteUser } from "@/services/UserService";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import clsx from "clsx";
 import { toast } from "sonner";
 import { formatDateTime } from "@/utils/helper";
 
@@ -38,11 +37,11 @@ const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id:
         { id: "updatedAt", desc: true },
     ]);
 
-    const handleDelete = async (e:  React.MouseEvent<HTMLButtonElement>, userId : string): Promise<void> => {
+    const handleDelete = useCallback(async (e:  React.MouseEvent<HTMLButtonElement>, userId : string): Promise<void> => {
         e.preventDefault();
         await deleteUser(userId);
         setLastDeletedUserId(userId);
-    };
+    }, [deleteUser]);
 
     useEffect(() => {
         if (isDeleted && lastDeletedUserId) {
@@ -55,7 +54,7 @@ const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id:
         if (extra.error) {
             setErrorMessage("Failed to delete user.");
         }
-    }, [isDeleted, extra.error, lastDeletedUserId]);
+    }, [isDeleted, extra.error, lastDeletedUserId, onUserDeleted]);
 
     useEffect(() => {
         if (successMessage) {
@@ -168,7 +167,7 @@ const UserTable = ({ data, onUserDeleted }: { data: TUser[], onUserDeleted: (id:
                 );
             },
         },
-    ], []);
+    ], [handleDelete]);
 
     const table = useReactTable({
         data,

@@ -90,9 +90,9 @@ const items: TMenuItem[] = [
 ];
 
 const AdminSidebar = () => {
-    const { open, isMobile, openMobile } = useSidebar();
-  const pathname = usePathname();
-  const isActive = (href: string) => pathname === href;
+    const { open, isMobile } = useSidebar();
+    const pathname = usePathname();
+    const isActive = (href: string) => pathname === href;
 
     return (
         <Sidebar variant="inset" collapsible="icon">

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useAuthLoginMutation } from "@/lib/redux/services/authenticationApi";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { setAccessToken, setRefreshToken } from "@/services/AuthenticationService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

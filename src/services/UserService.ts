@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Response from "@/constants/Response";
 import { useCreateUserMutation, useDeleteUserMutation, useGetUserQuery, useUpdateUserMutation } from "@/lib/redux/services/usersApi"
 import { TUpdateUser, TUser } from "@/types";
@@ -48,7 +49,7 @@ export const useCreateUserHandler = () => {
 };
 
 export const useUpdateUser = () => {
-    const [doUpdate, { data, error, isLoading }] = useUpdateUserMutation();
+    const [doUpdate, { error, isLoading }] = useUpdateUserMutation();
 
     const updateUser = async ({ id, user} : { id: string, user: TUpdateUser }) => {
         if (!id) return;
@@ -79,7 +80,7 @@ export const useUpdateUser = () => {
 }
 
 export const useDeleteUser = () => {
-    const [doDelete, { data, error, isLoading }] = useDeleteUserMutation();
+    const [doDelete, { error, isLoading }] = useDeleteUserMutation();
     const [isDeleted, setIsDeleted] = useState(false);
 
     const deleteUser = async (id: string) => {
