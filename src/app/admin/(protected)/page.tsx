@@ -1,8 +1,8 @@
-import DemoChartAreaInteractive from "@/components/Demo/DemoChartAreaInteractive"
 import DemoChartBarInteractive from "@/components/Demo/DemoChartBarInteractive"
 import UsersChart from "../components/charts/UsersChart"
 import CustomersChart from "../components/charts/CustomersChart"
 import ProductsChart from "../components/charts/ProductsChart"
+import OrdersChartAreaInteractive from "../components/charts/OrdersChartAreaInteractive"
 
 const AdminPage: React.FC = () => {
   return (
@@ -18,7 +18,7 @@ const AdminPage: React.FC = () => {
                 <ProductsChart />
             </div>
             <div className="col-span-full">
-                <DemoChartAreaInteractive />
+                <OrdersChartAreaInteractive />
             </div>
             <div className="col-span-full">
                 <DemoChartBarInteractive />
