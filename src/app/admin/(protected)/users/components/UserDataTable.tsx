@@ -57,6 +57,7 @@ import z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormField, FormItem, FormLabel, FormControl, Form } from "@/components/ui/form"
 import { formatDateTime } from "@/utils/helper"
+import { useAuthenticatedUser } from "@/services/AuthenticationService"
 
 const updateUserDefault: TUpdateUser = {
   role: "",
@@ -80,6 +81,7 @@ export function UserDataTable() {
     const { data: response, isLoading: userLoading } = useGetUsersQuery();
     const [doUpdate] = useUpdateUserMutation();
     const [doDelete] = useDeleteUserMutation();
+    const { user: currentUser } = useAuthenticatedUser();
     const [isLoading, setIsLoading] = useState(false);
     const [users, setUsers] = useState<TUser[]>([]);
     const [updateUserId, setUpdateUserId] = useState("");
@@ -202,7 +204,7 @@ export function UserDataTable() {
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                    className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer"
+                                    className="flex items-center justify-start gap-2 w-full p-2 cursor-pointer disabled:cursor-not-allowed"
                                     onClick={() => {
                                         setUpdateUserId(user.id);
 
@@ -219,6 +221,7 @@ export function UserDataTable() {
                                         // Reset the form with the user data
                                         form.reset(userData);
                                     }}
+                                    disabled={currentUser?.role === "staff" && user.role === "admin"}
                                 >
                                     <FilePenLine className="size-4" />
                                     Edit
@@ -356,7 +359,7 @@ export function UserDataTable() {
             );
         },
     },
-    ], [form]);
+    ], [form, currentUser?.role]);
 
     const table = useReactTable<TUser>({
         data: users,

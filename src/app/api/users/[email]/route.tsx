@@ -8,14 +8,15 @@ import { z, ZodError } from "zod";
 
 const emailSchema = z.string().email();
 
-export const GET = async (request: NextRequest, { params } : { params: { email: string } }) => {
+export const GET = async (request: NextRequest, { params } : { params: Promise<{ email: string }> }) => {
     let status: number = 200;
     let response: TResponse;
 
     try {
         await connectDB();
         response = ApiResponse.success;
-        const email = emailSchema.parse(params.email);
+        const resolvedParams = await params;
+        const email = emailSchema.parse(resolvedParams.email);
         const data =  await User.findOne({ email });
 
         if (!data) {

@@ -15,6 +15,8 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { useAuthenticatedUser } from "@/services/AuthenticationService";
+import clsx from "clsx";
 
 const breadcrumbMain = {
     path: paths.admin.dashboard.main.path,
@@ -48,6 +50,7 @@ const formSchema = z.object({
 const RegisterUserForm = () => {
     const [doRegister, { isLoading: registerLoading }] = useAuthRegisterMutation();
     const [isLoading, setIsLoading] = useState(false);
+    const { user } = useAuthenticatedUser();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -128,7 +131,7 @@ const RegisterUserForm = () => {
                                                             <SelectValue placeholder="Select Role" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="admin">Admin</SelectItem>
+                                                            <SelectItem value="admin" disabled={user?.role === "staff"} className={clsx(user?.role === "staff" && "text-red-500")}>Admin</SelectItem>
                                                             <SelectItem value="staff">Staff</SelectItem>
                                                         </SelectContent>
                                                     </Select>
