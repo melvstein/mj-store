@@ -5,6 +5,9 @@ import GoogleProvider from "next-auth/providers/google";
 import axios from "axios";
 import ApiResponse from "./apiResponse";
 
+/**
+ * Fetch customer by email from backend API.
+ */
 const getCustomerByEmail = async (email: string) => {
 	try {
 		const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/customers/email/${email}`);
@@ -12,7 +15,6 @@ const getCustomerByEmail = async (email: string) => {
 		if (response.data.code === ApiResponse.success.code) {
 			return response.data.data;
 		}
-
 		return null;
 	} catch (error) {
 		console.error("Error fetching customer by email:", error);
@@ -21,16 +23,19 @@ const getCustomerByEmail = async (email: string) => {
 };
 
 type TSaveCustomer = {
-    provider: string;
-    firstName: string | null | undefined;
-    lastName: string | null | undefined;
+	provider: string;
+	firstName: string | null | undefined;
+	lastName: string | null | undefined;
 	username: string | null | undefined;
-    email: string | null | undefined;
-    profileImageUrl: string;
-    isActive: boolean;
-    isVerified: boolean;
+	email: string | null | undefined;
+	profileImageUrl: string;
+	isActive: boolean;
+	isVerified: boolean;
 };
 
+/**
+ * Save a new customer via backend API.
+ */
 const saveCustomer = async (customer: TSaveCustomer) => {
 	try {
 		console.log("Saving new customer:", customer);
@@ -39,7 +44,6 @@ const saveCustomer = async (customer: TSaveCustomer) => {
 		if (response.data.code === ApiResponse.success.code) {
 			return response.data.data;
 		}
-
 		return null;
 	} catch (error) {
 		console.error("Error saving new customer:", error);
@@ -47,103 +51,103 @@ const saveCustomer = async (customer: TSaveCustomer) => {
 	}
 };
 
-export const config = {
+/**
+ * NextAuth configuration
+ */
+export const { handlers, signIn, signOut, auth } = NextAuth({
 	debug: true,
 	providers: [
+		/**
+		 * Google OAuth Provider
+		 */
 		GoogleProvider({
-			clientId: process.env.AUTH_GOOGLE_ID,
-			clientSecret: process.env.AUTH_GOOGLE_SECRET
+			clientId: process.env.AUTH_GOOGLE_ID!,
+			clientSecret: process.env.AUTH_GOOGLE_SECRET!,
 		}),
+
+		/**
+		 * Custom Credentials Provider
+		 */
 		CredentialsProvider({
 			name: "Credentials",
 			credentials: {
 				email: { label: "Email", type: "email", placeholder: "user@example.com" },
-				password: { label: "Password", type: "password", placeholder: "Password" }
+				password: { label: "Password", type: "password", placeholder: "Password" },
 			},
-			async authorize(credentials, request) {
-				/* console.log('CredentialsProvider authorize method arg credentials', credentials);
-				console.log('CredentialsProvider authorize method arg request', request); */
+			async authorize(credentials) {
+				try {
+					const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
-				const headerOrigin = request.headers.get('origin');
+					const response = await axios.post(`${apiUrl}/api/users`, {
+						apiKey: process.env.API_KEY,
+						email: credentials?.email,
+					});
 
-				const response = await axios.post(`${headerOrigin}/api/users`, {
-					apiKey: process.env.API_KEY,
-					email: credentials.email
-				});
-
-				if (response.data.code === ApiResponse.success.code) {
-					const user = response.data.data;
-
-					if (user) {
-						return user;
+					if (response.data.code === ApiResponse.success.code) {
+						const user = response.data.data;
+						if (user) return user;
 					}
+					return null;
+				} catch (err) {
+					console.error("CredentialsProvider authorize error:", err);
+					return null;
+				}
+			},
+		}),
+	],
+
+	callbacks: {
+		/**
+		 * Sign In callback — called during login via Google or credentials.
+		 */
+		async signIn({ account, user, profile }: { account: Account | null; user: NextAuthUser; profile?: Profile }) {
+			try {
+				if (account) {
+					console.log("Provider:", account.provider);
 				}
 
-				return null;
-			}
-		}),
-	],/* 
-	pages: {
-		signIn: "/customer/login",
-		signOut: "/",
-	}, */
-	callbacks: {
-		async signIn({ account, user, profile }: { account: Account | null, user: NextAuthUser, profile: Profile }) {
-			
-			if (account) {
-				console.log('Provider', account.provider);
-			}
+				const email = profile?.email ?? user.email;
+				const existingCustomer = email ? await getCustomerByEmail(email) : null;
 
-			try {
-				const customer = user.email ? await getCustomerByEmail(user.email) : null;
-				console.log('Customer', customer);
-
-				/* await connectDB();
-
-				const existingUser = await User.findOne({ email: user.email });
-
-				if (!existingUser) {
-					await User.create({
-						role: "customer",
-						name: user.name,
-						email: user.email,
-						image: user.image,
-						provider: "google",
-					});
-				} */
-
-				if (!customer) {
-					const customerData = {
-						provider: account?.provider ? account.provider : "credentials",
-						firstName: profile?.given_name ? profile.given_name : user.name,
-						lastName: profile?.family_name ? profile.family_name : user.email,
-						username: profile?.email ? profile.email : user.email,
-						email: profile?.email ? profile.email : user.email,
-						profileImageUrl: profile?.picture ? profile.picture : user.image,
+				if (!existingCustomer) {
+					const newCustomer = await saveCustomer({
+						provider: account?.provider ?? "credentials",
+						firstName: profile?.given_name ?? user.name,
+						lastName: profile?.family_name ?? user.email,
+						username: email,
+						email,
+						profileImageUrl: profile?.picture ?? user.image,
 						isActive: true,
-						isVerified: profile?.email_verified ? profile.email_verified : false,
-					}
+						isVerified: Boolean(profile?.email_verified),
+					});
 
-					const newCustomer = await saveCustomer(customerData);
-					console.log('New Customer', newCustomer);
+					console.log("New Customer:", newCustomer);
 
 					if (!newCustomer) {
-						console.log('Failed to save the new customer', newCustomer);
+						console.log("❌ Failed to save new customer");
 						return false;
 					}
 				}
 
 				return true;
 			} catch (error) {
-				console.error("Signin callback Error saving user:", error);
+				console.error("Signin callback error:", error);
 				return false;
 			}
 		},
+
+		/**
+		 * Session callback — controls what data is available in `session`.
+		 */
 		async session({ session }: { session: Session }) {
-			// console.log('Session callback', session);
+			// Add custom properties to the session here if needed
 			return session;
 		},
 	},
-};
 
-export const { handlers, signIn, signOut, auth } = NextAuth(config);
+	// Optional: Customize sign-in and sign-out routes
+	// pages: {
+	// 	signIn: "/customer/login",
+	// 	signOut: "/",
+	// },
+});
