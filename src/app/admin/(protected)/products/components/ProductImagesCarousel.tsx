@@ -36,6 +36,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge";
+import { toastMessage } from "@/lib/toaster";
 
 const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
     const [uploadProductImages, { isLoading: uploading }] = useUploadProductImagesMutation();
@@ -89,7 +90,7 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
             }).unwrap();
 
             if (response?.code === Response.SUCCESS) {
-                toast.success(`Successfully uploaded ${data.images.length} image(s)!`);
+                toastMessage("success", `Successfully uploaded ${data.images.length} image(s)!`, true);
 
                 if (response.data?.productImageUrls && Array.isArray(response.data.productImageUrls)) {
                     console.log("=== STATE UPDATE ===");
@@ -156,7 +157,7 @@ const ProductImagesCarousel = ({ product }: { product: TProduct | null }) => {
             }).unwrap();
             
             if (response?.code === Response.SUCCESS) {
-                toast.success("Image deleted successfully!");
+                toastMessage("success", "Image deleted successfully!", true);
                 
                 if (response?.data.productImageUrls && Array.isArray(response.data.productImageUrls) && response.data.productImageUrls.length > 0) {
                     const newImages = [...response.data.productImageUrls].reverse();

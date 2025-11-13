@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import ProductImagesCarousel from "../../components/ProductImagesCarousel";
+import { toastMessage } from "@/lib/toaster";
 
 const breadcrumbMain = {
     path: paths.admin.dashboard.main.path,
@@ -31,6 +32,10 @@ const breadcrumbPaths = [
     {
         path: paths.admin.products.main.path,
         name: paths.admin.products.main.name,
+    },
+    {
+        path: paths.admin.products.main.path,
+        name: paths.admin.products.edit.name,
     }
 ];
 
@@ -113,7 +118,7 @@ const ProductDetails = ({ product }: { product: TProduct | null }) => {
             const response = await doUpdate({ id: product?.id, product: data }).unwrap();
 
             if (response?.code === Response.SUCCESS) {
-                toast.success(response.message || "Product updated successfully!");
+                toastMessage("success", response.message || "Product updated successfully!", true);
 
                 form.reset({
                 sku: data.sku,
