@@ -95,7 +95,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			},
 		}),
 	],
-  	secret: process.env.AUTH_SECRET,
 	callbacks: {
 		/**
 		 * Sign In callback — called during login via Google or credentials.
